@@ -29,12 +29,7 @@ export function Select({ blank, onChange, options: rawOptions, value, ...props }
     onChange(options[+v].value);
   };
 
-  const valueIndex = options.findIndex((option) => {
-    if ('id' in option) {
-      return option.id === value;
-    }
-    return option.value === value;
-  });
+  const valueIndex = options.findIndex(option => option.value === value);
 
   return (
     <select
@@ -49,12 +44,12 @@ export function Select({ blank, onChange, options: rawOptions, value, ...props }
       )}
       {grouped.map(({ name, children }) => {
         const optionElements = children.map(({
-          index, label, id, disabled, key, value: optionValue,
+          index, label, key, value: optionValue, ...more
         }) => (
           <option
             value={index}
-            key={key || id || optionValue}
-            disabled={disabled}
+            key={key || optionValue}
+            {...more}
           >
             {label}
           </option>
@@ -78,13 +73,13 @@ Select.propTypes = {
   options: PropTypes.arrayOf(PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.number,
-    arrayMembers([
+    PropTypes.arrayOf(arrayMembers([
       PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.number,
       ]).isRequired,
       PropTypes.string.isRequired,
-    ]),
+    ])),
     PropTypes.shape({
       disabled: PropTypes.bool,
       value: PropTypes.any.isRequired,

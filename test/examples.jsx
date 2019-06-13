@@ -34,6 +34,27 @@ export function Examples() {
           },
         ]}
       />
+      <SelectField
+        label="Grouped objects"
+        options={[
+          {
+            label: 'Foo',
+            value: 1,
+            group: 'One',
+          },
+          {
+            label: 'Boo',
+            value: 2,
+            disabled: true,
+            group: 'One',
+          },
+          {
+            label: 'Foe',
+            value: 3,
+            group: 'Two',
+          },
+        ]}
+      />
     </>
   );
 }

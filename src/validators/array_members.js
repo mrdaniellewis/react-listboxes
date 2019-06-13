@@ -1,14 +1,11 @@
-import { checkPropTypes } from 'prop-types';
-
 export function arrayMembers(members) {
-  return (items, index, name, _, prop) => {
-    members.forEach((check, i) => {
-      checkPropTypes(
-        { [i]: check },
-        items[index],
-        i,
-        `${name} ${prop}`,
-      );
-    });
+  return (propValue, key, ...rest) => {
+    if (members[key]) {
+      const error = members[key](propValue, key, ...rest);
+      if (error) {
+        return new Error(error.message);
+      }
+    }
+    return null;
   };
 }

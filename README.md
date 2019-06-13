@@ -5,7 +5,8 @@ An [aria combo box with manual selection](https://www.w3.org/TR/wai-aria-practic
 ## Select
 
 This is a HTML `<select>`.
-The principle difference it is takes its options from an array, and return and is set by the option `value`.
+It is takes its options from an array, and onChange will be return the selected options value, rather than an event.
+The `value` can be any object.
 
 This is controlled component.  You must respond to `onChange` to update the selected value.
 
@@ -17,13 +18,13 @@ This is controlled component.  You must respond to `onChange` to update the sele
 />
 ```
 
-| Prop               | Purpose                                     |
-| ----               | ----                                        |
-| blank              | Set a placeholder option                    |
-| options            | An array of options.  See below.            |
-| value              | The `value` of the option to set            |
-| onChange           | Will be called with the value of set option |
-| Any other property | Will be added to the select element         |
+| Prop               | Purpose                                          |
+| ----               | ----                                             |
+| blank              | Set a placeholder option                         |
+| options            | An array of options.  See below.                 |
+| value              | The `value` of the option to set                 |
+| onChange           | Will be called with the value of selected option |
+| Any other property | Will be added to the select element              |
 
 ### Options
 
@@ -34,32 +35,24 @@ Options is an array of either:
 - null or undefined - will be treated as an option with an empty label
 - an object with the following properties:
 
-| Prop     | Purpose                                           |
-| ----     | ----                                              |
-| value    | The value of the option                           |
-| label    | The label of the option                           |
-| disabled | Is the option disabled                            |
-| group    | Group labels to generate optgroups                |
-| id       | If supplied, value matching will be based on this |
-| key      | If supplied, used as the react key                |
+| Prop               | Purpose                            |
+| ----               | ----                               |
+| value              | The value of the option            |
+| label              | The label of the option            |
+| group              | Group labels to generate optgroups |
+| key                | If supplied, used as the react key |
+| Any other property | Will be added to the option        |
 
 ## Listbox
 
-Produces a listbox.  This is equivalent to a HTML `<select>`.
-That is `<button>` that opens a static list of options.
+Produces a listbox.  This is a HTML select emulated using HTML and JavaScript.
+
+In ARIA terms, it is a `<button>` with a popup menu that opens a listbox.
 
 This is a controlled component.  You must change the `value` in response to onChange to change the selection.
+Unlike a select element, onChange is called immediately, and does not wait until the component is collapsed.
 
-An option will be selected in response to:
-| Key                  | Function                                                    |
-| ----                 | ----                                                        |
-| Down                 | Move down an item                                           |
-| Up                   | Move up an item                                             |
-| Home                 | Move to first item                                          |
-| End                  | Move to last item                                           |
-| Printable characters | Move to the item starting with that character or characters |
-| Escape               | Close list box                                              |
-| Enter                | Close list box                                              |
+The interaction pattern is the same as: 
 
 ```js
 <Listbox
@@ -69,9 +62,21 @@ An option will be selected in response to:
 />
 ```
 
+| Prop        | Purpose                                          |
+| ----        | ----                                             |
+| blank       | Set a placeholder option                         |
+| options     | An array of options.  See below.                 |
+| value       | The `value` of the option to set                 |
+| onChange    | Will be called with the value of selected option |
+| onExpanded  | Called when opened                               |
+| onCollapsed | Called when closed                               |
+| Button      | Supply a custom button component                 |
+| Listbox     | Supply a custom listbox component                |
+| Option      | Supply a custom option component                 |
+
 ## Combo box
 
-Produces are combo box using the ARIA 1.0 pattern.
+Produces a combo box using the ARIA 1.0 pattern.
 This is a text box linked to list box.
 
 This is a controlled component.  You must change the `options` in response to `onSearch`
