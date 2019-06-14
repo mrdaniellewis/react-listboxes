@@ -43,19 +43,19 @@ Options is an array of either:
 | key                | If supplied, used as the react key |
 | Any other property | Will be added to the option        |
 
-## Listbox
+## Dropdown
 
-Produces a listbox.  This is a HTML select emulated using HTML and JavaScript.
+Produces a listbox opened by a button. It is equivalent to a HTML `<select>` element.
 
 In ARIA terms, it is a `<button>` with a popup menu that opens a listbox.
 
 This is a controlled component.  You must change the `value` in response to onChange to change the selection.
 Unlike a select element, onChange is called immediately, and does not wait until the component is collapsed.
 
-The interaction pattern is the same as: 
+The interaction pattern is the same as the [aria practices collapsible dropdown example](https://www.w3.org/TR/wai-aria-practices/examples/listbox/listbox-collapsible.html)
 
 ```js
-<Listbox
+<Dropdown
   options={options}
   value={value}
   onChange={value => useValue(value)}

@@ -1,9 +1,12 @@
 import React from 'react';
 import { SelectField } from './select_field.jsx';
+import { DropDown } from '../src/components/drop_down.jsx';
 
 export function Examples() {
   return (
     <>
+      <h1>Examples</h1>
+      <h2>Select</h2>
       <SelectField
         label="Numbers"
         options={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}
@@ -54,6 +57,21 @@ export function Examples() {
             group: 'Two',
           },
         ]}
+      />
+      <SelectField
+        label="With blank"
+        blank="Please choose..."
+        options={[
+          1,
+          'Foo',
+          ['bar', 'Bar'],
+          { label: 'Foe', value: 'foe' },
+        ]}
+      />
+      <h2>Drop down</h2>
+      <DropDown
+        options={['Foo', 'Bar', 'Foe', 'Fee']}
+        id="dropdown"
       />
     </>
   );
