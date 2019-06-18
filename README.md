@@ -98,8 +98,22 @@ You can also use the `onSearch` hook if you want to build your own component.  S
 
 ## TODO
 
-- Move index to test folder
-- Add searchTerm to state
-- Display chosen value
-- Should be possible to create a listbox without a textbox
-- Add async search updating with busy
+- Drop down
+  - Add redux and context
+  - Add keyboard events for opening and closing
+  - Add keyboard events for movement
+  - Add open/close handlers
+  - Add positioning
+- Listbox
+  - Add customisation
+- Combo box
+  - Listbox with input field
+- Popup button should be own component
+  - Add support for all types of pop-ups 
+  - menu, listbox, tree, grid, dialog
+
+<DropDown>
+<ComboBox>
+<
+
+
