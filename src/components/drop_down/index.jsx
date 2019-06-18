@@ -1,15 +1,19 @@
-import React, { useRef } from 'react';
+import React, { useRef, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { PopupButton } from '../popup_button.jsx';
 import { ListBox } from '../list_box.jsx';
-import { useThunkReducer } from '../../hooks/use_thunk_reducer.js';
+import { useThunkReducer as useReducer } from '../../hooks/use_thunk_reducer.js';
 import { reducer } from './reducer.js';
 import { initialState } from './initial_state.js';
-import { setExpanded } from './actions.js';
+import { onKeyDown } from './actions.js';
 import { Context } from '../../context.js';
+import { options as validateOptions } from '../../validators/options.js';
+import { optionise } from '../../helpers/optionise.js';
 
-export function DropDown({ id, ...props }) {
-  const [state, dispatch] = useThunkReducer(reducer, props, initialState, id);
+export function DropDown(props) {
+  const { id, options: rawOptions, setValue } = props;
+  const options = useMemo(() => rawOptions.map(optionise), [rawOptions]);
+  const [expanded, setExpanded] = useState(false);
 
   const buttonRef = useRef();
   const listRef = useRef();
@@ -23,26 +27,38 @@ export function DropDown({ id, ...props }) {
     }, 0);
   }
 
-  const { expanded } = state;
-
   return (
-    <Context.Provider value={{ ...props, ...state, dispatch }}>
+    <Context.Provider value={{ ...props, expanded, options, setExpanded }}>
       <PopupButton
         ref={buttonRef}
         hasPopup="listbox"
         setExpanded={setExpanded}
       >
-        button
+        {children || label}
       </PopupButton>
       <ListBox
         id={id}
         options={options}
         hidden={!expanded}
         ref={listRef}
-        onKeyDown={() => {}}
-        onChange={() => {}}
+        onKeyDown={e => dispatch(onKeyDown(e))}
         onBlur={onBlur}
+        setValue={newValue => setValue(newValue)}
+        value={value}
       />
     </Context.Provider>
   );
 }
+
+DropDown.propTypes = {
+  children: PropTypes.node,
+  id: PropTypes.string.isRequired,
+  options: validateOptions.isRequired,
+  setValue: PropTypes.func.isRequired,
+  value: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+};
+
+DropDown.defaultProps = {
+  children: null,
+  value: null,
+};

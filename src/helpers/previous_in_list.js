@@ -1,11 +1,11 @@
-export function previousInList(options, index, startIndex = index) {
+export function previousInList(options, index = 0, startIndex = index) {
   let i = index - 1;
   if (i < 0) {
     i = options.length - 1;
   }
   // Prevent infinite loops
   if (i === startIndex) {
-    return null;
+    return undefined;
   }
   if (options[i] && options[i].disabled) {
     return previousInList(options, i, startIndex);

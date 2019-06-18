@@ -3,10 +3,12 @@ import { useRef, useCallback } from 'react';
 
 export function useThunkReducer(reducer, props, initialState, name) {
   const [state, dispatch] = useReducer(reducer, props, initialState, name);
-  const ref = useRef(state);
-  ref.current = state;
+  const stateRef = useRef(state);
+  const propsRef = useRef(props);
+  stateRef.current = state;
+  propsRef.current = props;
   const thunkDispatch = useCallback(
-    data => (typeof data === 'function' ? data(dispatch, () => ref.current) : dispatch(data)),
+    data => (typeof data === 'function' ? data(dispatch, () => stateRef.current, () => propsRef.current) : dispatch(data)),
     [],
   );
 

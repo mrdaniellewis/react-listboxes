@@ -3,6 +3,8 @@ import { previousInList } from '../../helpers/previous_in_list.js';
 
 export const SET_EXPANDED = 'SET_EXPANDED';
 export const SET_SEARCH = 'SET_SEARCH';
+export const SET_OPTIONS = 'SET_OPTIONS';
+export const SET_BUSY = 'SET_BUSY';
 
 export function setExpanded(expanded) {
   return { type: SET_EXPANDED, expanded };
@@ -10,6 +12,14 @@ export function setExpanded(expanded) {
 
 export function setSearch(key) {
   return { type: SET_SEARCH, key };
+}
+
+export function setOptions({ options, value }) {
+  return { type: SET_OPTIONS, options, value };
+}
+
+export function setBusy(busy) {
+  return { type: SET_BUSY, busy };
 }
 
 export function onKeyDown(event) {
@@ -75,7 +85,7 @@ export function onKeyDown(event) {
       default:
         // Determine if it is a printable key
         // All special keys all ascii sequences starting with a capital letter
-        // Printable characters will be something plus optionally some non ascii modifiers
+        // Printable characters will be something plus, optionally, some non ascii modifiers
         if (!/^[A-Z][A-Za-z0-9]/.test(key)) {
           dispatch(setSearch(key));
         }
