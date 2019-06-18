@@ -1,20 +1,33 @@
-# React combo box
+# React components
 
-An [aria combo box with manual selection](https://www.w3.org/TR/wai-aria-practices-1.1/#combobox) implemented in React.
+A set of react components based on [WAI-ARIA Authoring Practices](https://www.w3.org/TR/wai-aria-practices-1.1/).
 
-## Select
+```
+import { Component } from '@citizensadvice/react-components';
+```
 
-This is a HTML `<select>`.
-It is takes its options from an array, and onChange will be return the selected options value, rather than an event.
-The `value` can be any object.
+## Development
 
-This is controlled component.  You must respond to `onChange` to update the selected value.
+To start `npm start`  
+To test `npm test`
+To build example page `npm run build`
+To deploy the example page `npm run gh-pages`
+
+You can use [Redux Dev Tools](https://github.com/zalmoxisus/redux-devtools-extension) to debug the state of most components.
+
+## Components
+
+### Select
+
+This is a HTML `<select>`.  It takes the options from an array.
+
+This is stateless controlled component.  You must respond to `setValue` to update the selected value.
 
 ```js
 <Select
   options={options}
   value={value}
-  onChange={value => useValue(value)}
+  setValue={value => useValue(value)}
 />
 ```
 
@@ -23,10 +36,10 @@ This is controlled component.  You must respond to `onChange` to update the sele
 | blank              | Set a placeholder option                         |
 | options            | An array of options.  See below.                 |
 | value              | The `value` of the option to set                 |
-| onChange           | Will be called with the value of selected option |
+| setValue           | Will be called with the value of selected option |
 | Any other property | Will be added to the select element              |
 
-### Options
+#### Options
 
 Options is an array of either:
 - strings
@@ -35,30 +48,29 @@ Options is an array of either:
 - null or undefined - will be treated as an option with an empty label
 - an object with the following properties:
 
-| Prop               | Purpose                            |
-| ----               | ----                               |
-| value              | The value of the option            |
-| label              | The label of the option            |
-| group              | Group labels to generate optgroups |
-| key                | If supplied, used as the react key |
-| Any other property | Will be added to the option        |
+| Prop               | Purpose                                |
+| ----               | ----                                   |
+| value              | The value of the option                |
+| label              | The label of the option                |
+| group              | Group labels to generate `<optgroup>`s |
+| key                | If supplied, used as the react key     |
+| Any other property | Will be added to the option            |
 
-## Dropdown
+### Drop down
 
 Produces a listbox opened by a button. It is equivalent to a HTML `<select>` element.
 
 In ARIA terms, it is a `<button>` with a popup menu that opens a listbox.
 
-This is a controlled component.  You must change the `value` in response to onChange to change the selection.
-Unlike a select element, onChange is called immediately, and does not wait until the component is collapsed.
-
 The interaction pattern is the same as the [aria practices collapsible dropdown example](https://www.w3.org/TR/wai-aria-practices/examples/listbox/listbox-collapsible.html)
+
+This is a controlled component.  You must change the `value` in response to setValue to change the selection.  The component maintains an internal state to control if opened or closed. 
 
 ```js
 <Dropdown
   options={options}
   value={value}
-  onChange={value => useValue(value)}
+  setValue={value => useValue(value)}
 />
 ```
 
@@ -67,20 +79,18 @@ The interaction pattern is the same as the [aria practices collapsible dropdown 
 | blank       | Set a placeholder option                         |
 | options     | An array of options.  See below.                 |
 | value       | The `value` of the option to set                 |
-| onChange    | Will be called with the value of selected option |
-| onExpanded  | Called when opened                               |
-| onCollapsed | Called when closed                               |
+| setValue    | Will be called with the value of selected option |
+| onToggle    | Called when opened or closed                     |
 | Button      | Supply a custom button component                 |
 | Listbox     | Supply a custom listbox component                |
 | Option      | Supply a custom option component                 |
 
-## Combo box
+### Combo box
 
 Produces a combo box using the ARIA 1.0 pattern.
 This is a text box linked to list box.
 
-This is a controlled component.  You must change the `options` in response to `onSearch`
-and change the `value` in response to `onChange`.
+This is a controlled component.  You must change the `options` in response to `onSearch` and change the value in response to `setValue`.
 
 ```js
 <ComboBox
@@ -91,15 +101,27 @@ and change the `value` in response to `onChange`.
 />
 ```
 
-If the combo box shows a static list of options you can use the `<StaticComboBox>` component.
-This will filter the list of items for you.
+#### Searches
 
-You can also use the `onSearch` hook if you want to build your own component.  See TODO for an example.
+You must change the list of options in response on `onSearch`.  For a static list of options a hook is provided to help you.
+
+#### Highlight
+
+It is often desired to highlight the search results.
+
+
+### PopupButton
+### ComboBoxButton
+### Tree
 
 ## TODO
 
-- Move index to test folder
-- Add searchTerm to state
-- Display chosen value
-- Should be possible to create a listbox without a textbox
-- Add async search updating with busy
+- DropDown
+  - Keyboard events
+  - Positioning
+  - Customisation
+- ComboBox
+  - Build
+  - Keyboard events
+- DropDownComboBox
+  - Build
