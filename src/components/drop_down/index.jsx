@@ -1,11 +1,11 @@
-import React, { useRef, useMemo, useState } from 'react';
+import React, { useRef, useMemo, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { PopupButton } from '../popup_button.jsx';
 import { ListBox } from '../list_box.jsx';
 import { useThunkReducer as useReducer } from '../../hooks/use_thunk_reducer.js';
 import { reducer } from './reducer.js';
 import { initialState } from './initial_state.js';
-import { onKeyDown } from './actions.js';
+import { clearSearch, setExpanded } from './actions.js';
 import { Context } from '../../context.js';
 import { options as validateOptions } from '../../validators/options.js';
 import { optionise } from '../../helpers/optionise.js';
@@ -13,7 +13,8 @@ import { optionise } from '../../helpers/optionise.js';
 export function DropDown(props) {
   const { id, options: rawOptions, setValue } = props;
   const options = useMemo(() => rawOptions.map(optionise), [rawOptions]);
-  const [expanded, setExpanded] = useState(false);
+  const [state, dispatch] = useReducer(reducer, props, initialState, id);
+  const { expanded, search } = state;
 
   const buttonRef = useRef();
   const listRef = useRef();
@@ -21,11 +22,18 @@ export function DropDown(props) {
   function onBlur() {
     setTimeout(() => {
       if (!listRef.current.contains(document.activeElement)) {
-        setExpanded(false);
+        dispatch(setExpanded(false));
         buttonRef.current.focus();
       }
     }, 0);
   }
+
+  useEffect(() => {
+    const found = options.find(option => option.label.startsWith(search));
+    setValue(found.value);
+    // TODO: Need to debouce this
+    setTimeout(() => dispatch(clearSearch()), 1000);
+  }, [search]);
 
   return (
     <Context.Provider value={{ ...props, expanded, options, setExpanded }}>
