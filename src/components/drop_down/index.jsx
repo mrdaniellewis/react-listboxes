@@ -5,16 +5,17 @@ import { ListBox } from '../list_box.jsx';
 import { useThunkReducer as useReducer } from '../../hooks/use_thunk_reducer.js';
 import { reducer } from './reducer.js';
 import { initialState } from './initial_state.js';
-import { clearSearch, setExpanded } from './actions.js';
+import { clearSearch, setExpanded, onKeyDown } from './actions.js';
 import { Context } from '../../context.js';
 import { options as validateOptions } from '../../validators/options.js';
 import { optionise } from '../../helpers/optionise.js';
 
 export function DropDown(props) {
-  const { id, options: rawOptions, setValue } = props;
+  const { children, id, options: rawOptions, setValue, value } = props;
   const options = useMemo(() => rawOptions.map(optionise), [rawOptions]);
   const [state, dispatch] = useReducer(reducer, props, initialState, id);
   const { expanded, search } = state;
+  const currentOption = options.find(({ value: optionValue }) => optionValue === value);
 
   const buttonRef = useRef();
   const listRef = useRef();
@@ -33,16 +34,17 @@ export function DropDown(props) {
     setValue(found.value);
     // TODO: Need to debouce this
     setTimeout(() => dispatch(clearSearch()), 1000);
-  }, [search]);
+  }, [options, search, setValue]);
 
   return (
     <Context.Provider value={{ ...props, expanded, options, setExpanded }}>
       <PopupButton
         ref={buttonRef}
+        targetRef={listRef}
         hasPopup="listbox"
-        setExpanded={setExpanded}
+        setExpanded={newExpanded => dispatch(setExpanded(newExpanded))}
       >
-        {children || label}
+        {children || currentOption ? currentOption.label : ''}
       </PopupButton>
       <ListBox
         id={id}
@@ -63,7 +65,7 @@ DropDown.propTypes = {
   id: PropTypes.string.isRequired,
   options: validateOptions.isRequired,
   setValue: PropTypes.func.isRequired,
-  value: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
 };
 
 DropDown.defaultProps = {

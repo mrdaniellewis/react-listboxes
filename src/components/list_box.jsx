@@ -4,7 +4,7 @@ import { options as validateOptions } from '../validators/options.js';
 import { optionise } from '../helpers/optionise.js';
 import { useGrouped } from '../hooks/use_grouped.js';
 
-export const ListBox = forwardRef(({ blank, id, onChange, options: rawOptions, value, ...props }, ref) => {
+export const ListBox = forwardRef(({ blank, id, setValue, options: rawOptions, value, ...props }, ref) => {
   const options = useMemo(() => rawOptions.map(optionise), [rawOptions]);
 
   const valueIndex = options.findIndex(option => option.value === value);
@@ -20,7 +20,7 @@ export const ListBox = forwardRef(({ blank, id, onChange, options: rawOptions, v
       if (e.button > 0) {
         return;
       }
-      onChange(newValue);
+      setValue(newValue);
     }
   );
 
@@ -79,7 +79,7 @@ export const ListBox = forwardRef(({ blank, id, onChange, options: rawOptions, v
 ListBox.propTypes = {
   blank: PropTypes.node,
   id: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
+  setValue: PropTypes.func.isRequired,
   options: validateOptions.isRequired,
   value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
 };

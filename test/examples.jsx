@@ -1,6 +1,6 @@
 import React from 'react';
 import { SelectField } from './select_field.jsx';
-import { DropDown } from '../src/components/drop_down.jsx';
+import { DropDownField } from './drop_down_field.jsx';
 
 export function Examples() {
   return (
@@ -69,7 +69,8 @@ export function Examples() {
         ]}
       />
       <h2>Drop down</h2>
-      <DropDown
+      <DropDownField
+        label="Dropdown"
         options={['Foo', 'Bar', 'Foe', 'Fee']}
         id="dropdown"
       />

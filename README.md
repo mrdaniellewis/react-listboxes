@@ -122,6 +122,7 @@ It is often desired to highlight the search results.
   - Add keyboard events for movement
   - Add open/close handlers
   - Add positioning
+  - Click on label
 - Listbox
   - Add customisation
 - Combo box

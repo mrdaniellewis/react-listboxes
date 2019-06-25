@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect, forwardRef } from 'react';
+import React, { useRef, useLayoutEffect, forwardRef, useImperativeHandle } from 'react';
 import PropTypes from 'prop-types';
 
 export const PopupButton = forwardRef(({
@@ -13,6 +13,12 @@ export const PopupButton = forwardRef(({
       }
     }
   }, [expanded, targetRef]);
+
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      buttonRef.current.focus();
+    },
+  }));
 
   return (
     <button
