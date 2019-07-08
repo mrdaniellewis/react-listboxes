@@ -119,13 +119,17 @@ It is often desired to highlight the search results.
 ## TODO
 
 - Drop down
+  - activedescendant from parent componet
+  - label must be string
   - Add positioning
   - Click on label
   - Use comboxbox searcher
 - Listbox
   - Add customisation
 - Combo box
-  - Copy drop down and add in input field
-  - Customisation
+  - with basic search
+  - with async search 
   - Searchers
   - Highlighters
+  - aria 1.0
+  - autocomplete types
