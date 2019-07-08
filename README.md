@@ -19,7 +19,8 @@ You can use [Redux Dev Tools](https://github.com/zalmoxisus/redux-devtools-exten
 
 ### Select
 
-This is a HTML `<select>`.  It takes the options from an array.
+This is a HTML `<select>`.  Unlike a standard react `<select>` it takes the options from an array
+and calls `setValue` with an object rather than a string.
 
 This is stateless controlled component.  You must respond to `setValue` to update the selected value.
 
@@ -58,13 +59,14 @@ Options is an array of either:
 
 ### Drop down
 
-Produces a listbox opened by a button. It is equivalent to a HTML `<select>` element.
+Produces a listbox opened by a button. It is equivalent to a custom HTML `<select>` element.
 
-In ARIA terms, it is a `<button>` with a popup menu that opens a listbox.
+In ARIA terms, it is a `<button>` `aria-haspopup` of `menu` that opens a listbox.
 
 The interaction pattern is the same as the [aria practices collapsible dropdown example](https://www.w3.org/TR/wai-aria-practices/examples/listbox/listbox-collapsible.html)
 
-This is a controlled component.  You must change the `value` in response to setValue to change the selection.  The component maintains an internal state to control if opened or closed. 
+This is a controlled component.  You must change the `value` in response to `setValue` to change the selection.
+The component maintains an internal state to control if opened or closed. 
 
 ```js
 <Dropdown
@@ -117,16 +119,13 @@ It is often desired to highlight the search results.
 ## TODO
 
 - Drop down
-  - Add redux and context
-  - Add keyboard events for opening and closing
-  - Add keyboard events for movement
-  - Add open/close handlers
   - Add positioning
   - Click on label
+  - Use comboxbox searcher
 - Listbox
   - Add customisation
 - Combo box
-  - Listbox with input field
-- Popup button should be own component
-  - Add support for all types of pop-ups 
-  - menu, listbox, tree, grid, dialog
+  - Copy drop down and add in input field
+  - Customisation
+  - Searchers
+  - Highlighters

@@ -13,7 +13,7 @@ export function SelectField({ label, ...props }) {
       <Select
         id={id}
         value={value}
-        onChange={newValue => setValue(newValue)}
+        setValue={newValue => setValue(newValue)}
         {...props}
       />
     </>

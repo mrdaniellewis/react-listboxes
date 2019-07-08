@@ -2,21 +2,16 @@ import React, { useRef, useLayoutEffect, forwardRef, useImperativeHandle } from 
 import PropTypes from 'prop-types';
 
 export const PopupButton = forwardRef(({
-  children, expanded, hasPopup, setExpanded, targetRef, ...props
+  children, expanded, hasPopup, setExpanded, ...props
 }, ref) => {
   const buttonRef = useRef(ref);
 
-  useLayoutEffect(() => {
-    if (expanded) {
-      if (document.activeElement === buttonRef.current) {
-        targetRef.current.focus();
-      }
-    }
-  }, [expanded, targetRef]);
-
   useImperativeHandle(ref, () => ({
-    focus: () => {
+    focus() {
       buttonRef.current.focus();
+    },
+    contains(el) {
+      return buttonRef.current.contains(el);
     },
   }));
 
@@ -39,9 +34,6 @@ PopupButton.propTypes = {
   expanded: PropTypes.bool,
   hasPopup: PropTypes.oneOf([true, 'menu', 'listbox', 'tree', 'grid', 'dialog']),
   setExpanded: PropTypes.func.isRequired,
-  targetRef: PropTypes.shape({
-    current: PropTypes.instanceOf(Element),
-  }).isRequired,
 };
 
 PopupButton.defaultProps = {

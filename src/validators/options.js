@@ -13,7 +13,7 @@ export const options = PropTypes.arrayOf(PropTypes.oneOfType([
   ])),
   PropTypes.shape({
     disabled: PropTypes.bool,
-    value: PropTypes.any.isRequired,
+    value: PropTypes.any,
     label: PropTypes.node.isRequired,
     group: PropTypes.string,
     id: PropTypes.oneOfType([

@@ -45,14 +45,14 @@ export function onKeyDown(event) {
         event.preventDefault();
         if (altKey) {
           dispatch(setExpanded(false));
-        } else {
+        } else if (expanded) {
           setValue(previousInList(options, selectedIndex));
         }
         break;
       case 'ArrowDown':
         // Show, and next item unless altKey
         event.preventDefault();
-        if (!altKey) {
+        if (expanded && !altKey) {
           setValue(nextInList(options, selectedIndex));
         } else {
           dispatch(setExpanded(true));
@@ -74,9 +74,9 @@ export function onKeyDown(event) {
         break;
       case 'Enter':
         // Select current item if one is selected
-        event.preventDefault();
-        if (expanded && selectedIndex !== null) {
-          setValue(options[selectedIndex]);
+        if (expanded && selectedIndex !== -1) {
+          event.preventDefault();
+          setValue(options[selectedIndex].value);
           dispatch(setExpanded(false));
         }
         break;
@@ -84,7 +84,7 @@ export function onKeyDown(event) {
         // Determine if it is a printable key
         // All special keys all ascii sequences starting with a capital letter
         // Printable characters will be something plus, optionally, some non ascii modifiers
-        if (!/^[A-Z][A-Za-z0-9]/.test(key)) {
+        if (expanded && !/^[A-Z][A-Za-z0-9]/.test(key)) {
           dispatch(setSearchKey(key));
         }
     }

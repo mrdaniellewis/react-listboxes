@@ -1,4 +1,4 @@
-export function previousInList(options, index = 0, startIndex = index) {
+export function previousInList(options, index = -1, startIndex = index) {
   let i = index - 1;
   if (i < 0) {
     i = options.length - 1;
@@ -10,5 +10,5 @@ export function previousInList(options, index = 0, startIndex = index) {
   if (options[i] && options[i].disabled) {
     return previousInList(options, i, startIndex);
   }
-  return options[i];
+  return options[i].value;
 }

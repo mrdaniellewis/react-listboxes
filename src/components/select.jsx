@@ -1,35 +1,20 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { options as validateOptions } from '../validators/options.js';
-import { optionise } from '../helpers/optionise.js';
+import { useOptionised } from '../hooks/use_optionised.js';
 import { useGrouped } from '../hooks/use_grouped.js';
 
-export function Select({ blank, onChange, options: rawOptions, value, ...props }) {
-  const options = useMemo(() => rawOptions.map(optionise), [rawOptions]);
-
+export function Select({ blank, setValue, options: rawOptions, value, ...props }) {
+  const options = useOptionised(rawOptions, blank);
   const grouped = useGrouped(options);
-
-  const selectOnChange = ({ target: { value: v } }) => {
-    if (blank && v === '') {
-      onChange(null);
-      return;
-    }
-    onChange(options[+v].value);
-  };
-
   const valueIndex = options.findIndex(option => option.value === value);
 
   return (
     <select
       value={valueIndex === -1 ? '' : valueIndex}
-      onChange={selectOnChange}
+      onChange={({ target: { value: index } }) => setValue(options[+index].value)}
       {...props}
     >
-      {blank && (
-        <option value="">
-          {blank}
-        </option>
-      )}
       {grouped.map(({ name, children }) => {
         const optionElements = children.map(({
           index, label, key, value: optionValue, ...more
@@ -57,7 +42,7 @@ export function Select({ blank, onChange, options: rawOptions, value, ...props }
 
 Select.propTypes = {
   blank: PropTypes.node,
-  onChange: PropTypes.func.isRequired,
+  setValue: PropTypes.func.isRequired,
   options: validateOptions.isRequired,
   value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
 };

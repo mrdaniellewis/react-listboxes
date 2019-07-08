@@ -72,7 +72,12 @@ export function Examples() {
       <DropDownField
         label="Dropdown"
         options={['Foo', 'Bar', 'Foe', 'Fee']}
-        id="dropdown"
+        value="Foo"
+      />
+      <DropDownField
+        label="Dropdown with blank"
+        options={['Foo', 'Bar', 'Foe', 'Fee']}
+        blank="Please choose…"
       />
     </>
   );

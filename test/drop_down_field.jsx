@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import { DropDown } from '../src/components/drop_down/index.jsx';
 
 export function DropDownField({ label, ...props }) {
-  const [value, setValue] = useState(null);
+  const { value: initialValue } = props;
+  const [value, setValue] = useState(initialValue);
   const id = label.trim().replace(/[^a-z]{2,}/, '_');
   return (
     <>
@@ -12,15 +13,20 @@ export function DropDownField({ label, ...props }) {
       </span>
       <DropDown
         id={id}
-        aria-labelledby={`label_${id}`}
+        aria-labelledby={`label_${id} ${id}`}
+        {...props}
         value={value}
         setValue={newValue => setValue(newValue)}
-        {...props}
       />
     </>
   );
 }
 
 DropDownField.propTypes = {
+  value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
   label: PropTypes.string.isRequired,
+};
+
+DropDownField.defaultProps = {
+  value: null,
 };
