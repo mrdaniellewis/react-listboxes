@@ -119,14 +119,17 @@ It is often desired to highlight the search results.
 ## TODO
 
 - Drop down
+  - Use comboxbox searcher
+  - Customisation
   - Add positioning
   - Click on label
-  - Use comboxbox searcher
-- Listbox
-  - Add customisation
 - Combo box
+  - do not change search when selecting value
+    - change serach to current label when blurring
+    - ensure currently selected option is available
+    - solve first draw issue
   - with async search 
-  - Searchers
+    - busy
   - Highlighters
   - aria 1.0
   - autocomplete types
