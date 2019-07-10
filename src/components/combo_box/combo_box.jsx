@@ -4,7 +4,7 @@ import { ListBox } from '../list_box.jsx';
 import { useThunkReducer as useReducer } from '../../hooks/use_thunk_reducer.js';
 import { reducer } from './reducer.js';
 import { initialState } from './initial_state.js';
-import { clear, onKeyDown, onChange, onFocus, setSearch, onClick, onBlur, onClearValue } from './actions.js';
+import { onKeyDown, onChange, onFocus, setSearch, onClick, onBlur, onClearValue } from './actions.js';
 import { Context } from '../../context.js';
 import { options as validateOptions } from '../../validators/options.js';
 import { useOptionised } from '../../hooks/use_optionised.js';
@@ -81,9 +81,13 @@ ComboBox.propTypes = {
   busy: PropTypes.bool,
   id: PropTypes.string.isRequired,
   options: validateOptions.isRequired,
-  setValue: PropTypes.func.isRequired,
-  onSearch: PropTypes.func.isRequired,
+  setValue: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
+  onSearch: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
   value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
+  label: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]),
 };
 
 ComboBox.defaultProps = {

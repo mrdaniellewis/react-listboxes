@@ -1,6 +1,6 @@
 import { CLEAR_SEARCH, SET_ACTIVE, SET_EXPANDED, SET_SEARCH } from './actions.js';
 
-export function reducer(state, { type, expanded, search }) {
+export function reducer(state, { type, expanded, search, label }) {
   switch (type) {
     case SET_ACTIVE:
       return { ...state, search, expanded: true };

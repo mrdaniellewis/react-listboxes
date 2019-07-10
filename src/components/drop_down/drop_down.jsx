@@ -16,7 +16,9 @@ export function DropDown(props) {
   const options = useOptionised(rawOptions, blank);
   const [state, dispatch] = useReducer(reducer, { ...props, options }, initialState, id);
   const { expanded, search } = state;
-  const currentOption = options.find(({ value: optionValue }) => optionValue === value);
+  const currentOptionIndex = options.findIndex(({ value: optionValue }) => optionValue === value);
+  const currentOption = currentOptionIndex === -1 ? null : options[currentOptionIndex];
+  const activeId = currentOption ? (currentOption.id || `${id}_${currentOptionIndex}`) : null;
 
   const buttonRef = useRef();
   const listRef = useRef();
@@ -73,6 +75,7 @@ export function DropDown(props) {
         setValue={newValue => dispatch(onClick(newValue))}
         value={value}
         blank={blank}
+        aria-activedescendant={activeId}
       />
     </Context.Provider>
   );

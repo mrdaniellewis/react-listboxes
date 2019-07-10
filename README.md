@@ -119,8 +119,6 @@ It is often desired to highlight the search results.
 ## TODO
 
 - Drop down
-  - activedescendant from parent componet
-  - label must be string
   - Add positioning
   - Click on label
   - Use comboxbox searcher

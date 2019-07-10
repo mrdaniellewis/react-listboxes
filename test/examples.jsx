@@ -2,6 +2,7 @@ import React from 'react';
 import { SelectField } from './select_field.jsx';
 import { DropDownField } from './drop_down_field.jsx';
 import { ComboBoxField } from './combo_box_field.jsx';
+import { AsyncComboBoxField } from './async_combo_box_field.jsx';
 
 export function Examples() {
   return (
@@ -83,6 +84,9 @@ export function Examples() {
       <ComboBoxField
         label="ComboBox"
         options={['Foo', 'Bar', 'Foe', 'Fee']}
+      />
+      <AsyncComboBoxField
+        label="Async comboBox"
       />
     </>
   );

@@ -21,7 +21,6 @@ export const ListBox = forwardRef((
   }));
 
   const valueIndex = options.findIndex(option => option.value === value);
-  const activeId = valueIndex > -1 ? options[valueIndex].id || `${id}_${valueIndex}` : null;
 
   const onClick = newValue => (
     (e) => {
@@ -38,7 +37,6 @@ export const ListBox = forwardRef((
     // eslint-disable-next-line jsx-a11y/aria-activedescendant-has-tabindex
     <ul
       role="listbox"
-      aria-activedescendant={activeId}
       tabIndex={-1}
       ref={listRef}
       id={id}

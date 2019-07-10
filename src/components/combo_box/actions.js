@@ -134,3 +134,12 @@ export function onClearValue() {
     setValue(null);
   };
 }
+
+export function onChangeValue() {
+  return (dispatch, getState, getProps) => {
+    const { onSearch, options, value } = getProps();
+    const option = options.find(o => o.value === value);
+    setSearch(option ? option.label : null);
+    onSearch(option ? option.label : null);
+  };
+}
