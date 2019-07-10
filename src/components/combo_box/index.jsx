@@ -1,15 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { StateInspector } from 'reinspect';
-import { DropDown } from './drop_down.jsx';
+import { ComboBox } from './combo_box.jsx';
 
 function Inspector({ children, ...props }) {
   const { id } = props;
   return (
     <StateInspector name={id}>
-      <DropDown {...props}>
+      <ComboBox {...props}>
         {children}
-      </DropDown>
+      </ComboBox>
     </StateInspector>
   );
 }
@@ -23,4 +23,4 @@ Inspector.defaultProps = {
   children: null,
 };
 
-export { Inspector as DropDown };
+export { Inspector as ComboBox };

@@ -90,3 +90,11 @@ export function onKeyDown(event) {
     }
   };
 }
+
+export function onClick(value) {
+  return (dispatch, getState, getProps) => {
+    const { setValue } = getProps();
+    setValue(value);
+    dispatch(setExpanded(false));
+  };
+}

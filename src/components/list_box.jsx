@@ -5,7 +5,7 @@ import { optionise } from '../helpers/optionise.js';
 import { useGrouped } from '../hooks/use_grouped.js';
 
 export const ListBox = forwardRef((
-  { id, setValue, options: rawOptions, value, setExpanded, ...props },
+  { id, setValue, options: rawOptions, value, ...props },
   ref,
 ) => {
   const options = useMemo(() => rawOptions.map(optionise), [rawOptions]);
@@ -29,7 +29,6 @@ export const ListBox = forwardRef((
         return;
       }
       setValue(newValue);
-      setExpanded(false);
     }
   );
 
@@ -42,6 +41,7 @@ export const ListBox = forwardRef((
       aria-activedescendant={activeId}
       tabIndex={-1}
       ref={listRef}
+      id={id}
       {...props}
     >
       {grouped.map(({ name, children }, i) => (
@@ -80,10 +80,11 @@ ListBox.propTypes = {
   setValue: PropTypes.func.isRequired,
   options: validateOptions.isRequired,
   value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
-  setExpanded: PropTypes.func.isRequired,
 };
 
 ListBox.defaultProps = {
   blank: null,
   value: null,
 };
+
+ListBox.displayName = 'ListBox';

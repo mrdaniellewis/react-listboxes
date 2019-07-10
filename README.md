@@ -127,7 +127,6 @@ It is often desired to highlight the search results.
 - Listbox
   - Add customisation
 - Combo box
-  - with basic search
   - with async search 
   - Searchers
   - Highlighters

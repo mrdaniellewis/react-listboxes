@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect, forwardRef, useImperativeHandle } from 'react';
+import React, { useRef, forwardRef, useImperativeHandle } from 'react';
 import PropTypes from 'prop-types';
 
 export const PopupButton = forwardRef(({

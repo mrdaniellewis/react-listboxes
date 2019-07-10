@@ -1,15 +1,25 @@
 import { nextInList } from '../../helpers/next_in_list.js';
 import { previousInList } from '../../helpers/previous_in_list.js';
 
+export const SET_ACTIVE = 'SET_ACTIVE';
 export const SET_EXPANDED = 'SET_EXPANDED';
 export const SET_SEARCH = 'SET_SEARCH';
+export const CLEAR_SEARCH = 'CLEAR_SEARCH';
 
 export function setExpanded(expanded) {
   return { type: SET_EXPANDED, expanded };
 }
 
+export function setActive(search) {
+  return { type: SET_ACTIVE, search };
+}
+
 export function setSearch(search) {
   return { type: SET_SEARCH, search };
+}
+
+export function clearSearch() {
+  return { type: CLEAR_SEARCH };
 }
 
 export function onKeyDown(event) {
@@ -25,8 +35,7 @@ export function onKeyDown(event) {
 
     if (key === 'Escape') {
       event.preventDefault();
-      dispatch(setExpanded(false));
-      setValue(null);
+      dispatch(clearSearch());
       return;
     }
 
@@ -84,8 +93,44 @@ export function onKeyDown(event) {
 export function onChange(event) {
   return (dispatch, getState, getProps) => {
     const { target: { value } } = event;
-    const { onSearch } = getProps();
+    const { onSearch, setValue } = getProps();
     onSearch(value);
     dispatch(setSearch(value));
+    if (value === '') {
+      setValue(null);
+    }
+  };
+}
+
+export function onFocus() {
+  return (dispatch, getState, getProps) => {
+    const { options, value } = getProps();
+    const option = options.find(o => o.value === value);
+    dispatch(setActive(option ? option.label : ''));
+  };
+}
+
+export function onClick(value) {
+  return (dispatch, setState, getProps) => {
+    const { setValue } = getProps();
+    setValue(value);
+    dispatch(clearSearch());
+  };
+}
+
+export function onBlur() {
+  return (dispatch, setState, getProps) => {
+    const { onSearch } = getProps();
+    onSearch(null);
+    dispatch(clearSearch());
+  };
+}
+
+export function onClearValue() {
+  return (dispatch, setState, getProps) => {
+    const { onSearch, setValue } = getProps();
+    dispatch(clearSearch());
+    onSearch(null);
+    setValue(null);
   };
 }

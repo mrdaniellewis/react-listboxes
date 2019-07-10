@@ -1,6 +1,7 @@
 import React from 'react';
 import { SelectField } from './select_field.jsx';
 import { DropDownField } from './drop_down_field.jsx';
+import { ComboBoxField } from './combo_box_field.jsx';
 
 export function Examples() {
   return (
@@ -78,6 +79,10 @@ export function Examples() {
         label="Dropdown with blank"
         options={['Foo', 'Bar', 'Foe', 'Fee']}
         blank="Please choose…"
+      />
+      <ComboBoxField
+        label="ComboBox"
+        options={['Foo', 'Bar', 'Foe', 'Fee']}
       />
     </>
   );

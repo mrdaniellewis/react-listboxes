@@ -2,11 +2,11 @@ import { useEffect, useCallback } from 'react';
 
 export function useOnBlur(fn, ref) {
   const onBlur = useCallback(() => {
-    Promise.resolve().then(() => {
+    setTimeout(() => {
       if (!ref.current.contains(document.activeElement)) {
         fn();
       }
-    });
+    }, 0);
   }, [fn, ref]);
 
   useEffect(() => {

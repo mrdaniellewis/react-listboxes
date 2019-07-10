@@ -1,37 +1,45 @@
-import React, { useRef, useEffect, useLayoutEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { ListBox } from '../list_box.jsx';
 import { useThunkReducer as useReducer } from '../../hooks/use_thunk_reducer.js';
 import { reducer } from './reducer.js';
 import { initialState } from './initial_state.js';
-import { setExpanded, onKeyDown, onChange } from './actions.js';
+import { clear, onKeyDown, onChange, onFocus, setSearch, onClick, onBlur, onClearValue } from './actions.js';
 import { Context } from '../../context.js';
 import { options as validateOptions } from '../../validators/options.js';
 import { useOptionised } from '../../hooks/use_optionised.js';
 import { useOnBlur } from '../../hooks/use_on_blur.js';
 
 export function ComboBox(props) {
-  const { id, options: rawOptions, setValue, value } = props;
+  const { id, options: rawOptions, value, busy } = props;
   const options = useOptionised(rawOptions);
   const [state, dispatch] = useReducer(reducer, { ...props, options }, initialState, id);
   const { expanded, search } = state;
 
-  const inputRef = useRef();
-  const listRef = useRef();
-  const onBlur = useOnBlur(() => dispatch(setExpanded(false)), listRef);
+  const comboRef = useRef();
+  const blur = useOnBlur(() => dispatch(onBlur()), comboRef);
+
+  useEffect(() => {
+    dispatch(setSearch(null));
+  }, [value]);
 
   const valueIndex = options.findIndex(option => option.value === value);
+  const option = options[valueIndex];
   const activeId = valueIndex > -1 ? options[valueIndex].id || `${id}_${valueIndex}` : null;
+  const showListBox = expanded && options.length;
+  const showNotFound = expanded && !options.length && search && search.trim();
+  const inputLabel = search !== null ? search : (option && option.label) || '';
 
   return (
-    <Context.Provider value={{ ...props, expanded, options, setExpanded }}>
+    <Context.Provider value={{ ...props, ...state, options }}>
       <div
         role="combobox"
         aria-haspopup="listbox"
-        aria-expanded={expanded ? 'true' : 'false'}
+        aria-expanded={showListBox ? 'true' : 'false'}
         aria-owns={`${id}_list_box`}
         aria-busy={busy ? 'true' : 'false'}
-        onBlur={onBlur}
+        onBlur={blur}
+        ref={comboRef}
       >
         <input
           id={id}
@@ -39,24 +47,28 @@ export function ComboBox(props) {
           aria-autocomplete="list"
           aria-controls={`${id}_list_box`}
           aria-activedescendant={activeId}
-          value={search}
-          ref={inputRef}
+          value={inputLabel}
           onKeyDown={e => dispatch(onKeyDown(e))}
           onChange={e => dispatch(onChange(e))}
           onFocus={e => dispatch(onFocus(e))}
-          aria-describedby={`${id}_not_found`}
+          aria-describedby={showNotFound ? `${id}_not_found` : ''}
         />
+        <span
+          onClick={() => dispatch(onClearValue())}
+          hidden={!value}
+        >
+          ×
+        </span>
         <ListBox
           id={`${id}_list_box`}
           options={options}
-          hidden={!expanded}
-          ref={listRef}
-          setValue={newValue => setValue(newValue)}
+          hidden={!showListBox}
+          setValue={newValue => dispatch(onClick(newValue))}
           value={value}
         />
         <div
           id={`${id}_not_found`}
-          hidden={expanded && !(!busy && search && !options.length)}
+          hidden={!showNotFound}
         >
           Nothing found
         </div>

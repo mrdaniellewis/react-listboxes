@@ -1,8 +1,10 @@
 body {
   font: 1em/1.5 sans-serif;
+  padding-bottom: 10em;
 }
 
-label {
+label,
+.label {
   display: block;
   margin-top: 1em;
 }
@@ -12,4 +14,8 @@ select,
 textarea {
   font-family: inherit;
   font-size: inherit;
+}
+
+[aria-selected="true"] {
+  font-weight: bold;
 }

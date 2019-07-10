@@ -5,7 +5,7 @@ import { ListBox } from '../list_box.jsx';
 import { useThunkReducer as useReducer } from '../../hooks/use_thunk_reducer.js';
 import { reducer } from './reducer.js';
 import { initialState } from './initial_state.js';
-import { clearSearch, setExpanded, onKeyDown } from './actions.js';
+import { clearSearch, setExpanded, onKeyDown, onClick } from './actions.js';
 import { Context } from '../../context.js';
 import { options as validateOptions } from '../../validators/options.js';
 import { useOptionised } from '../../hooks/use_optionised.js';
@@ -69,9 +69,8 @@ export function DropDown(props) {
         hidden={!expanded}
         ref={listRef}
         onKeyDown={e => dispatch(onKeyDown(e))}
-        setExpanded={v => dispatch(setExpanded(v))}
         onBlur={onBlur}
-        setValue={newValue => setValue(newValue)}
+        setValue={newValue => dispatch(onClick(newValue))}
         value={value}
         blank={blank}
       />

@@ -8,7 +8,7 @@ export function DropDownField({ label, ...props }) {
   const id = label.trim().replace(/[^a-z]{2,}/, '_');
   return (
     <>
-      <span id={`label_${id}`}>
+      <span className="label" id={`label_${id}`}>
         {label}
       </span>
       <DropDown
