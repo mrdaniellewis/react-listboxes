@@ -17,6 +17,7 @@
     "object-curly-newline": ["error", { "consistent": true }],
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "error",
+    "react/no-unused-prop-types": "off",
     "jsx-a11y/label-has-for": "off"
   },
   "overrides": [

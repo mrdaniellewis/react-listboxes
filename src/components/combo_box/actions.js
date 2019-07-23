@@ -4,7 +4,7 @@ import { previousInList } from '../../helpers/previous_in_list.js';
 export const SET_ACTIVE = 'SET_ACTIVE';
 export const SET_EXPANDED = 'SET_EXPANDED';
 export const SET_SEARCH = 'SET_SEARCH';
-export const CLEAR_SEARCH = 'CLEAR_SEARCH';
+export const SET_INACTIVE = 'SET_INACTIVE';
 
 export function setExpanded(expanded) {
   return { type: SET_EXPANDED, expanded };
@@ -18,16 +18,15 @@ export function setSearch(search) {
   return { type: SET_SEARCH, search };
 }
 
-export function clearSearch() {
-  return { type: CLEAR_SEARCH };
+export function setInactive(search) {
+  return { type: SET_INACTIVE, search };
 }
 
 export function onKeyDown(event) {
   return (dispatch, getState, getProps) => {
     const { expanded } = getState();
-    const { busy, options, setValue, value } = getProps();
+    const { busy, options, setValue, valueIndex, value } = getProps();
     const { altKey, metaKey, ctrlKey, key } = event;
-    const selectedIndex = options.findIndex(option => option.value === value);
 
     if (metaKey || ctrlKey) {
       return;
@@ -35,7 +34,7 @@ export function onKeyDown(event) {
 
     if (key === 'Escape') {
       event.preventDefault();
-      dispatch(clearSearch());
+      dispatch(setInactive(value.label));
       return;
     }
 
@@ -50,14 +49,14 @@ export function onKeyDown(event) {
         if (altKey) {
           dispatch(setExpanded(false));
         } else if (expanded) {
-          setValue(previousInList(options, selectedIndex));
+          setValue(previousInList(options, valueIndex));
         }
         break;
       case 'ArrowDown':
         // Show, and next item unless altKey
         event.preventDefault();
         if (expanded && !altKey) {
-          setValue(nextInList(options, selectedIndex));
+          setValue(nextInList(options, valueIndex));
         } else {
           dispatch(setExpanded(true));
         }
@@ -78,10 +77,10 @@ export function onKeyDown(event) {
         break;
       case 'Enter':
         // Select current item if one is selected
-        if (expanded && selectedIndex !== -1) {
+        if (expanded && valueIndex !== -1) {
           event.preventDefault();
-          setValue(options[selectedIndex].value);
-          dispatch(setExpanded(false));
+          setValue(options[valueIndex]);
+          dispatch(setInactive(options[valueIndex].label));
         }
         break;
       default:
@@ -93,53 +92,44 @@ export function onKeyDown(event) {
 export function onChange(event) {
   return (dispatch, getState, getProps) => {
     const { target: { value } } = event;
-    const { onSearch, setValue } = getProps();
+    const { onSearch } = getProps();
     onSearch(value);
     dispatch(setSearch(value));
-    if (value === '') {
-      setValue(null);
-    }
   };
 }
 
 export function onFocus() {
   return (dispatch, getState, getProps) => {
-    const { options, value } = getProps();
-    const option = options.find(o => o.value === value);
-    dispatch(setActive(option ? option.label : ''));
+    const { value } = getProps();
+    dispatch(setActive(value ? value.label : ''));
   };
 }
 
 export function onClick(value) {
   return (dispatch, setState, getProps) => {
-    const { setValue } = getProps();
+    const { setValue, onSearch } = getProps();
     setValue(value);
-    dispatch(clearSearch());
+    onSearch(value.label);
+    dispatch(setInactive(value.label));
   };
 }
 
 export function onBlur() {
-  return (dispatch, setState, getProps) => {
-    const { onSearch } = getProps();
-    onSearch(null);
-    dispatch(clearSearch());
+  return (dispatch, getState, getProps) => {
+    const { search } = getState();
+    const { setValue } = getProps();
+    if (search === '') {
+      setValue(null);
+    }
+    dispatch(setInactive(null));
   };
 }
 
 export function onClearValue() {
   return (dispatch, setState, getProps) => {
     const { onSearch, setValue } = getProps();
-    dispatch(clearSearch());
+    dispatch(setInactive(''));
     onSearch(null);
     setValue(null);
-  };
-}
-
-export function onChangeValue() {
-  return (dispatch, getState, getProps) => {
-    const { onSearch, options, value } = getProps();
-    const option = options.find(o => o.value === value);
-    setSearch(option ? option.label : null);
-    onSearch(option ? option.label : null);
   };
 }

@@ -4,34 +4,27 @@ import { ListBox } from '../list_box.jsx';
 import { useThunkReducer as useReducer } from '../../hooks/use_thunk_reducer.js';
 import { reducer } from './reducer.js';
 import { initialState } from './initial_state.js';
-import { onKeyDown, onChange, onFocus, setSearch, onClick, onBlur, onClearValue } from './actions.js';
+import { onKeyDown, onChange, onFocus, onClick, onBlur, onClearValue } from './actions.js';
 import { Context } from '../../context.js';
 import { options as validateOptions } from '../../validators/options.js';
-import { useOptionised } from '../../hooks/use_optionised.js';
+import { useOptionisedProps } from '../../hooks/use_optionised_props.js';
 import { useOnBlur } from '../../hooks/use_on_blur.js';
 
-export function ComboBox(props) {
-  const { id, options: rawOptions, value, busy } = props;
-  const options = useOptionised(rawOptions);
-  const [state, dispatch] = useReducer(reducer, { ...props, options }, initialState, id);
+export function ComboBox(rawProps) {
+  const optionisedProps = useOptionisedProps(rawProps);
+  const { options, value, valueIndex, id, busy } = optionisedProps;
+  const [state, dispatch] = useReducer(reducer, optionisedProps, initialState, id);
   const { expanded, search } = state;
+  const activeId = value ? (value.id || `${id}_${valueIndex}`) : null;
+  const showListBox = expanded && options.length;
+  const showNotFound = expanded && !options.length && search && search.trim();
+  const inputLabel = search !== null ? search : (value && value.label) || '';
 
   const comboRef = useRef();
   const blur = useOnBlur(() => dispatch(onBlur()), comboRef);
 
-  useEffect(() => {
-    dispatch(setSearch(null));
-  }, [value]);
-
-  const valueIndex = options.findIndex(option => option.value === value);
-  const option = options[valueIndex];
-  const activeId = valueIndex > -1 ? options[valueIndex].id || `${id}_${valueIndex}` : null;
-  const showListBox = expanded && options.length;
-  const showNotFound = expanded && !options.length && search && search.trim();
-  const inputLabel = search !== null ? search : (option && option.label) || '';
-
   return (
-    <Context.Provider value={{ ...props, ...state, options }}>
+    <Context.Provider value={{ dispatch, ...optionisedProps, ...state }}>
       <div
         role="combobox"
         aria-haspopup="listbox"
@@ -64,7 +57,8 @@ export function ComboBox(props) {
           options={options}
           hidden={!showListBox}
           setValue={newValue => dispatch(onClick(newValue))}
-          value={value}
+          aria-activedescendant={activeId}
+          valueIndex={valueIndex}
         />
         <div
           id={`${id}_not_found`}
@@ -84,10 +78,6 @@ ComboBox.propTypes = {
   setValue: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
   onSearch: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
   value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
-  label: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ]),
 };
 
 ComboBox.defaultProps = {

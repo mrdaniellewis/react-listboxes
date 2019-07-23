@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useLayoutEffect } from 'react';
+import React, { useRef, useEffect, useLayoutEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { PopupButton } from '../popup_button.jsx';
 import { ListBox } from '../list_box.jsx';
@@ -8,17 +8,16 @@ import { initialState } from './initial_state.js';
 import { clearSearch, setExpanded, onKeyDown, onClick } from './actions.js';
 import { Context } from '../../context.js';
 import { options as validateOptions } from '../../validators/options.js';
-import { useOptionised } from '../../hooks/use_optionised.js';
+import { useOptionisedProps } from '../../hooks/use_optionised_props.js';
 import { useOnBlur } from '../../hooks/use_on_blur.js';
+import { makeSearch } from '../../helpers/make_search.js';
 
-export function DropDown(props) {
-  const { children, id, options: rawOptions, setValue, value, blank } = props;
-  const options = useOptionised(rawOptions, blank);
-  const [state, dispatch] = useReducer(reducer, { ...props, options }, initialState, id);
+export function DropDown(rawProps) {
+  const optionisedProps = useOptionisedProps(rawProps);
+  const { options, value, setValue, valueIndex, blank, id, children } = optionisedProps;
+  const [state, dispatch] = useReducer(reducer, optionisedProps, initialState, id);
   const { expanded, search } = state;
-  const currentOptionIndex = options.findIndex(({ value: optionValue }) => optionValue === value);
-  const currentOption = currentOptionIndex === -1 ? null : options[currentOptionIndex];
-  const activeId = currentOption ? (currentOption.id || `${id}_${currentOptionIndex}`) : null;
+  const activeId = value ? (value.id || `${id}_${valueIndex}`) : null;
 
   const buttonRef = useRef();
   const listRef = useRef();
@@ -38,24 +37,23 @@ export function DropDown(props) {
     };
   }, [expanded]);
 
+  const searcher = useMemo(() => makeSearch(options), [options]);
+
   useEffect(() => {
     if (!search) {
       return undefined;
     }
-    // TODO: use searcher
-    const found = options.find(option => (
-      option.label.toLowerCase().startsWith(search.toLowerCase())
-    ));
-    if (found) {
-      setValue(found.value);
+    const found = searcher(search);
+    if (found && found.length) {
+      setValue(found[0]);
     }
     const timeout = setTimeout(() => dispatch(clearSearch()), 1000);
 
     return () => clearTimeout(timeout);
-  }, [options, search, setValue]);
+  }, [searcher, search, setValue]);
 
   return (
-    <Context.Provider value={{ ...props, expanded, options, setExpanded }}>
+    <Context.Provider value={{ dispatch, ...optionisedProps, ...state }}>
       <PopupButton
         ref={buttonRef}
         hasPopup="listbox"
@@ -63,7 +61,7 @@ export function DropDown(props) {
         setExpanded={newExpanded => dispatch(setExpanded(newExpanded))}
         onKeyDown={e => dispatch(onKeyDown(e))}
       >
-        {children || currentOption ? currentOption.label : blank}
+        {children || (value && value.label) || blank}
       </PopupButton>
       <ListBox
         id={id}
@@ -73,7 +71,7 @@ export function DropDown(props) {
         onKeyDown={e => dispatch(onKeyDown(e))}
         onBlur={onBlur}
         setValue={newValue => dispatch(onClick(newValue))}
-        value={value}
+        valueIndex={valueIndex}
         blank={blank}
         aria-activedescendant={activeId}
       />

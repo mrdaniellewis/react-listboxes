@@ -1,18 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { options as validateOptions } from '../validators/options.js';
-import { useOptionised } from '../hooks/use_optionised.js';
+import { useOptionisedProps } from '../hooks/use_optionised_props.js';
 import { useGrouped } from '../hooks/use_grouped.js';
 
-export function Select({ blank, setValue, options: rawOptions, value, ...props }) {
-  const options = useOptionised(rawOptions, blank);
+export function Select(rawProps) {
+  const { options, valueIndex, setValue, blank, value, ...props } = useOptionisedProps(rawProps);
   const grouped = useGrouped(options);
-  const valueIndex = options.findIndex(option => option.value === value);
 
   return (
     <select
       value={valueIndex === -1 ? '' : valueIndex}
-      onChange={({ target: { value: index } }) => setValue(options[+index].value)}
+      onChange={({ target: { value: index } }) => setValue(options[+index])}
       {...props}
     >
       {grouped.map(({ name, children }) => {

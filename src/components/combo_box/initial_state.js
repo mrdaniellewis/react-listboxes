@@ -1,7 +1,6 @@
-export function initialState({ label = '' }) {
+export function initialState() {
   return {
     expanded: false,
     search: '',
-    label,
   };
 }

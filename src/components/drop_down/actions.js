@@ -20,9 +20,8 @@ export function setSearchKey(key) {
 export function onKeyDown(event) {
   return (dispatch, getState, getProps) => {
     const { expanded } = getState();
-    const { busy, options, setValue, value } = getProps();
+    const { busy, options, setValue, valueIndex } = getProps();
     const { altKey, metaKey, ctrlKey, key } = event;
-    const selectedIndex = options.findIndex(option => option.value === value);
 
     if (metaKey || ctrlKey) {
       return;
@@ -31,7 +30,6 @@ export function onKeyDown(event) {
     if (key === 'Escape') {
       event.preventDefault();
       dispatch(setExpanded(false));
-      setValue(null);
       return;
     }
 
@@ -46,14 +44,14 @@ export function onKeyDown(event) {
         if (altKey) {
           dispatch(setExpanded(false));
         } else if (expanded) {
-          setValue(previousInList(options, selectedIndex));
+          setValue(previousInList(options, valueIndex));
         }
         break;
       case 'ArrowDown':
         // Show, and next item unless altKey
         event.preventDefault();
         if (expanded && !altKey) {
-          setValue(nextInList(options, selectedIndex));
+          setValue(nextInList(options, valueIndex));
         } else {
           dispatch(setExpanded(true));
         }
@@ -74,9 +72,9 @@ export function onKeyDown(event) {
         break;
       case 'Enter':
         // Select current item if one is selected
-        if (expanded && selectedIndex !== -1) {
+        if (expanded && valueIndex !== -1) {
           event.preventDefault();
-          setValue(options[selectedIndex].value);
+          setValue(options[valueIndex]);
           dispatch(setExpanded(false));
         }
         break;

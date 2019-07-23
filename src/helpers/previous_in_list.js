@@ -10,5 +10,5 @@ export function previousInList(options, index = -1, startIndex = index) {
   if (options[i] && options[i].disabled) {
     return previousInList(options, i, startIndex);
   }
-  return options[i].value;
+  return options[i];
 }

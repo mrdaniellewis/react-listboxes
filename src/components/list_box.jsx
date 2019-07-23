@@ -1,14 +1,12 @@
-import React, { useMemo, forwardRef, Fragment, useRef, useImperativeHandle } from 'react';
+import React, { forwardRef, Fragment, useRef, useImperativeHandle } from 'react';
 import PropTypes from 'prop-types';
 import { options as validateOptions } from '../validators/options.js';
-import { optionise } from '../helpers/optionise.js';
 import { useGrouped } from '../hooks/use_grouped.js';
 
 export const ListBox = forwardRef((
-  { id, setValue, options: rawOptions, value, ...props },
+  { id, setValue, options, valueIndex, ...props },
   ref,
 ) => {
-  const options = useMemo(() => rawOptions.map(optionise), [rawOptions]);
   const listRef = useRef();
 
   useImperativeHandle(ref, () => ({
@@ -19,8 +17,6 @@ export const ListBox = forwardRef((
       return listRef.current.contains(el);
     },
   }));
-
-  const valueIndex = options.findIndex(option => option.value === value);
 
   const onClick = newValue => (
     (e) => {
@@ -50,22 +46,23 @@ export const ListBox = forwardRef((
               {name}
             </li>
           )}
-          {children.map(({
-            id: optionId, index, label, key, value: optionValue, disabled, ...more
-          }) => (
-            // eslint-disable-next-line jsx-a11y/click-events-have-key-events
-            <li
-              id={optionId || `${id}_${index}`}
-              role="option"
-              aria-selected={index === valueIndex ? 'true' : 'false'}
-              aria-disabled={disabled ? 'true' : null}
-              key={key || optionId || optionValue}
-              onClick={!disabled && onClick(optionValue)}
-              {...more}
-            >
-              {label}
-            </li>
-          ))}
+          {children.map((option) => {
+            const { id: optionId, index, label, key, disabled, ...more } = option;
+            return (
+              // eslint-disable-next-line jsx-a11y/click-events-have-key-events
+              <li
+                id={optionId || `${id}_${index}`}
+                role="option"
+                aria-selected={index === valueIndex ? 'true' : 'false'}
+                aria-disabled={disabled ? 'true' : null}
+                key={optionId || label}
+                onClick={!disabled && onClick(option)}
+                {...more}
+              >
+                {label}
+              </li>
+            );
+          })}
         </Fragment>
       ))}
     </ul>
@@ -77,12 +74,12 @@ ListBox.propTypes = {
   id: PropTypes.string.isRequired,
   setValue: PropTypes.func.isRequired,
   options: validateOptions.isRequired,
-  value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
+  valueIndex: PropTypes.number,
 };
 
 ListBox.defaultProps = {
   blank: null,
-  value: null,
+  valueIndex: null,
 };
 
 ListBox.displayName = 'ListBox';
