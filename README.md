@@ -124,10 +124,9 @@ It is often desired to highlight the search results.
   - Add positioning
   - Click on label
 - Combo box
-  - do not change search when selecting value
-    - change serach to current label when blurring
-    - ensure currently selected option is available
-    - solve first draw issue
+  - aria-active descendant is where the focus is - not the current value
+  - first draw do not show items
+  - drop down button
   - with async search 
     - busy
   - Highlighters

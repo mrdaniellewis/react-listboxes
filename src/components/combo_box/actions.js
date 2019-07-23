@@ -94,7 +94,7 @@ export function onChange(event) {
     const { target: { value } } = event;
     const { onSearch } = getProps();
     onSearch(value);
-    dispatch(setSearch(value));
+    dispatch(setActive(value));
   };
 }
 
