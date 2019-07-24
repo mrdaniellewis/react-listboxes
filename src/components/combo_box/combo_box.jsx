@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import { ListBox } from '../list_box.jsx';
 import { useThunkReducer as useReducer } from '../../hooks/use_thunk_reducer.js';
@@ -11,11 +11,12 @@ import { useOptionisedProps } from '../../hooks/use_optionised_props.js';
 import { useOnBlur } from '../../hooks/use_on_blur.js';
 
 export function ComboBox(rawProps) {
-  const optionisedProps = useOptionisedProps(rawProps);
-  const { options, value, valueIndex, id, busy } = optionisedProps;
+  const optionisedProps = useOptionisedProps({ ...rawProps });
+  const { options, value, id, busy } = optionisedProps;
   const [state, dispatch] = useReducer(reducer, optionisedProps, initialState, id);
-  const { expanded, search } = state;
-  const activeId = value ? (value.id || `${id}_${valueIndex}`) : null;
+  const { expanded, search, listBoxFocused, selectedIndex } = state;
+  const activeOption = selectedIndex > -1 ? options[selectedIndex] : null;
+  const activeId = activeOption && listBoxFocused ? activeOption.id || `${id}_${selectedIndex}` : null;
   const showListBox = expanded && options.length;
   const showNotFound = expanded && !options.length && search && search.trim();
   const inputLabel = search !== null ? search : (value && value.label) || '';
@@ -46,19 +47,20 @@ export function ComboBox(rawProps) {
           onFocus={e => dispatch(onFocus(e))}
           aria-describedby={showNotFound ? `${id}_not_found` : ''}
         />
-        <span
+        <button
+          type="button"
           onClick={() => dispatch(onClearValue())}
           hidden={!value}
         >
           ×
-        </span>
+        </button>
         <ListBox
           id={`${id}_list_box`}
           options={options}
           hidden={!showListBox}
           setValue={newValue => dispatch(onClick(newValue))}
           aria-activedescendant={activeId}
-          valueIndex={valueIndex}
+          valueIndex={selectedIndex}
         />
         <div
           id={`${id}_not_found`}

@@ -4,6 +4,7 @@ import { previousInList } from '../../helpers/previous_in_list.js';
 export const SET_EXPANDED = 'SET_EXPANDED';
 export const CLEAR_SEARCH = 'CLEAR_SEARCH';
 export const SET_SEARCH_KEY = 'SET_SEARCH_KEY';
+export const SET_SELECTED_INDEX = 'SET_SELECTED_INDEX';
 
 export function setExpanded(expanded) {
   return { type: SET_EXPANDED, expanded };
@@ -17,10 +18,14 @@ export function setSearchKey(key) {
   return { type: SET_SEARCH_KEY, key };
 }
 
+export function setSelectedIndex(selectedIndex) {
+  return { type: SET_SELECTED_INDEX, selectedIndex };
+}
+
 export function onKeyDown(event) {
   return (dispatch, getState, getProps) => {
-    const { expanded } = getState();
-    const { busy, options, setValue, valueIndex } = getProps();
+    const { expanded, selectedIndex } = getState();
+    const { busy, options, setValue } = getProps();
     const { altKey, metaKey, ctrlKey, key } = event;
 
     if (metaKey || ctrlKey) {
@@ -44,14 +49,14 @@ export function onKeyDown(event) {
         if (altKey) {
           dispatch(setExpanded(false));
         } else if (expanded) {
-          setValue(previousInList(options, valueIndex));
+          dispatch(setSelectedIndex(previousInList(options, selectedIndex)));
         }
         break;
       case 'ArrowDown':
         // Show, and next item unless altKey
         event.preventDefault();
         if (expanded && !altKey) {
-          setValue(nextInList(options, valueIndex));
+          dispatch(setSelectedIndex(nextInList(options, selectedIndex)));
         } else {
           dispatch(setExpanded(true));
         }
@@ -60,21 +65,21 @@ export function onKeyDown(event) {
         // First item
         if (expanded) {
           event.preventDefault();
-          setValue(nextInList(options, options.length - 1));
+          dispatch(setSelectedIndex(nextInList(options, options.length - 1)));
         }
         break;
       case 'End':
         // Last item
         if (expanded) {
           event.preventDefault();
-          setValue(previousInList(options, 0));
+          dispatch(setSelectedIndex(previousInList(options, 0)));
         }
         break;
       case 'Enter':
         // Select current item if one is selected
-        if (expanded && valueIndex !== -1) {
+        if (expanded && selectedIndex !== -1) {
           event.preventDefault();
-          setValue(options[valueIndex]);
+          setValue(options[selectedIndex]);
           dispatch(setExpanded(false));
         }
         break;
@@ -89,10 +94,32 @@ export function onKeyDown(event) {
   };
 }
 
+export function onToggleOpen(open) {
+  return (dispatch, getState, getProps) => {
+    const { valueIndex } = getProps();
+    if (open) {
+      dispatch(setSelectedIndex(valueIndex));
+    } else {
+      dispatch(setExpanded(false));
+    }
+  };
+}
+
 export function onClick(value) {
   return (dispatch, getState, getProps) => {
     const { setValue } = getProps();
     setValue(value);
+    dispatch(setExpanded(false));
+  };
+}
+
+export function onBlur() {
+  return (dispatch, getState, getProps) => {
+    const { setValue, value, options } = getProps();
+    const { selectedIndex } = getState();
+    if (options[selectedIndex].value !== (value && value.value)) {
+      setValue(options[selectedIndex] || null);
+    }
     dispatch(setExpanded(false));
   };
 }

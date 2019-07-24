@@ -15,12 +15,12 @@ export const useOptionisedProps = ({
   );
 
   const value = useMemo(
-    () => optionise(rawValue),
+    () => (rawValue != null ? optionise(rawValue) : null),
     [rawValue],
   );
 
   const valueIndex = useMemo(
-    () => options.findIndex(o => o.value === value.value),
+    () => options.findIndex(o => o.value === (value && value.value)),
     [value, options],
   );
 

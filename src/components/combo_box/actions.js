@@ -5,6 +5,7 @@ export const SET_ACTIVE = 'SET_ACTIVE';
 export const SET_EXPANDED = 'SET_EXPANDED';
 export const SET_SEARCH = 'SET_SEARCH';
 export const SET_INACTIVE = 'SET_INACTIVE';
+export const SET_SELECTED_INDEX = 'SET_SELECTED_INDEX';
 
 export function setExpanded(expanded) {
   return { type: SET_EXPANDED, expanded };
@@ -22,9 +23,13 @@ export function setInactive(search) {
   return { type: SET_INACTIVE, search };
 }
 
+export function setSelectedIndex(selectedIndex) {
+  return { type: SET_SELECTED_INDEX, selectedIndex };
+}
+
 export function onKeyDown(event) {
   return (dispatch, getState, getProps) => {
-    const { expanded } = getState();
+    const { expanded, selectedIndex } = getState();
     const { busy, options, setValue, valueIndex, value } = getProps();
     const { altKey, metaKey, ctrlKey, key } = event;
 
@@ -34,7 +39,7 @@ export function onKeyDown(event) {
 
     if (key === 'Escape') {
       event.preventDefault();
-      dispatch(setInactive(value.label));
+      dispatch(setInactive(value ? value.label : ''));
       return;
     }
 
@@ -49,14 +54,14 @@ export function onKeyDown(event) {
         if (altKey) {
           dispatch(setExpanded(false));
         } else if (expanded) {
-          setValue(previousInList(options, valueIndex));
+          dispatch(setSelectedIndex(previousInList(options, selectedIndex, true)));
         }
         break;
       case 'ArrowDown':
         // Show, and next item unless altKey
         event.preventDefault();
         if (expanded && !altKey) {
-          setValue(nextInList(options, valueIndex));
+          dispatch(setSelectedIndex(nextInList(options, selectedIndex, true)));
         } else {
           dispatch(setExpanded(true));
         }
@@ -65,22 +70,22 @@ export function onKeyDown(event) {
         // First item
         if (expanded) {
           event.preventDefault();
-          setValue(nextInList(options, options.length - 1));
+          dispatch(setSelectedIndex(nextInList(options, options.length - 1)));
         }
         break;
       case 'End':
         // Last item
         if (expanded) {
           event.preventDefault();
-          setValue(previousInList(options, 0));
+          dispatch(setSelectedIndex(previousInList(options, 0)));
         }
         break;
       case 'Enter':
         // Select current item if one is selected
         if (expanded && valueIndex !== -1) {
           event.preventDefault();
-          setValue(options[valueIndex]);
-          dispatch(setInactive(options[valueIndex].label));
+          setValue(options[selectedIndex]);
+          dispatch(setInactive(options[selectedIndex].label));
         }
         break;
       default:
@@ -92,16 +97,21 @@ export function onKeyDown(event) {
 export function onChange(event) {
   return (dispatch, getState, getProps) => {
     const { target: { value } } = event;
-    const { onSearch } = getProps();
+    const { onSearch, setValue } = getProps();
     onSearch(value);
+    setValue(null);
     dispatch(setActive(value));
   };
 }
 
 export function onFocus() {
   return (dispatch, getState, getProps) => {
-    const { value } = getProps();
-    dispatch(setActive(value ? value.label : ''));
+    const { options, value } = getProps();
+    if (options.length === 1 && value && options[0].value === value.value) {
+      dispatch(setSearch(value ? value.label : ''));
+    } else {
+      dispatch(setActive(value ? value.label : ''));
+    }
   };
 }
 
@@ -116,10 +126,10 @@ export function onClick(value) {
 
 export function onBlur() {
   return (dispatch, getState, getProps) => {
-    const { search } = getState();
-    const { setValue } = getProps();
-    if (search === '') {
-      setValue(null);
+    const { setValue, value, options } = getProps();
+    const { selectedIndex } = getState();
+    if (selectedIndex > -1 && options[selectedIndex].value !== (value && value.value)) {
+      setValue(options[selectedIndex] || null);
     }
     dispatch(setInactive(null));
   };

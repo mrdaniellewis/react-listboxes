@@ -5,7 +5,7 @@ import { DropDown } from '../src/components/drop_down/index.jsx';
 export function DropDownField({ label, ...props }) {
   const { value: initialValue } = props;
   const [value, setValue] = useState(initialValue);
-  const id = label.trim().replace(/[^a-z]{2,}/, '_');
+  const id = label.trim().toLowerCase().replace(/[^a-z]+/g, '_');
   return (
     <>
       <span className="label" id={`label_${id}`}>

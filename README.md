@@ -119,13 +119,16 @@ It is often desired to highlight the search results.
 ## TODO
 
 - Drop down
-  - Use comboxbox searcher
+  - selectedIndex should change with a change of options
   - Customisation
   - Add positioning
   - Click on label
 - Combo box
-  - aria-active descendant is where the focus is - not the current value
-  - first draw do not show items
+  - fix pressing enter
+  - fix onChange
+  - fix removing selectedIndex
+  - selectedIndex should change with a change of options
+  - allow for automatic selection
   - drop down button
   - with async search 
     - busy

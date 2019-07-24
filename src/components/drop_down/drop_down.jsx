@@ -5,7 +5,7 @@ import { ListBox } from '../list_box.jsx';
 import { useThunkReducer as useReducer } from '../../hooks/use_thunk_reducer.js';
 import { reducer } from './reducer.js';
 import { initialState } from './initial_state.js';
-import { clearSearch, setExpanded, onKeyDown, onClick } from './actions.js';
+import { clearSearch, onKeyDown, onClick, setSelectedIndex, onBlur, onToggleOpen } from './actions.js';
 import { Context } from '../../context.js';
 import { options as validateOptions } from '../../validators/options.js';
 import { useOptionisedProps } from '../../hooks/use_optionised_props.js';
@@ -14,15 +14,16 @@ import { makeSearch } from '../../helpers/make_search.js';
 
 export function DropDown(rawProps) {
   const optionisedProps = useOptionisedProps(rawProps);
-  const { options, value, setValue, valueIndex, blank, id, children } = optionisedProps;
+  const { options, value, setValue, blank, id, children } = optionisedProps;
   const [state, dispatch] = useReducer(reducer, optionisedProps, initialState, id);
-  const { expanded, search } = state;
-  const activeId = value ? (value.id || `${id}_${valueIndex}`) : null;
+  const { expanded, search, selectedIndex } = state;
+  const activeOption = selectedIndex > -1 ? options[selectedIndex] : null;
+  const activeId = activeOption ? activeOption.id || `${id}_${selectedIndex}` : null;
 
   const buttonRef = useRef();
   const listRef = useRef();
 
-  const onBlur = useOnBlur(() => dispatch(setExpanded(false)), listRef);
+  const onBlurHandler = useOnBlur(() => dispatch(onBlur()), listRef);
 
   useLayoutEffect(() => {
     const lastExpanded = expanded;
@@ -45,12 +46,12 @@ export function DropDown(rawProps) {
     }
     const found = searcher(search);
     if (found && found.length) {
-      setValue(found[0]);
+      dispatch(setSelectedIndex(options.findIndex(o => o.value === found.value)));
     }
     const timeout = setTimeout(() => dispatch(clearSearch()), 1000);
 
     return () => clearTimeout(timeout);
-  }, [searcher, search, setValue]);
+  }, [options, searcher, search, setValue]);
 
   return (
     <Context.Provider value={{ dispatch, ...optionisedProps, ...state }}>
@@ -58,7 +59,7 @@ export function DropDown(rawProps) {
         ref={buttonRef}
         hasPopup="listbox"
         expanded={expanded}
-        setExpanded={newExpanded => dispatch(setExpanded(newExpanded))}
+        setExpanded={newExpanded => dispatch(onToggleOpen(newExpanded))}
         onKeyDown={e => dispatch(onKeyDown(e))}
       >
         {children || (value && value.label) || blank}
@@ -69,9 +70,9 @@ export function DropDown(rawProps) {
         hidden={!expanded}
         ref={listRef}
         onKeyDown={e => dispatch(onKeyDown(e))}
-        onBlur={onBlur}
+        onBlur={onBlurHandler}
         setValue={newValue => dispatch(onClick(newValue))}
-        valueIndex={valueIndex}
+        valueIndex={selectedIndex}
         blank={blank}
         aria-activedescendant={activeId}
       />
