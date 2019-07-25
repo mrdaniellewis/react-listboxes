@@ -5,10 +5,11 @@ import { ListBox } from '../list_box.jsx';
 import { useThunkReducer as useReducer } from '../../hooks/use_thunk_reducer.js';
 import { reducer } from './reducer.js';
 import { initialState } from './initial_state.js';
-import { clearSearch, onKeyDown, onClick, setSelectedIndex, onBlur, onToggleOpen } from './actions.js';
+import { clearSearch, onKeyDown, onClick, setSelectedValue, onBlur, onToggleOpen } from './actions.js';
 import { Context } from '../../context.js';
 import { options as validateOptions } from '../../validators/options.js';
 import { useOptionisedProps } from '../../hooks/use_optionised_props.js';
+import { useSelectedIndex } from '../../hooks/use_selected_index.js';
 import { useOnBlur } from '../../hooks/use_on_blur.js';
 import { makeSearch } from '../../helpers/make_search.js';
 
@@ -16,9 +17,8 @@ export function DropDown(rawProps) {
   const optionisedProps = useOptionisedProps(rawProps);
   const { options, value, setValue, blank, id, children } = optionisedProps;
   const [state, dispatch] = useReducer(reducer, optionisedProps, initialState, id);
-  const { expanded, search, selectedIndex } = state;
-  const activeOption = selectedIndex > -1 ? options[selectedIndex] : null;
-  const activeId = activeOption ? activeOption.id || `${id}_${selectedIndex}` : null;
+  const { expanded, search, selectedValue } = state;
+  const selectedIndex = useSelectedIndex({ options, selectedValue });
 
   const buttonRef = useRef();
   const listRef = useRef();
@@ -46,7 +46,7 @@ export function DropDown(rawProps) {
     }
     const found = searcher(search);
     if (found && found.length) {
-      dispatch(setSelectedIndex(options.findIndex(o => o.value === found.value)));
+      dispatch(setSelectedValue(found[0]));
     }
     const timeout = setTimeout(() => dispatch(clearSearch()), 1000);
 
@@ -69,12 +69,12 @@ export function DropDown(rawProps) {
         options={options}
         hidden={!expanded}
         ref={listRef}
-        onKeyDown={e => dispatch(onKeyDown(e))}
         onBlur={onBlurHandler}
+        onKeyDown={e => dispatch(onKeyDown(e))}
         setValue={newValue => dispatch(onClick(newValue))}
         valueIndex={selectedIndex}
         blank={blank}
-        aria-activedescendant={activeId}
+        aria-activedescendant={selectedIndex > -1 ? options[selectedIndex].id : null}
       />
     </Context.Provider>
   );

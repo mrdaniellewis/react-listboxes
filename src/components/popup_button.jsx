@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 export const PopupButton = forwardRef(({
   children, expanded, hasPopup, setExpanded, ...props
 }, ref) => {
-  const buttonRef = useRef(ref);
+  const buttonRef = useRef();
 
   useImperativeHandle(ref, () => ({
     focus() {

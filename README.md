@@ -119,7 +119,7 @@ It is often desired to highlight the search results.
 ## TODO
 
 - Drop down
-  - selectedIndex should change with a change of options
+  - Fix Firefox / Safari focus issue
   - Customisation
   - Add positioning
   - Click on label

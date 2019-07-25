@@ -2,21 +2,21 @@ import { useCallback, useMemo } from 'react';
 import { optionise } from '../helpers/optionise.js';
 
 export const useOptionisedProps = ({
-  options: rawOptions, value: rawValue, blank, setValue: rawSetValue, ...props
+  id, options: rawOptions, value: rawValue, blank, setValue: rawSetValue, ...props
 }) => {
   const options = useMemo(
     () => (
       (blank
-        ? [{ value: null, label: blank }, ...rawOptions]
+        ? [{ value: null, label: blank, id: `${id}_blank` }, ...rawOptions]
         : rawOptions
-      ).map(optionise)
+      ).map((o, i) => ({ id: `${id}_${i}`, ...optionise(o) }))
     ),
-    [rawOptions, blank],
+    [id, rawOptions, blank],
   );
 
   const value = useMemo(
-    () => (rawValue != null ? optionise(rawValue) : null),
-    [rawValue],
+    () => (rawValue != null || blank ? optionise(rawValue) : null),
+    [rawValue, blank],
   );
 
   const valueIndex = useMemo(
@@ -35,5 +35,5 @@ export const useOptionisedProps = ({
     [options, rawSetValue, rawOptions, blank],
   );
 
-  return { blank, options, value, valueIndex, setValue, ...props };
+  return { id, blank, options, value, valueIndex, setValue, ...props };
 };

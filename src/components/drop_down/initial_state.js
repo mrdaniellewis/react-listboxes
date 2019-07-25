@@ -1,7 +1,7 @@
-export function initialState({ valueIndex }) {
+export function initialState({ value }) {
   return {
     expanded: false,
     search: '',
-    selectedIndex: valueIndex,
+    selectedValue: value,
   };
 }

@@ -2,16 +2,16 @@ export function nextInList(options, index = -1, allowEmpty = false, startIndex =
   let i = index + 1;
   if (i >= options.length) {
     if (allowEmpty) {
-      return -1;
+      return null;
     }
     i = 0;
   }
   // Prevent infinite loops
   if (i === startIndex) {
-    return -1;
+    return null;
   }
   if (options[i] && options[i].disabled) {
     return nextInList(options, i, allowEmpty, startIndex);
   }
-  return i;
+  return options[i];
 }

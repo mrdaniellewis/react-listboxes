@@ -8,15 +8,16 @@ import { onKeyDown, onChange, onFocus, onClick, onBlur, onClearValue } from './a
 import { Context } from '../../context.js';
 import { options as validateOptions } from '../../validators/options.js';
 import { useOptionisedProps } from '../../hooks/use_optionised_props.js';
+import { useSelectedIndex } from '../../hooks/use_selected_index.js';
 import { useOnBlur } from '../../hooks/use_on_blur.js';
 
 export function ComboBox(rawProps) {
   const optionisedProps = useOptionisedProps({ ...rawProps });
   const { options, value, id, busy } = optionisedProps;
   const [state, dispatch] = useReducer(reducer, optionisedProps, initialState, id);
-  const { expanded, search, listBoxFocused, selectedIndex } = state;
-  const activeOption = selectedIndex > -1 ? options[selectedIndex] : null;
-  const activeId = activeOption && listBoxFocused ? activeOption.id || `${id}_${selectedIndex}` : null;
+  const { expanded, search, listBoxFocused, selectedValue } = state;
+  const selectedIndex = useSelectedIndex({ options, selectedValue });
+  const activeId = listBoxFocused && selectedIndex > -1 ? selectedValue.id : null;
   const showListBox = expanded && options.length;
   const showNotFound = expanded && !options.length && search && search.trim();
   const inputLabel = search !== null ? search : (value && value.label) || '';
@@ -59,7 +60,6 @@ export function ComboBox(rawProps) {
           options={options}
           hidden={!showListBox}
           setValue={newValue => dispatch(onClick(newValue))}
-          aria-activedescendant={activeId}
           valueIndex={selectedIndex}
         />
         <div

@@ -51,7 +51,7 @@ export const ListBox = forwardRef((
             return (
               // eslint-disable-next-line jsx-a11y/click-events-have-key-events
               <li
-                id={optionId || `${id}_${index}`}
+                id={optionId}
                 role="option"
                 aria-selected={index === valueIndex ? 'true' : 'false'}
                 aria-disabled={disabled ? 'true' : null}
