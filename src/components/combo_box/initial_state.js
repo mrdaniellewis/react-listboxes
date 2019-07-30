@@ -4,5 +4,6 @@ export function initialState({ value }) {
     search: '',
     listBoxFocused: false,
     selectedValue: value,
+    focused: false,
   };
 }

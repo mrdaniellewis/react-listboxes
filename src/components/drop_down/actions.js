@@ -119,8 +119,11 @@ export function onClick(value) {
 
 export function onBlur() {
   return (dispatch, getState, getProps) => {
+    const { expanded, selectedValue } = getState();
+    if (expanded) {
+      return;
+    }
     const { setValue, value, options } = getProps();
-    const { selectedValue } = getState();
     if (selectedValue !== value
       && (!selectedValue || options.find(o => o.value === selectedValue.value))
     ) {

@@ -10,14 +10,14 @@ export function AsyncComboBoxField({ label, ...props }) {
   const { value: initialValue, options: initialOptions } = props;
   const [value, setValue] = useState(initialValue);
   const [search] = useState(() => makeSearch(fruits));
-  const [options, onSearch] = useAsyncSearch(
+  const { options, busy, onSearch } = useAsyncSearch(
     async (query) => {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, Math.random() * 3000));
       return search(query);
     },
     initialOptions,
   );
-  const id = label.trim().replace(/[^a-z]{2,}/, '_');
+  const id = label.trim().replace(/[^a-z]+/ig, '_').toLowerCase();
 
   return (
     <>
@@ -29,6 +29,7 @@ export function AsyncComboBoxField({ label, ...props }) {
         {...props}
         options={options}
         value={value}
+        busy={busy}
         setValue={setValue}
         onSearch={onSearch}
       />

@@ -85,11 +85,9 @@ export function Examples() {
         label="ComboBox"
         options={['Foo', 'Bar', 'Foe', 'Fee']}
       />
-      {/*
       <AsyncComboBoxField
         label="Async comboBox"
       />
-      */}
     </>
   );
 }

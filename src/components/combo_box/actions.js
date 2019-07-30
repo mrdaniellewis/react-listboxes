@@ -1,26 +1,31 @@
 import { nextInList } from '../../helpers/next_in_list.js';
 import { previousInList } from '../../helpers/previous_in_list.js';
+import { equalValues } from '../../helpers/equal_values.js';
 
 export const SET_ACTIVE = 'SET_ACTIVE';
 export const SET_EXPANDED = 'SET_EXPANDED';
-export const SET_SEARCH = 'SET_SEARCH';
 export const SET_INACTIVE = 'SET_INACTIVE';
+export const SET_SELECTED = 'SET_SELECTED';
 export const SET_SELECTED_VALUE = 'SET_SELECTED_VALUE';
 
 export function setExpanded(expanded) {
   return { type: SET_EXPANDED, expanded };
 }
 
-export function setActive(search) {
-  return { type: SET_ACTIVE, search };
+export function setActive({ search, selectedValue, expanded }) {
+  return { type: SET_ACTIVE, search, selectedValue, expanded };
 }
 
-export function setSearch(search) {
-  return { type: SET_SEARCH, search };
+export function setInactive(selectedValue) {
+  return { type: SET_INACTIVE, selectedValue };
 }
 
-export function setInactive(search) {
-  return { type: SET_INACTIVE, search };
+export function setSelected(selectedValue) {
+  return {
+    type: SET_SELECTED,
+    selectedValue,
+    search: selectedValue ? selectedValue.label : '',
+  };
 }
 
 export function setSelectedValue(selectedValue) {
@@ -29,8 +34,8 @@ export function setSelectedValue(selectedValue) {
 
 export function onKeyDown(event) {
   return (dispatch, getState, getProps) => {
-    const { expanded, selectedValue } = getState();
-    const { busy, options, setValue, valueIndex, value } = getProps();
+    const { search, expanded, selectedValue } = getState();
+    const { busy, options, setValue, value } = getProps();
     const { altKey, metaKey, ctrlKey, key } = event;
 
     if (metaKey || ctrlKey) {
@@ -39,7 +44,7 @@ export function onKeyDown(event) {
 
     if (key === 'Escape') {
       event.preventDefault();
-      dispatch(setInactive(value ? value.label : ''));
+      dispatch(setSelected(value));
       return;
     }
 
@@ -86,10 +91,16 @@ export function onKeyDown(event) {
         break;
       case 'Enter':
         // Select current item if one is selected
-        if (expanded && valueIndex !== -1) {
-          event.preventDefault();
-          setValue(options[selectedIndex]);
-          dispatch(setInactive(options[selectedIndex].label));
+        if (expanded) {
+          if (selectedIndex !== -1) {
+            event.preventDefault();
+            dispatch(setSelected(options[selectedIndex]));
+            setValue(options[selectedIndex]);
+          } else if (!search) {
+            event.preventDefault();
+            dispatch(setSelected(null));
+            setValue(null);
+          }
         }
         break;
       default:
@@ -101,51 +112,46 @@ export function onKeyDown(event) {
 export function onChange(event) {
   return (dispatch, getState, getProps) => {
     const { target: { value } } = event;
-    const { onSearch, setValue } = getProps();
+    const { onSearch } = getProps();
+    dispatch(setActive({ search: value, selectedValue: null, expanded: true }));
     onSearch(value);
-    setValue(null);
-    dispatch(setActive(value));
   };
 }
 
 export function onFocus() {
   return (dispatch, getState, getProps) => {
     const { options, value } = getProps();
-    if (options.length === 1 && value && options[0].value === value.value) {
-      TODO
-      dispatch(setSearch(value ? value.label : ''));
-    } else {
-      dispatch(setActive(value ? value.label : ''));
-    }
+    const expanded = !(options.length === 1 && value && options[0].value === value.value);
+    dispatch(setActive({ search: value ? value.label : '', selectedValue: value, expanded }));
   };
 }
 
 export function onClick(value) {
   return (dispatch, setState, getProps) => {
     const { setValue, onSearch } = getProps();
+    dispatch(setSelected(value));
     setValue(value);
     onSearch(value.label);
-    dispatch(setInactive(value.label));
   };
 }
 
 export function onBlur() {
   return (dispatch, getState, getProps) => {
-    const { setValue, value, options } = getProps();
+    const { setValue, value } = getProps();
     const { selectedValue } = getState();
-    if (selectedValue !== value
-      && (!selectedValue || options.find(o => o.value === selectedValue.value))
-    ) {
+    if (!equalValues(value, selectedValue)) {
+      dispatch(setInactive(selectedValue));
       setValue(selectedValue);
+    } else {
+      dispatch(setInactive(value));
     }
-    dispatch(setInactive(null));
   };
 }
 
 export function onClearValue() {
   return (dispatch, setState, getProps) => {
     const { onSearch, setValue } = getProps();
-    dispatch(setInactive(''));
+    dispatch(setSelected(null));
     onSearch(null);
     setValue(null);
   };

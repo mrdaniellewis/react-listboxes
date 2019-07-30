@@ -124,14 +124,16 @@ It is often desired to highlight the search results.
   - Add positioning
   - Click on label
 - Combo box
-  - fix pressing enter
-  - fix onChange
-  - fix removing selectedIndex
-  - selectedIndex should change with a change of options
+  - Add description of found
+  - Customisation
+  - Customise nothing found
+  - Error message
+  - Try with updating selection
   - allow for automatic selection
   - drop down button
   - with async search 
     - busy
   - Highlighters
   - aria 1.0
+  - focus only
   - autocomplete types

@@ -8,7 +8,7 @@ export function ComboBoxField({ label, ...props }) {
   const { value: initialValue, options: initialOptions } = props;
   const [value, setValue] = useState(initialValue);
   const [options, onSearch] = useSearch(initialOptions);
-  const id = label.trim().replace(/[^a-z]{2,}/, '_');
+  const id = label.trim().replace(/[^a-z]+/ig, '_').toLowerCase();
 
   return (
     <>
