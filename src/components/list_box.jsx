@@ -1,13 +1,17 @@
-import React, { forwardRef, Fragment, useRef, useImperativeHandle } from 'react';
+import React, { forwardRef, Fragment, useRef, useImperativeHandle, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { options as validateOptions } from '../validators/options.js';
 import { useGrouped } from '../hooks/use_grouped.js';
+import { component } from '../validators/component.js';
+import { Context } from '../context.js';
 
 export const ListBox = forwardRef((
-  { id, setValue, options, valueIndex, ...props },
+  { id, setValue, options, valueIndex,
+    ListBoxComponent, GroupComponent, OptionComponent, ValueComponent, ...props },
   ref,
 ) => {
   const listRef = useRef();
+  const currentContext = useContext(Context);
 
   useImperativeHandle(ref, () => ({
     focus() {
@@ -31,7 +35,7 @@ export const ListBox = forwardRef((
 
   return (
     // eslint-disable-next-line jsx-a11y/aria-activedescendant-has-tabindex
-    <ul
+    <ListBoxComponent
       role="listbox"
       tabIndex={-1}
       ref={listRef}
@@ -42,30 +46,35 @@ export const ListBox = forwardRef((
         // TODO: See if nesting options in groups breaks user agents
         <Fragment key={name || i}>
           {name && (
-            <li>
-              {name}
-            </li>
+            <Context.Provider value={{ ...currentContext, group: { name, children } }}>
+              <GroupComponent>
+                {name}
+              </GroupComponent>
+            </Context.Provider>
           )}
           {children.map((option) => {
-            const { id: optionId, index, label, key, disabled, ...more } = option;
+            const { id: optionId, index, label, key, disabled, data, ...more } = option;
             return (
               // eslint-disable-next-line jsx-a11y/click-events-have-key-events
-              <li
-                id={optionId}
-                role="option"
-                aria-selected={index === valueIndex ? 'true' : 'false'}
-                aria-disabled={disabled ? 'true' : null}
-                key={optionId || label}
-                onClick={!disabled && onClick(option)}
-                {...more}
-              >
-                {label}
-              </li>
+              <Context.Provider key={key || optionId} value={{ ...currentContext, option }}>
+                <OptionComponent
+                  id={optionId}
+                  role="option"
+                  aria-selected={index === valueIndex ? 'true' : 'false'}
+                  aria-disabled={disabled ? 'true' : null}
+                  onClick={!disabled && onClick(option)}
+                  {...more}
+                >
+                  <ValueComponent>
+                    {label}
+                  </ValueComponent>
+                </OptionComponent>
+              </Context.Provider>
             );
           })}
         </Fragment>
       ))}
-    </ul>
+    </ListBoxComponent>
   );
 });
 
@@ -75,11 +84,19 @@ ListBox.propTypes = {
   setValue: PropTypes.func.isRequired,
   options: validateOptions.isRequired,
   valueIndex: PropTypes.number,
+  ListBoxComponent: component,
+  OptionComponent: component,
+  GroupComponent: component,
+  ValueComponent: component,
 };
 
 ListBox.defaultProps = {
   blank: null,
   valueIndex: null,
+  ListBoxComponent: 'ul',
+  OptionComponent: 'li',
+  GroupComponent: 'li',
+  ValueComponent: Fragment,
 };
 
 ListBox.displayName = 'ListBox';

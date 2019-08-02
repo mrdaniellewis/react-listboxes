@@ -1,9 +1,11 @@
 import { nextInList } from '../../helpers/next_in_list.js';
 import { previousInList } from '../../helpers/previous_in_list.js';
+import { equalValues } from '../../helpers/equal_values.js';
 
 export const SET_EXPANDED = 'SET_EXPANDED';
 export const CLEAR_SEARCH = 'CLEAR_SEARCH';
 export const SET_SEARCH_KEY = 'SET_SEARCH_KEY';
+export const SET_SELECTED = 'SET_SELECTED';
 export const SET_SELECTED_VALUE = 'SET_SELECTED_VALUE';
 
 export function setExpanded(expanded) {
@@ -22,10 +24,42 @@ export function setSelectedValue(selectedValue) {
   return { type: SET_SELECTED_VALUE, selectedValue };
 }
 
+export function setSelected(selectedValue) {
+  return {
+    type: SET_SELECTED,
+    selectedValue,
+  };
+}
+
+export function onSelectValue(value) {
+  return (dispatch, getState, getProps) => {
+    const { setValue, buttonRef } = getProps();
+    dispatch(setSelected(value));
+    setValue(value);
+    buttonRef.current.focus();
+  };
+}
+
+export function onButtonKeyDown(event) {
+  return (dispatch, getState, getProps) => {
+    const { value } = getProps();
+    const { metaKey, ctrlKey, key } = event;
+
+    if (metaKey || ctrlKey) {
+      return;
+    }
+
+    if (key === 'ArrowUp' || key === 'ArrowDown') {
+      event.preventDefault();
+      dispatch(setSelectedValue(value));
+    }
+  };
+}
+
 export function onKeyDown(event) {
   return (dispatch, getState, getProps) => {
     const { expanded, selectedValue } = getState();
-    const { busy, options, setValue } = getProps();
+    const { options, buttonRef } = getProps();
     const { altKey, metaKey, ctrlKey, key } = event;
 
     if (metaKey || ctrlKey) {
@@ -35,10 +69,7 @@ export function onKeyDown(event) {
     if (key === 'Escape') {
       event.preventDefault();
       dispatch(setExpanded(false));
-      return;
-    }
-
-    if (busy || !options || !options.length) {
+      buttonRef.current.focus();
       return;
     }
 
@@ -81,10 +112,9 @@ export function onKeyDown(event) {
         break;
       case 'Enter':
         // Select current item if one is selected
-        if (expanded && selectedIndex !== -1) {
+        if (expanded && selectedIndex !== -1 && options[selectedIndex]) {
           event.preventDefault();
-          setValue(options[selectedIndex]);
-          dispatch(setExpanded(false));
+          dispatch(onSelectValue(options[selectedIndex]));
         }
         break;
       default:
@@ -109,26 +139,25 @@ export function onToggleOpen(open) {
   };
 }
 
-export function onClick(value) {
+export function onFocus() {
   return (dispatch, getState, getProps) => {
-    const { setValue } = getProps();
-    setValue(value);
-    dispatch(setExpanded(false));
+    const { expanded } = getState();
+    if (expanded) {
+      return;
+    }
+    const { value } = getProps();
+    dispatch(setSelectedValue(value));
   };
 }
 
 export function onBlur() {
   return (dispatch, getState, getProps) => {
-    const { expanded, selectedValue } = getState();
-    if (expanded) {
-      return;
+    const { value } = getProps();
+    const { selectedValue } = getState();
+    if (!equalValues(value, selectedValue)) {
+      dispatch(onSelectValue(selectedValue));
+    } else {
+      dispatch(setExpanded(false));
     }
-    const { setValue, value, options } = getProps();
-    if (selectedValue !== value
-      && (!selectedValue || options.find(o => o.value === selectedValue.value))
-    ) {
-      setValue(selectedValue);
-    }
-    dispatch(setExpanded(false));
   };
 }

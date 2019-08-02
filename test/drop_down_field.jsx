@@ -8,9 +8,9 @@ export function DropDownField({ label, ...props }) {
   const id = label.trim().toLowerCase().replace(/[^a-z]+/ig, '_').toLowerCase();
   return (
     <>
-      <span className="label" id={`label_${id}`}>
+      <label htmlFor={id}>
         {label}
-      </span>
+      </label>
       <DropDown
         id={id}
         aria-labelledby={`label_${id} ${id}`}

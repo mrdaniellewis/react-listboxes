@@ -49,13 +49,14 @@ Options is an array of either:
 - null or undefined - will be treated as an option with an empty label
 - an object with the following properties:
 
-| Prop               | Purpose                                |
-| ----               | ----                                   |
-| value              | The value of the option                |
-| label              | The label of the option                |
-| group              | Group labels to generate `<optgroup>`s |
-| key                | If supplied, used as the react key     |
-| Any other property | Will be added to the option            |
+| Prop               | Purpose                                       |
+| ----               | ----                                          |
+| value              | The value of the option                       |
+| label              | The label of the option                       |
+| group              | Group labels to generate `<optgroup>`s        |
+| disabled           | Set the option to disabled                    |
+| data               | This key is ignored and can store custom data |
+| Any other property | Will be added to the React option             |
 
 ### Drop down
 
@@ -118,22 +119,16 @@ It is often desired to highlight the search results.
 
 ## TODO
 
-- Drop down
-  - Fix Firefox / Safari focus issue
-  - Customisation
-  - Add positioning
-  - Click on label
+- Class names
+- Styling
+- Positioning
+- Menu button
 - Combo box
-  - Add description of found
-  - Customisation
-  - Customise nothing found
-  - Error message
-  - Try with updating selection
-  - allow for automatic selection
-  - drop down button
-  - with async search 
-    - busy
-  - Highlighters
-  - aria 1.0
-  - focus only
+  - Aria 1.1 sample
+  - Click / hover styling
+  - Drop down button styling
+  - Close button styling
+  - Loading button styling
+  - Telephone highlighter
+  - HTML highlighter
   - autocomplete types

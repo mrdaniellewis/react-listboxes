@@ -8,7 +8,7 @@ export function useThunkReducer(reducer, props, initialState, name) {
   stateRef.current = state;
   propsRef.current = props;
   const thunkDispatch = useCallback(
-    data => (typeof data === 'function' ? data(dispatch, () => stateRef.current, () => propsRef.current) : dispatch(data)),
+    data => (typeof data === 'function' ? data(thunkDispatch, () => stateRef.current, () => propsRef.current) : dispatch(data)),
     [],
   );
 

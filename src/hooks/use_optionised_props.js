@@ -26,7 +26,6 @@ export const useOptionisedProps = ({
 
   const setValue = useCallback(
     (option) => {
-      console.log('setValue', option, options);
       let index = option !== null ? options.findIndex(o => o.value === option.value) : -1;
       if (blank && index > -1) {
         index -= 1;

@@ -32,10 +32,19 @@ export function setSelectedValue(selectedValue) {
   return { type: SET_SELECTED_VALUE, selectedValue };
 }
 
+export function onSelectValue(value) {
+  return (dispatch, getState, getProps) => {
+    const { setValue, onSearch } = getProps();
+    dispatch(setSelected(value));
+    setValue(value);
+    onSearch(value ? value.label : '');
+  };
+}
+
 export function onKeyDown(event) {
   return (dispatch, getState, getProps) => {
     const { search, expanded, selectedValue } = getState();
-    const { busy, options, setValue, value } = getProps();
+    const { busy, options, value } = getProps();
     const { altKey, metaKey, ctrlKey, key } = event;
 
     if (metaKey || ctrlKey) {
@@ -92,14 +101,12 @@ export function onKeyDown(event) {
       case 'Enter':
         // Select current item if one is selected
         if (expanded) {
-          if (selectedIndex !== -1) {
+          if (selectedIndex !== -1 && options[selectedIndex]) {
             event.preventDefault();
-            dispatch(setSelected(options[selectedIndex]));
-            setValue(options[selectedIndex]);
+            dispatch(onSelectValue(options[selectedIndex]));
           } else if (!search) {
             event.preventDefault();
-            dispatch(setSelected(null));
-            setValue(null);
+            dispatch(onSelectValue(null));
           }
         }
         break;
@@ -120,18 +127,14 @@ export function onChange(event) {
 
 export function onFocus() {
   return (dispatch, getState, getProps) => {
-    const { options, value } = getProps();
+    const { options, value, onSearch } = getProps();
+    const { focused } = getState();
+    if (focused) {
+      return;
+    }
     const expanded = !(options.length === 1 && value && options[0].value === value.value);
     dispatch(setActive({ search: value ? value.label : '', selectedValue: value, expanded }));
-  };
-}
-
-export function onClick(value) {
-  return (dispatch, setState, getProps) => {
-    const { setValue, onSearch } = getProps();
-    dispatch(setSelected(value));
-    setValue(value);
-    onSearch(value.label);
+    onSearch(value ? value.label : '');
   };
 }
 
@@ -145,14 +148,5 @@ export function onBlur() {
     } else {
       dispatch(setInactive(value));
     }
-  };
-}
-
-export function onClearValue() {
-  return (dispatch, setState, getProps) => {
-    const { onSearch, setValue } = getProps();
-    dispatch(setSelected(null));
-    onSearch(null);
-    setValue(null);
   };
 }

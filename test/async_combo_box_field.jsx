@@ -5,13 +5,17 @@ import { useAsyncSearch } from '../src/hooks/use_async_search.js';
 import { options as validateOptions } from '../src/validators/options.js';
 import { makeSearch } from '../src/helpers/make_search.js';
 import fruits from './fruits.json';
+import { TokenHighlight } from '../src/components/highlight/token_highlight.jsx';
 
 export function AsyncComboBoxField({ label, ...props }) {
   const { value: initialValue, options: initialOptions } = props;
   const [value, setValue] = useState(initialValue);
   const [search] = useState(() => makeSearch(fruits));
-  const { options, busy, onSearch } = useAsyncSearch(
+  const { options, busy, onSearch, error } = useAsyncSearch(
     async (query) => {
+      if (query === 'fail') {
+        throw new Error('failure');
+      }
       await new Promise(resolve => setTimeout(resolve, Math.random() * 3000));
       return search(query);
     },
@@ -32,6 +36,8 @@ export function AsyncComboBoxField({ label, ...props }) {
         busy={busy}
         setValue={setValue}
         onSearch={onSearch}
+        notFoundMessage={error}
+        ValueComponent={TokenHighlight}
       />
     </>
   );
