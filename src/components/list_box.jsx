@@ -1,4 +1,4 @@
-import React, { forwardRef, Fragment, useRef, useImperativeHandle, useContext } from 'react';
+import React, { forwardRef, Fragment, useRef, useImperativeHandle, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { options as validateOptions } from '../validators/options.js';
 import { useGrouped } from '../hooks/use_grouped.js';
@@ -6,7 +6,7 @@ import { component } from '../validators/component.js';
 import { Context } from '../context.js';
 
 export const ListBox = forwardRef((
-  { id, setValue, options, valueIndex,
+  { id, setValue, options, valueIndex, selectedIndex, managedFocus,
     ListBoxComponent, GroupComponent, OptionComponent, ValueComponent, ...props },
   ref,
 ) => {
@@ -32,6 +32,13 @@ export const ListBox = forwardRef((
   );
 
   const grouped = useGrouped(options);
+  const selectedRef = useRef();
+
+  useEffect(() => {
+    if (selectedRef.current && managedFocus) {
+      selectedRef.current.focus();
+    }
+  }, [selectedIndex, managedFocus]);
 
   return (
     // eslint-disable-next-line jsx-a11y/aria-activedescendant-has-tabindex
@@ -53,15 +60,18 @@ export const ListBox = forwardRef((
             </Context.Provider>
           )}
           {children.map((option) => {
-            const { id: optionId, index, label, key, disabled, data, ...more } = option;
+            const { id: optionId, index, label, key, disabled, data: _ignore, ...more } = option;
             return (
               // eslint-disable-next-line jsx-a11y/click-events-have-key-events
               <Context.Provider key={key || optionId} value={{ ...currentContext, option }}>
                 <OptionComponent
                   id={optionId}
                   role="option"
-                  aria-selected={index === valueIndex ? 'true' : 'false'}
+                  tabIndex={-1}
+                  aria-selected={index === valueIndex ? 'true' : null}
                   aria-disabled={disabled ? 'true' : null}
+                  data-focused={index === selectedIndex ? 'true' : null}
+                  ref={index === selectedIndex ? selectedRef : null}
                   onClick={!disabled && onClick(option)}
                   {...more}
                 >
@@ -84,6 +94,8 @@ ListBox.propTypes = {
   setValue: PropTypes.func.isRequired,
   options: validateOptions.isRequired,
   valueIndex: PropTypes.number,
+  selectedIndex: PropTypes.number,
+  managedFocus: PropTypes.bool,
   ListBoxComponent: component,
   OptionComponent: component,
   GroupComponent: component,
@@ -93,6 +105,8 @@ ListBox.propTypes = {
 ListBox.defaultProps = {
   blank: null,
   valueIndex: null,
+  selectedIndex: null,
+  managedFocus: true,
   ListBoxComponent: 'ul',
   OptionComponent: 'li',
   GroupComponent: 'li',

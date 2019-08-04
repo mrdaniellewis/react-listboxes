@@ -119,11 +119,20 @@ It is often desired to highlight the search results.
 
 ## TODO
 
+- Bug - select then arrow, not focusing
+- Add example with disabled
+- Add example with groups
+- Allow focus on disabled
+- Allow focus on group headings
+- Use class for styling active - smoother
+- Keyboard passthrough - clipboard events
 - Class names
 - Styling
 - Positioning
 - Menu button
+  - dividers
 - Combo box
+  - Use managed focus
   - Aria 1.1 sample
   - Click / hover styling
   - Drop down button styling

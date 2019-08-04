@@ -4,7 +4,7 @@ import { Select } from '../src/components/select.jsx';
 
 export function SelectField({ label, ...props }) {
   const [value, setValue] = useState(null);
-  const id = label.trim().replace(/[^a-z]{2,}/, '_');
+  const id = label.trim().toLowerCase().replace(/[^a-z]+/ig, '_').toLowerCase();
   return (
     <>
       <label htmlFor={id}>

@@ -5,7 +5,9 @@ import { useOptionisedProps } from '../hooks/use_optionised_props.js';
 import { useGrouped } from '../hooks/use_grouped.js';
 
 export function Select(rawProps) {
-  const { options, valueIndex, setValue, blank, value, ...props } = useOptionisedProps(rawProps);
+  const {
+    options, valueIndex, setValue, blank: _1, value: _2, ...props
+  } = useOptionisedProps(rawProps);
   const grouped = useGrouped(options);
 
   return (

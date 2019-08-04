@@ -1,6 +1,7 @@
 import { nextInList } from '../../helpers/next_in_list.js';
 import { previousInList } from '../../helpers/previous_in_list.js';
 import { equalValues } from '../../helpers/equal_values.js';
+import { rNonPrintableKey } from '../../constants/r_non_printable_key.js';
 
 export const SET_EXPANDED = 'SET_EXPANDED';
 export const CLEAR_SEARCH = 'CLEAR_SEARCH';
@@ -118,10 +119,7 @@ export function onKeyDown(event) {
         }
         break;
       default:
-        // Determine if it is a printable key
-        // All special keys all ascii sequences starting with a capital letter
-        // Printable characters will be something plus, optionally, some non ascii modifiers
-        if (expanded && !/^[A-Z][A-Za-z0-9]/.test(key)) {
+        if (expanded && !rNonPrintableKey.test(key)) {
           dispatch(setSearchKey(key));
         }
     }

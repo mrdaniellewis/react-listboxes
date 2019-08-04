@@ -18,7 +18,7 @@ export function DropDown({
   ButtonComponent, ListBoxComponent, OptionComponent, GroupComponent, ValueComponent, ...rawProps
 }) {
   const optionisedProps = useOptionisedProps(rawProps);
-  const { options, value, setValue, blank, id, children } = optionisedProps;
+  const { options, value, valueIndex, setValue, blank, id, children } = optionisedProps;
   const buttonRef = useRef();
   const listRef = useRef();
   const [state, dispatch] = useReducer(
@@ -75,7 +75,8 @@ export function DropDown({
         onBlur={onBlurHandler}
         onKeyDown={e => dispatch(onKeyDown(e))}
         setValue={newValue => dispatch(onSelectValue(newValue))}
-        valueIndex={selectedIndex}
+        valueIndex={valueIndex}
+        selectedIndex={selectedIndex}
         blank={blank}
         aria-activedescendant={selectedIndex > -1 ? options[selectedIndex].id : null}
         ListBoxComponent={ListBoxComponent}

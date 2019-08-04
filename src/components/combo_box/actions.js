@@ -1,6 +1,7 @@
 import { nextInList } from '../../helpers/next_in_list.js';
 import { previousInList } from '../../helpers/previous_in_list.js';
 import { equalValues } from '../../helpers/equal_values.js';
+import { rNonPrintableKey } from '../../constants/r_non_printable_key.js';
 
 export const SET_ACTIVE = 'SET_ACTIVE';
 export const SET_EXPANDED = 'SET_EXPANDED';
@@ -43,8 +44,8 @@ export function onSelectValue(value) {
 
 export function onKeyDown(event) {
   return (dispatch, getState, getProps) => {
-    const { search, expanded, selectedValue } = getState();
-    const { busy, options, value } = getProps();
+    const { search, expanded, selectedValue, listBoxFocused } = getState();
+    const { busy, options, value, managedFocus, inputRef } = getProps();
     const { altKey, metaKey, ctrlKey, key } = event;
 
     if (metaKey || ctrlKey) {
@@ -71,14 +72,14 @@ export function onKeyDown(event) {
         event.preventDefault();
         if (altKey) {
           dispatch(setExpanded(false));
-        } else if (expanded) {
+        } else {
           dispatch(setSelectedValue(previousInList(options, selectedIndex, true)));
         }
         break;
       case 'ArrowDown':
         // Show, and next item unless altKey
         event.preventDefault();
-        if (expanded && !altKey) {
+        if (!altKey) {
           dispatch(setSelectedValue(nextInList(options, selectedIndex, true)));
         } else {
           dispatch(setExpanded(true));
@@ -110,8 +111,19 @@ export function onKeyDown(event) {
           }
         }
         break;
+      case 'Delete':
+      case 'Backspace':
+      case 'ArrowLeft':
+      case 'ArrowRight':
+      case 'Tab':
+        if (managedFocus && listBoxFocused) {
+          inputRef.current.focus();
+        }
+        break;
       default:
-        // Nothing
+        if (managedFocus && listBoxFocused && !rNonPrintableKey.test(key)) {
+          inputRef.current.focus();
+        }
     }
   };
 }

@@ -18,25 +18,31 @@ export function ComboBox({
   SpinnerComponent, NotFoundComponent, InfoDescriptionComponent, ClearButtonComponent,
   OpenButtonComponent, ValueComponent, ...rawProps
 }) {
+  const comboRef = useRef();
+  const inputRef = useRef();
   const optionisedProps = useOptionisedProps({ ...rawProps });
-  const { notFoundMessage, options, value, id, busy } = optionisedProps;
-  const [state, dispatch] = useReducer(reducer, optionisedProps, initialState, id);
-  const { expanded, search, listBoxFocused, selectedValue } = state;
+  const { notFoundMessage, options, value, valueIndex, id, busy, managedFocus } = optionisedProps;
+  const [state, dispatch] = useReducer(reducer, { ...optionisedProps, inputRef }, initialState, id);
+  const { expanded, search, listBoxFocused, selectedValue, focused } = state;
   const selectedIndex = useSelectedIndex({ options, selectedValue });
+
   const activeId = listBoxFocused && selectedIndex > -1 ? selectedValue.id : null;
   const showListBox = expanded && options.length;
   const showNotFound = expanded && !options.length && search && search.trim();
   const inputLabel = search !== null ? search : (value && value.label) || '';
   const showBusy = busy && search !== (value && value.label);
 
-  const comboRef = useRef();
-  const inputRef = useRef();
-
   const blur = useOnBlur(() => dispatch(onBlur()), comboRef);
 
   useEffect(() => {
     dispatch(setSelected(value));
   }, [value]);
+
+  useEffect(() => {
+    if (managedFocus && !listBoxFocused && focused) {
+      inputRef.current.focus();
+    }
+  }, [listBoxFocused, focused, managedFocus]);
 
   return (
     <Context.Provider value={{ dispatch, ...optionisedProps, ...state }}>
@@ -53,17 +59,18 @@ export function ComboBox({
           id={id}
           type="text"
           role="combobox"
-          aria-autocomplete="list"
-          aria-controls={`${id}_list_box`}
+          aria-autocomplete="both"
           aria-haspopup="true"
           aria-owns={`${id}_list_box`}
           aria-expanded={showListBox ? 'true' : 'false'}
           aria-activedescendant={activeId}
+          data-focused={focused ? 'true' : null}
           value={inputLabel}
           onKeyDown={e => dispatch(onKeyDown(e))}
           onChange={e => dispatch(onChange(e))}
           onFocus={e => dispatch(onFocus(e))}
           aria-describedby={joinTokens(showNotFound && `${id}_not_found`, `${id}_info`)}
+          autoComplete="off"
           ref={inputRef}
         />
         <ClearButtonComponent
@@ -95,12 +102,15 @@ export function ComboBox({
           options={options}
           hidden={!showListBox}
           setValue={newValue => dispatch(onSelectValue(newValue))}
-          valueIndex={selectedIndex}
+          valueIndex={valueIndex}
+          selectedIndex={selectedIndex}
           onMouseDown={e => e.preventDefault()}
           ListBoxComponent={ListBoxComponent}
           OptionComponent={OptionComponent}
           GroupComponent={GroupComponent}
           ValueComponent={ValueComponent}
+          onKeyDown={e => dispatch(onKeyDown(e))}
+          managedFocus={managedFocus && listBoxFocused}
         />
         <NotFoundComponent
           id={`${id}_not_found`}
@@ -131,6 +141,7 @@ ComboBox.propTypes = {
   setValue: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
   onSearch: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
   value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
+  managedFocus: PropTypes.bool,
   ComboBoxComponent: component,
   InputComponent: component,
   SpinnerComponent: component,
@@ -148,6 +159,7 @@ ComboBox.defaultProps = {
   busy: null,
   notFoundMessage: 'No matches found',
   value: null,
+  managedFocus: true,
   ComboBoxComponent: 'div',
   InputComponent: 'input',
   SpinnerComponent: 'span',

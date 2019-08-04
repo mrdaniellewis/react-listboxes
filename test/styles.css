@@ -20,8 +20,12 @@ textarea {
   font-size: inherit;
 }
 
-[aria-selected="true"] {
+[role="option"][data-focused] {
   font-weight: bold;
+}
+
+[aria-selected="true"]::marker {
+  content: "✓ ";
 }
 
 .spinner {
