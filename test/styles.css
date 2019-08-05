@@ -20,8 +20,24 @@ textarea {
   font-size: inherit;
 }
 
-[role="option"][data-focused] {
+input::-ms-clear {
+  width : 0;
+  height: 0;
+}
+
+[role="option"],
+[role="menuitem"] {
+  cursor: pointer;
+}
+
+[role="option"][data-focused],
+[role="menuitem"][data-focused] {
   font-weight: bold;
+}
+
+[role="separator"] {
+  border-top: 1px solid blue;
+  margin: .5em 0;
 }
 
 [aria-selected="true"]::marker {
@@ -35,6 +51,7 @@ textarea {
 
 [aria-disabled="true"] {
   opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .spinner {

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { StateInspector } from 'reinspect';
+import { StateInspector } from '../../reinspect.js';
 import { ComboBox } from './combo_box.jsx';
 
 function Inspector({ children, ...props }) {

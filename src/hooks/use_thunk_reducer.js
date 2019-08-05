@@ -1,5 +1,5 @@
-import { useReducer } from 'reinspect';
 import { useRef, useCallback } from 'react';
+import { useReducer } from '../reinspect.js';
 
 export function useThunkReducer(reducer, props, initialState, name) {
   const [state, dispatch] = useReducer(reducer, props, initialState, name);

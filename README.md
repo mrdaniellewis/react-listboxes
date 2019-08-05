@@ -1,3 +1,5 @@
+** WORK IN PROGRESS **
+
 # React components
 
 A set of react components based on [WAI-ARIA Authoring Practices](https://www.w3.org/TR/wai-aria-practices-1.1/).
@@ -11,7 +13,7 @@ import { Component } from '@citizensadvice/react-components';
 To start `npm start`  
 To test `npm test`
 To build example page `npm run build`
-To deploy the example page `npm run gh-pages`
+To deploy the example page `npm run deploy`
 
 You can use [Redux Dev Tools](https://github.com/zalmoxisus/redux-devtools-extension) to debug the state of most components.
 
@@ -119,20 +121,26 @@ It is often desired to highlight the search results.
 
 ## TODO
 
-- Bug - select then arrow, not focusing
-- Add example with disabled
-- Add example with groups
-- Allow focus on disabled
-- Allow focus on group headings
-- Use class for styling active - smoother
-- Keyboard passthrough - clipboard events
-- Class names
+- should not set focus on hover
+- setting focus incorrectly on menu
+- label can be a component
+- enter does not work on navigation menu
+- tab forward on menu
+- auto-id
+- allow focusing on groups
+- value is optional for menu etc
+- showing loader on delete?
+- tab trapped in ie11 on button
+- do not label button (ie11)
+- ie11 only reading "clear" on clear button
+- labelledby passthrough
+- describedby passthough
+- class name generation
 - Styling
 - Positioning
 - Menu button
   - dividers
 - Combo box
-  - Use managed focus
   - Aria 1.1 sample
   - Click / hover styling
   - Drop down button styling

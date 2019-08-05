@@ -3,10 +3,10 @@ module.exports = (api) => {
 
   const presets = [
     '@babel/preset-react',
-    ['@babel/preset-env', { useBuiltIns: 'usage' }],
+    '@babel/preset-env',
   ];
   const plugins = [
-    ['@babel/plugin-transform-runtime', { regenerator: true, corejs: 3 }],
+    ['@babel/plugin-transform-runtime', { regenerator: true }],
   ];
 
   return {

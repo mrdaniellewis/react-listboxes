@@ -8,6 +8,7 @@ export const CLEAR_SEARCH = 'CLEAR_SEARCH';
 export const SET_SEARCH_KEY = 'SET_SEARCH_KEY';
 export const SET_SELECTED = 'SET_SELECTED';
 export const SET_SELECTED_VALUE = 'SET_SELECTED_VALUE';
+export const SET_MOUSE_OVER = 'SET_MOUSE_OVER';
 
 export function setExpanded(expanded) {
   return { type: SET_EXPANDED, expanded };
@@ -32,11 +33,18 @@ export function setSelected(selectedValue) {
   };
 }
 
+export function setMouseOver(mouseOver) {
+  return { type: SET_MOUSE_OVER, mouseOver };
+}
+
 export function onSelectValue(value) {
   return (dispatch, getState, getProps) => {
     const { setValue, buttonRef } = getProps();
     dispatch(setSelected(value));
     setValue(value);
+    if (value && value.onClick) {
+      value.onClick();
+    }
     buttonRef.current.focus();
   };
 }
@@ -157,5 +165,30 @@ export function onBlur() {
     } else {
       dispatch(setExpanded(false));
     }
+  };
+}
+
+export function onMouseEnter() {
+  return (dispatch, getState) => {
+    dispatch(setMouseOver(true));
+
+    const { expanded } = getState();
+
+    if (!expanded) {
+      dispatch(onToggleOpen(true));
+    }
+  };
+}
+
+export function onMouseLeave() {
+  return (dispatch, getState) => {
+    dispatch(setMouseOver(false));
+
+    setTimeout(() => {
+      const { expanded, mouseOver } = getState();
+      if (expanded && !mouseOver) {
+        dispatch(onToggleOpen(false));
+      }
+    }, 200);
   };
 }

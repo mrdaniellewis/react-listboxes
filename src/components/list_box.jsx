@@ -1,4 +1,4 @@
-import React, { forwardRef, Fragment, useRef, useImperativeHandle, useContext, useEffect } from 'react';
+import React, { forwardRef, Fragment, useRef, useImperativeHandle, useContext, useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
 import { options as validateOptions } from '../validators/options.js';
 import { useGrouped } from '../hooks/use_grouped.js';
@@ -34,7 +34,7 @@ export const ListBox = forwardRef((
   const grouped = useGrouped(options);
   const selectedRef = useRef();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (selectedRef.current && managedFocus) {
       selectedRef.current.focus();
     }
@@ -61,9 +61,10 @@ export const ListBox = forwardRef((
             </Context.Provider>
           )}
           {children.map((option) => {
-            const { id: optionId, index, label, key, disabled, data: _ignore, ...more } = option;
+            const {
+              id: optionId, index, label, key, disabled, data: _1, onClick: _2, ...more
+            } = option;
             return (
-              // eslint-disable-next-line jsx-a11y/click-events-have-key-events
               <Context.Provider key={key || optionId} value={{ ...currentContext, option }}>
                 <OptionComponent
                   id={optionId}
@@ -73,7 +74,7 @@ export const ListBox = forwardRef((
                   aria-disabled={disabled ? 'true' : null}
                   data-focused={index === selectedIndex ? 'true' : null}
                   ref={index === selectedIndex ? selectedRef : null}
-                  onClick={!disabled && onClick(option)}
+                  onClick={disabled ? null : onClick(option)}
                   aria-labelledby={name ? `${id}_group_${i} ${optionId}` : null}
                   {...more}
                 >
@@ -109,9 +110,9 @@ ListBox.defaultProps = {
   valueIndex: null,
   selectedIndex: null,
   managedFocus: true,
-  ListBoxComponent: 'ul',
-  OptionComponent: 'li',
-  GroupComponent: 'li',
+  ListBoxComponent: 'div',
+  OptionComponent: 'div',
+  GroupComponent: 'div',
   ValueComponent: Fragment,
 };
 

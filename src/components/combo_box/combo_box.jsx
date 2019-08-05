@@ -15,13 +15,16 @@ import { component } from '../../validators/component.js';
 
 export function ComboBox({
   ComboBoxComponent, OptionComponent, GroupComponent, ListBoxComponent, InputComponent,
-  SpinnerComponent, NotFoundComponent, InfoDescriptionComponent, ClearButtonComponent,
+  SpinnerComponent, NotFoundComponent, DescriptionComponent, ClearButtonComponent,
   OpenButtonComponent, ValueComponent, ...rawProps
 }) {
   const comboRef = useRef();
   const inputRef = useRef();
   const optionisedProps = useOptionisedProps({ ...rawProps });
-  const { notFoundMessage, options, value, valueIndex, id, busy, managedFocus } = optionisedProps;
+  const {
+    notFoundMessage, options, value, valueIndex, id, busy, managedFocus,
+    className, setValue: _1, onSearch: _2, ...componentProps
+  } = optionisedProps;
   const [state, dispatch] = useReducer(reducer, { ...optionisedProps, inputRef }, initialState, id);
   const { expanded, search, listBoxFocused, selectedValue, focused } = state;
   const selectedIndex = useSelectedIndex({ options, selectedValue });
@@ -47,9 +50,11 @@ export function ComboBox({
   return (
     <Context.Provider value={{ dispatch, ...optionisedProps, ...state }}>
       <ComboBoxComponent
+        aria-busy={showBusy ? 'true' : 'false'}
+        className={className}
         onBlur={blur}
         ref={comboRef}
-        aria-busy={showBusy ? 'true' : 'false'}
+        {...componentProps}
       >
         <SpinnerComponent
           className="spinner"
@@ -120,14 +125,14 @@ export function ComboBox({
         >
           {notFoundMessage}
         </NotFoundComponent>
-        <InfoDescriptionComponent
+        <DescriptionComponent
           id={`${id}_info`}
           hidden
         >
           {options.length && showListBox && (
             `Found ${options.length} options`
           )}
-        </InfoDescriptionComponent>
+        </DescriptionComponent>
       </ComboBoxComponent>
     </Context.Provider>
   );
@@ -135,40 +140,44 @@ export function ComboBox({
 
 ComboBox.propTypes = {
   busy: PropTypes.bool,
+  className: PropTypes.string,
   id: PropTypes.string.isRequired,
+  managedFocus: PropTypes.bool,
   notFoundMessage: PropTypes.node,
+  onSearch: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
   options: validateOptions.isRequired,
   setValue: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
-  onSearch: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
   value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
-  managedFocus: PropTypes.bool,
-  ComboBoxComponent: component,
-  InputComponent: component,
-  SpinnerComponent: component,
-  NotFoundComponent: component,
-  InfoDescriptionComponent: component,
+
   ClearButtonComponent: component,
+  ComboBoxComponent: component,
+  GroupComponent: component,
+  DescriptionComponent: component,
+  InputComponent: component,
+  ListBoxComponent: component,
+  NotFoundComponent: component,
   OpenButtonComponent: component,
   OptionComponent: component,
-  GroupComponent: component,
-  ListBoxComponent: component,
+  SpinnerComponent: component,
   ValueComponent: component,
 };
 
 ComboBox.defaultProps = {
   busy: null,
+  className: 'combobox',
+  managedFocus: true,
   notFoundMessage: 'No matches found',
   value: null,
-  managedFocus: true,
-  ComboBoxComponent: 'div',
-  InputComponent: 'input',
-  SpinnerComponent: 'span',
-  NotFoundComponent: 'div',
-  InfoDescriptionComponent: 'div',
+
   ClearButtonComponent: 'button',
+  ComboBoxComponent: 'div',
+  GroupComponent: undefined,
+  DescriptionComponent: 'div',
+  InputComponent: 'input',
+  ListBoxComponent: undefined,
+  NotFoundComponent: 'div',
   OpenButtonComponent: 'span',
   OptionComponent: undefined,
-  GroupComponent: undefined,
-  ListBoxComponent: undefined,
+  SpinnerComponent: 'span',
   ValueComponent: undefined,
 };

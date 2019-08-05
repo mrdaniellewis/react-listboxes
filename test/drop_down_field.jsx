@@ -13,7 +13,6 @@ export function DropDownField({ label, ...props }) {
       </label>
       <DropDown
         id={id}
-        aria-labelledby={`label_${id} ${id}`}
         {...props}
         value={value}
         setValue={newValue => setValue(newValue)}
