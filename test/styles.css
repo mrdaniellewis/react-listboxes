@@ -28,6 +28,15 @@ textarea {
   content: "✓ ";
 }
 
+[role="listbox"] > :not([role="option"]) {
+  list-style-type: none;
+  margin-left: -2em;
+}
+
+[aria-disabled="true"] {
+  opacity: 0.5;
+}
+
 .spinner {
   vertical-align: middle;
   width: 1em;

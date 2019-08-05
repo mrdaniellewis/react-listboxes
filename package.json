@@ -5,9 +5,11 @@
   "description": "A combox box implemented in React",
   "main": "src/index.jsx",
   "scripts": {
+    "build": "parcel build ./test/index.html --public-url .",
     "start": "parcel ./test/index.html",
     "lint": "eslint . --ext .js --ext .jsx",
-    "test": "jest"
+    "test": "jest",
+    "deploy": "npm run lint && npm run build && gh-pages -d dist"
   },
   "license": "ISC",
   "devDependencies": {
@@ -25,6 +27,7 @@
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.14.3",
     "eslint-plugin-react-hooks": "^1.6.1",
+    "gh-pages": "^2.0.1",
     "jest": "^24.8.0",
     "parcel-bundler": "^1.12.3",
     "prop-types": "^15.7.2",

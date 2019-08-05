@@ -50,11 +50,12 @@ export const ListBox = forwardRef((
       {...props}
     >
       {grouped.map(({ name, children }, i) => (
-        // TODO: See if nesting options in groups breaks user agents
         <Fragment key={name || i}>
           {name && (
             <Context.Provider value={{ ...currentContext, group: { name, children } }}>
-              <GroupComponent>
+              <GroupComponent
+                id={`${id}_group_${i}`}
+              >
                 {name}
               </GroupComponent>
             </Context.Provider>
@@ -73,6 +74,7 @@ export const ListBox = forwardRef((
                   data-focused={index === selectedIndex ? 'true' : null}
                   ref={index === selectedIndex ? selectedRef : null}
                   onClick={!disabled && onClick(option)}
+                  aria-labelledby={name ? `${id}_group_${i} ${optionId}` : null}
                   {...more}
                 >
                   <ValueComponent>

@@ -2,6 +2,7 @@ import { nextInList } from '../../helpers/next_in_list.js';
 import { previousInList } from '../../helpers/previous_in_list.js';
 import { equalValues } from '../../helpers/equal_values.js';
 import { rNonPrintableKey } from '../../constants/r_non_printable_key.js';
+import { onlyOptionIsSelected } from '../../helpers/only_option_is_selected.js';
 
 export const SET_ACTIVE = 'SET_ACTIVE';
 export const SET_EXPANDED = 'SET_EXPANDED';
@@ -70,17 +71,23 @@ export function onKeyDown(event) {
       case 'ArrowUp':
         // Close if altKey, otherwise next item and show
         event.preventDefault();
+        if (!expanded && onlyOptionIsSelected(options, value)) {
+          return;
+        }
         if (altKey) {
           dispatch(setExpanded(false));
         } else {
-          dispatch(setSelectedValue(previousInList(options, selectedIndex, true)));
+          dispatch(setSelectedValue(previousInList(options, selectedIndex, expanded)));
         }
         break;
       case 'ArrowDown':
         // Show, and next item unless altKey
         event.preventDefault();
+        if (!expanded && onlyOptionIsSelected(options, value)) {
+          return;
+        }
         if (!altKey) {
-          dispatch(setSelectedValue(nextInList(options, selectedIndex, true)));
+          dispatch(setSelectedValue(nextInList(options, selectedIndex, expanded)));
         } else {
           dispatch(setExpanded(true));
         }
@@ -144,7 +151,7 @@ export function onFocus() {
     if (focused) {
       return;
     }
-    const expanded = !(options.length === 1 && value && options[0].value === value.value);
+    const expanded = !onlyOptionIsSelected(options, value);
     dispatch(setActive({ search: value ? value.label : '', selectedValue: value, expanded }));
     onSearch(value ? value.label : '');
   };

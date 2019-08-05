@@ -85,6 +85,32 @@ export function Examples() {
         label="ComboBox"
         options={['Foo', 'Bar', 'Foe', 'Fee']}
       />
+      <ComboBoxField
+        label="ComboBox grouped"
+        options={[
+          {
+            label: 'Foo',
+            value: 1,
+            group: 'One',
+          },
+          {
+            label: 'Boo',
+            value: 2,
+            disabled: true,
+            group: 'One',
+          },
+          {
+            label: 'Foe',
+            value: 3,
+            group: 'Two',
+          },
+          {
+            label: 'Thumb',
+            value: 4,
+            group: 'Two',
+          },
+        ]}
+      />
       <AsyncComboBoxField
         label="Async comboBox"
       />
