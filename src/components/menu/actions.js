@@ -4,22 +4,12 @@ import { equalValues } from '../../helpers/equal_values.js';
 import { rNonPrintableKey } from '../../constants/r_non_printable_key.js';
 
 export const SET_EXPANDED = 'SET_EXPANDED';
-export const CLEAR_SEARCH = 'CLEAR_SEARCH';
-export const SET_SEARCH_KEY = 'SET_SEARCH_KEY';
 export const SET_SELECTED = 'SET_SELECTED';
 export const SET_SELECTED_VALUE = 'SET_SELECTED_VALUE';
-export const SET_BUTTON_MOUSE_DOWN = 'SET_BUTTON_MOUSE_DOWN';
+export const SET_MOUSE_OVER = 'SET_MOUSE_OVER';
 
 export function setExpanded(expanded) {
   return { type: SET_EXPANDED, expanded };
-}
-
-export function clearSearch() {
-  return { type: CLEAR_SEARCH };
-}
-
-export function setSearchKey(key) {
-  return { type: SET_SEARCH_KEY, key };
 }
 
 export function setSelectedValue(selectedValue) {
@@ -33,15 +23,19 @@ export function setSelected(selectedValue) {
   };
 }
 
-export function setButtonMouseDown(mouseDown) {
-  return { type: SET_BUTTON_MOUSE_DOWN, mouseDown };
+export function setMouseOver(mouseOver) {
+  return { type: SET_MOUSE_OVER, mouseOver };
 }
 
 export function onSelectValue(value) {
   return (dispatch, getState, getProps) => {
-    const { setValue } = getProps();
+    const { setValue, buttonRef } = getProps();
     dispatch(setSelected(value));
     setValue(value);
+    if (value && value.onClick) {
+      value.onClick();
+    }
+    buttonRef.current.focus();
   };
 }
 
@@ -120,25 +114,21 @@ export function onKeyDown(event) {
         if (expanded && selectedIndex !== -1 && options[selectedIndex]) {
           event.preventDefault();
           dispatch(onSelectValue(options[selectedIndex]));
-          buttonRef.current.focus();
         }
         break;
       default:
-        if (expanded && !rNonPrintableKey.test(key)) {
-          dispatch(setSearchKey(key));
-        }
+        // Nothing
     }
   };
 }
 
-export function onToggleOpen() {
+export function onToggleOpen(open) {
   return (dispatch, getState, getProps) => {
-    const { expanded } = getState();
     const { value } = getProps();
-    if (expanded) {
-      dispatch(setExpanded(false));
-    } else {
+    if (open) {
       dispatch(setSelectedValue(value));
+    } else {
+      dispatch(setExpanded(false));
     }
   };
 }
@@ -157,11 +147,7 @@ export function onFocus() {
 export function onBlur() {
   return (dispatch, getState, getProps) => {
     const { value } = getProps();
-    const { selectedValue, mouseDown } = getState();
-    if (mouseDown) {
-      dispatch(setButtonMouseDown(false));
-      return;
-    }
+    const { selectedValue } = getState();
     if (!equalValues(value, selectedValue)) {
       dispatch(onSelectValue(selectedValue));
     } else {
@@ -170,10 +156,27 @@ export function onBlur() {
   };
 }
 
-export function onClick(value) {
-  return (dispatch, getState, getProps) => {
-    const { buttonRef } = getProps();
-    dispatch(onSelectValue(value));
-    buttonRef.current.focus();
+export function onMouseEnter() {
+  return (dispatch, getState) => {
+    dispatch(setMouseOver(true));
+
+    const { expanded } = getState();
+
+    if (!expanded) {
+      dispatch(onToggleOpen(true));
+    }
+  };
+}
+
+export function onMouseLeave() {
+  return (dispatch, getState) => {
+    dispatch(setMouseOver(false));
+
+    setTimeout(() => {
+      const { expanded, mouseOver } = getState();
+      if (expanded && !mouseOver) {
+        dispatch(onToggleOpen(false));
+      }
+    }, 200);
   };
 }

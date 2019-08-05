@@ -1,6 +1,6 @@
-import { SET_EXPANDED, SET_SEARCH_KEY, CLEAR_SEARCH, SET_SELECTED_VALUE, SET_SELECTED, SET_MOUSE_OVER } from './actions.js';
+import { SET_EXPANDED, SET_SEARCH_KEY, CLEAR_SEARCH, SET_SELECTED_VALUE, SET_SELECTED, SET_BUTTON_MOUSE_DOWN } from './actions.js';
 
-export function reducer(state, { type, expanded, key, selectedValue, mouseOver }) {
+export function reducer(state, { type, expanded, key, selectedValue }) {
   switch (type) {
     case SET_EXPANDED:
       return { ...state, expanded };
@@ -12,8 +12,8 @@ export function reducer(state, { type, expanded, key, selectedValue, mouseOver }
       return { ...state, expanded: false, selectedValue };
     case SET_SELECTED_VALUE:
       return { ...state, selectedValue, expanded: true };
-    case SET_MOUSE_OVER:
-      return { ...state, mouseOver };
+    case SET_BUTTON_MOUSE_DOWN:
+      return { ...state, mouseDown: true };
     default:
       throw new Error(`${type} unknown`);
   }

@@ -6,7 +6,7 @@ import { component } from '../validators/component.js';
 import { Context } from '../context.js';
 
 export const ListBox = forwardRef((
-  { id, setValue, options, valueIndex, selectedIndex, managedFocus,
+  { id, setValue, options, valueIndex, selectedIndex, managedFocus, expanded,
     ListBoxComponent, GroupComponent, OptionComponent, ValueComponent, ...props },
   ref,
 ) => {
@@ -35,10 +35,10 @@ export const ListBox = forwardRef((
   const selectedRef = useRef();
 
   useLayoutEffect(() => {
-    if (selectedRef.current && managedFocus) {
+    if (expanded && selectedRef.current && managedFocus) {
       selectedRef.current.focus();
     }
-  }, [selectedIndex, managedFocus]);
+  }, [expanded, selectedIndex, managedFocus]);
 
   return (
     // eslint-disable-next-line jsx-a11y/aria-activedescendant-has-tabindex
@@ -93,6 +93,7 @@ export const ListBox = forwardRef((
 
 ListBox.propTypes = {
   blank: PropTypes.node,
+  expanded: PropTypes.bool,
   id: PropTypes.string.isRequired,
   setValue: PropTypes.func.isRequired,
   options: validateOptions.isRequired,
@@ -107,12 +108,13 @@ ListBox.propTypes = {
 
 ListBox.defaultProps = {
   blank: null,
+  expanded: false,
   valueIndex: null,
   selectedIndex: null,
   managedFocus: true,
-  ListBoxComponent: 'div',
-  OptionComponent: 'div',
-  GroupComponent: 'div',
+  ListBoxComponent: 'ul',
+  OptionComponent: 'li',
+  GroupComponent: 'li',
   ValueComponent: Fragment,
 };
 

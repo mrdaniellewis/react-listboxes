@@ -3,6 +3,6 @@ export function initialState({ value }) {
     expanded: false,
     search: '',
     selectedValue: value,
-    mouseOver: false,
+    mouseDown: false,
   };
 }

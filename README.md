@@ -121,15 +121,19 @@ It is often desired to highlight the search results.
 
 ## TODO
 
-- should not set focus on hover
-- setting focus incorrectly on menu
-- label can be a component
-- enter does not work on navigation menu
-- tab forward on menu
+- drop down
+  - fix mousedown issue
+  - remove popup button
+  - allow custom node?
+  - allow focusing on groups
+  - searcher should just be based on prefix
+- menu
+  - hover intent
+  - value is an array of nodes
+  - no hover on focus
 - auto-id
-- allow focusing on groups
-- value is optional for menu etc
 - showing loader on delete?
+- errors if ref is missing
 - tab trapped in ie11 on button
 - do not label button (ie11)
 - ie11 only reading "clear" on clear button

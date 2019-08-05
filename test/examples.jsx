@@ -5,7 +5,7 @@ import { SelectField } from './select_field.jsx';
 import { DropDownField } from './drop_down_field.jsx';
 import { ComboBoxField } from './combo_box_field.jsx';
 import { AsyncComboBoxField } from './async_combo_box_field.jsx';
-import { Menu } from '../src/components/menu.jsx';
+import { Menu } from '../src/components/menu/index.jsx';
 import { NavigationMenu } from '../src/components/navigation_menu.jsx';
 
 export function Examples() {

@@ -1,12 +1,13 @@
 import React, { useRef, useEffect, useLayoutEffect, useMemo, Fragment } from 'react';
 import PropTypes from 'prop-types';
+import { PopupButton } from '../popup_button.jsx';
 import { ListBox } from '../list_box.jsx';
 import { useThunkReducer as useReducer } from '../../hooks/use_thunk_reducer.js';
 import { reducer } from './reducer.js';
 import { initialState } from './initial_state.js';
 import {
-  clearSearch, onKeyDown, setSelectedValue, onBlur, setButtonMouseDown,
-  onToggleOpen, onFocus, onButtonKeyDown, onClick,
+  clearSearch, onKeyDown, onSelectValue, setSelectedValue, onBlur,
+  onToggleOpen, onFocus, onButtonKeyDown, onMouseEnter, onMouseLeave,
 } from './actions.js';
 import { Context } from '../../context.js';
 import { options as validateOptions } from '../../validators/options.js';
@@ -16,14 +17,14 @@ import { useOnBlur } from '../../hooks/use_on_blur.js';
 import { makeSearch } from '../../helpers/make_search.js';
 import { component } from '../../validators/component.js';
 
-export function DropDown({
+export function Menu({
   ButtonComponent, ListBoxComponent, OptionComponent,
   GroupComponent, ValueComponent, DropDownComponent, ...rawProps
 }) {
   const optionisedProps = useOptionisedProps(rawProps);
   const {
     options, value, valueIndex, setValue, blank, id,
-    children, managedFocus, ...componentProps
+    children, expandOnHover, managedFocus, ...componentProps
   } = optionisedProps;
   const buttonRef = useRef();
   const listRef = useRef();
@@ -37,6 +38,13 @@ export function DropDown({
   const selectedIndex = useSelectedIndex({ options, selectedValue });
 
   const onBlurHandler = useOnBlur(() => dispatch(onBlur()), listRef);
+
+  useLayoutEffect(() => {
+    if (expanded) {
+      listRef.current.focus();
+    }
+  }, [expanded]);
+
   const searcher = useMemo(() => makeSearch(options), [options]);
 
   useEffect(() => {
@@ -52,39 +60,37 @@ export function DropDown({
     return () => clearTimeout(timeout);
   }, [options, searcher, search, setValue]);
 
-  useLayoutEffect(() => {
-    if (expanded) {
-      listRef.current.focus();
-    }
-  }, [expanded]);
-
   return (
     <Context.Provider value={{ dispatch, ...optionisedProps, ...state }}>
       <DropDownComponent
         {...componentProps}
       >
-        <ButtonComponent
-          type="button"
-          id={id}
-          aria-haspopup="listbox"
-          aria-expanded={expanded ? 'true' : null}
-          aria-controls={`${id}_listbox`}
+        <PopupButton
           ref={buttonRef}
-          onClick={() => dispatch(onToggleOpen())}
+          hasPopup="menu"
+          expanded={expanded}
+          setExpanded={newExpanded => dispatch(onToggleOpen(newExpanded))}
           onKeyDown={e => dispatch(onButtonKeyDown(e))}
-          onMouseDown={() => dispatch(setButtonMouseDown(true))}
+          ButtonComponent={ButtonComponent}
+          aria-controls={`${id}_menu`}
+          onMouseEnter={expandOnHover ? () => dispatch(onMouseEnter()) : null}
+          onMouseLeave={expandOnHover ? () => dispatch(onMouseLeave()) : null}
+          id={id}
         >
           {children || (value && value.label) || blank}
-        </ButtonComponent>
+        </PopupButton>
         <ListBox
-          id={`${id}_listbox`}
+          id={`${id}_menu`}
+          role="menu"
           options={options}
           hidden={!expanded}
           ref={listRef}
           onFocus={e => dispatch(onFocus(e))}
           onBlur={onBlurHandler}
           onKeyDown={e => dispatch(onKeyDown(e))}
-          setValue={newValue => dispatch(onClick(newValue))}
+          onMouseEnter={expandOnHover ? () => dispatch(onMouseEnter()) : null}
+          onMouseLeave={expandOnHover ? () => dispatch(onMouseLeave()) : null}
+          setValue={newValue => dispatch(onSelectValue(newValue))}
           valueIndex={valueIndex}
           selectedIndex={selectedIndex}
           blank={blank}
@@ -101,7 +107,7 @@ export function DropDown({
   );
 }
 
-DropDown.propTypes = {
+Menu.propTypes = {
   blank: PropTypes.string,
   children: PropTypes.node,
   id: PropTypes.string.isRequired,
@@ -109,6 +115,7 @@ DropDown.propTypes = {
   setValue: PropTypes.func.isRequired,
   value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
   managedFocus: PropTypes.bool,
+  expandOnHover: PropTypes.bool,
   ListBoxComponent: component,
   ButtonComponent: component,
   GroupComponent: component,
@@ -117,13 +124,14 @@ DropDown.propTypes = {
   DropDownComponent: component,
 };
 
-DropDown.defaultProps = {
+Menu.defaultProps = {
   blank: '',
   children: null,
   value: null,
+  expandOnHover: false,
   managedFocus: true,
   ListBoxComponent: undefined,
-  ButtonComponent: 'button',
+  ButtonComponent: undefined,
   GroupComponent: undefined,
   OptionComponent: undefined,
   ValueComponent: undefined,

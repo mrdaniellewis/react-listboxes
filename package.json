@@ -46,5 +46,6 @@
     "classnames": ">= 1.2",
     "regenerator-runtime": "^0.13.3",
     "reinspect": "^1.0.1"
-  }
+  },
+  "sideEffects": false
 }
