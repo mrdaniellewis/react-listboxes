@@ -26669,9 +26669,13 @@ Object.defineProperty(exports, "__esModule", {
 exports.arrayMembers = arrayMembers;
 
 function arrayMembers(members) {
-  return (propValue, key, ...rest) => {
+  return function (propValue, key) {
     if (members[key]) {
-      const error = members[key](propValue, key, ...rest);
+      for (var _len = arguments.length, rest = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+        rest[_key - 2] = arguments[_key];
+      }
+
+      var error = members[key].apply(members, [propValue, key].concat(rest));
 
       if (error) {
         return new Error(error.message);
@@ -26695,7 +26699,7 @@ var _array_members = require("./array_members.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const options = _propTypes.default.arrayOf(_propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.number, _propTypes.default.arrayOf((0, _array_members.arrayMembers)([_propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.number]).isRequired, _propTypes.default.string.isRequired])), _propTypes.default.shape({
+var options = _propTypes.default.arrayOf(_propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.number, _propTypes.default.arrayOf((0, _array_members.arrayMembers)([_propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.number]).isRequired, _propTypes.default.string.isRequired])), _propTypes.default.shape({
   disabled: _propTypes.default.bool,
   value: _propTypes.default.any,
   label: _propTypes.default.string.isRequired,
@@ -26713,7 +26717,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.optionise = void 0;
 
-const optionise = item => {
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+var optionise = function optionise(item) {
   if (Array.isArray(item)) {
     return {
       value: item[0],
@@ -26728,7 +26734,7 @@ const optionise = item => {
     };
   }
 
-  if (typeof item === 'object') {
+  if (_typeof(item) === 'object') {
     return item;
   } // A primitive
 
@@ -26752,26 +26758,53 @@ var _react = require("react");
 
 var _optionise = require("../helpers/optionise.js");
 
-const useOptionisedProps = ({
-  id,
-  options: rawOptions,
-  value: rawValue,
-  blank,
-  setValue: rawSetValue,
-  ...props
-}) => {
-  const options = (0, _react.useMemo)(() => (blank ? [{
-    value: null,
-    label: blank,
-    id: `${id}_blank`
-  }, ...rawOptions] : rawOptions).map((o, i) => ({
-    id: `${id}_${i}`,
-    ...(0, _optionise.optionise)(o)
-  })), [id, rawOptions, blank]);
-  const value = (0, _react.useMemo)(() => rawValue != null || blank ? (0, _optionise.optionise)(rawValue) : null, [rawValue, blank]);
-  const valueIndex = (0, _react.useMemo)(() => options.findIndex(o => o.value === (value && value.value)), [value, options]);
-  const setValue = (0, _react.useCallback)(option => {
-    let index = option !== null ? options.findIndex(o => o.value === option.value) : -1;
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+var useOptionisedProps = function useOptionisedProps(_ref) {
+  var id = _ref.id,
+      rawOptions = _ref.options,
+      rawValue = _ref.value,
+      blank = _ref.blank,
+      rawSetValue = _ref.setValue,
+      props = _objectWithoutProperties(_ref, ["id", "options", "value", "blank", "setValue"]);
+
+  var options = (0, _react.useMemo)(function () {
+    return (blank ? [{
+      value: null,
+      label: blank,
+      id: "".concat(id, "_blank")
+    }].concat(_toConsumableArray(rawOptions)) : rawOptions).map(function (o, i) {
+      return _objectSpread({
+        id: "".concat(id, "_").concat(i)
+      }, (0, _optionise.optionise)(o));
+    });
+  }, [id, rawOptions, blank]);
+  var value = (0, _react.useMemo)(function () {
+    return rawValue != null || blank ? (0, _optionise.optionise)(rawValue) : null;
+  }, [rawValue, blank]);
+  var valueIndex = (0, _react.useMemo)(function () {
+    return options.findIndex(function (o) {
+      return o.value === (value && value.value);
+    });
+  }, [value, options]);
+  var setValue = (0, _react.useCallback)(function (option) {
+    var index = option !== null ? options.findIndex(function (o) {
+      return o.value === option.value;
+    }) : -1;
 
     if (blank && index > -1) {
       index -= 1;
@@ -26779,15 +26812,14 @@ const useOptionisedProps = ({
 
     rawSetValue(index > -1 ? rawOptions[index] : null);
   }, [options, rawSetValue, rawOptions, blank]);
-  return {
-    id,
-    blank,
-    options,
-    value,
-    valueIndex,
-    setValue,
-    ...props
-  };
+  return _objectSpread({
+    id: id,
+    blank: blank,
+    options: options,
+    value: value,
+    valueIndex: valueIndex,
+    setValue: setValue
+  }, props);
 };
 
 exports.useOptionisedProps = useOptionisedProps;
@@ -26801,26 +26833,36 @@ exports.useGrouped = void 0;
 
 var _react = require("react");
 
-const useGrouped = options => (0, _react.useMemo)(() => {
-  let lastGroup = null;
-  return options.reduce((array, {
-    group,
-    ...values
-  }, index) => {
-    if (group !== lastGroup) {
-      array.unshift({
-        name: group,
-        children: []
-      });
-      lastGroup = group;
-    }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
 
-    array[0].children.push({ ...values,
-      index
-    });
-    return array;
-  }, []).reverse();
-}, [options]);
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+var useGrouped = function useGrouped(options) {
+  return (0, _react.useMemo)(function () {
+    var lastGroup = null;
+    return options.reduce(function (array, _ref, index) {
+      var group = _ref.group,
+          values = _objectWithoutProperties(_ref, ["group"]);
+
+      if (group !== lastGroup) {
+        array.unshift({
+          name: group,
+          children: []
+        });
+        lastGroup = group;
+      }
+
+      array[0].children.push(_objectSpread({}, values, {
+        index: index
+      }));
+      return array;
+    }, []).reverse();
+  }, [options]);
+};
 
 exports.useGrouped = useGrouped;
 },{"react":"../node_modules/react/index.js"}],"../src/components/select.jsx":[function(require,module,exports) {
@@ -26845,37 +26887,41 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
 function Select(rawProps) {
-  const {
-    options,
-    valueIndex,
-    setValue,
-    blank: _1,
-    value: _2,
-    ...props
-  } = (0, _use_optionised_props.useOptionisedProps)(rawProps);
-  const grouped = (0, _use_grouped.useGrouped)(options);
+  var _useOptionisedProps = (0, _use_optionised_props.useOptionisedProps)(rawProps),
+      options = _useOptionisedProps.options,
+      valueIndex = _useOptionisedProps.valueIndex,
+      setValue = _useOptionisedProps.setValue,
+      _1 = _useOptionisedProps.blank,
+      _2 = _useOptionisedProps.value,
+      props = _objectWithoutProperties(_useOptionisedProps, ["options", "valueIndex", "setValue", "blank", "value"]);
+
+  var grouped = (0, _use_grouped.useGrouped)(options);
   return _react.default.createElement("select", _extends({
     value: valueIndex === -1 ? '' : valueIndex,
-    onChange: ({
-      target: {
-        value: index
-      }
-    }) => setValue(options[+index])
-  }, props), grouped.map(({
-    name,
-    children
-  }) => {
-    const optionElements = children.map(({
-      index,
-      label,
-      key,
-      value: optionValue,
-      ...more
-    }) => _react.default.createElement("option", _extends({
-      value: index,
-      key: key || optionValue
-    }, more), label));
+    onChange: function onChange(_ref) {
+      var index = _ref.target.value;
+      return setValue(options[+index]);
+    }
+  }, props), grouped.map(function (_ref2) {
+    var name = _ref2.name,
+        children = _ref2.children;
+    var optionElements = children.map(function (_ref3) {
+      var index = _ref3.index,
+          label = _ref3.label,
+          key = _ref3.key,
+          optionValue = _ref3.value,
+          more = _objectWithoutProperties(_ref3, ["index", "label", "key", "value"]);
+
+      return _react.default.createElement("option", _extends({
+        value: index,
+        key: key || optionValue
+      }, more), label);
+    });
 
     if (name) {
       return _react.default.createElement("optgroup", {
@@ -26919,12 +26965,28 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
-function SelectField({
-  label,
-  ...props
-}) {
-  const [value, setValue] = (0, _react.useState)(null);
-  const id = label.trim().toLowerCase().replace(/[^a-z]+/ig, '_').toLowerCase();
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function SelectField(_ref) {
+  var label = _ref.label,
+      props = _objectWithoutProperties(_ref, ["label"]);
+
+  var _useState = (0, _react.useState)(null),
+      _useState2 = _slicedToArray(_useState, 2),
+      value = _useState2[0],
+      setValue = _useState2[1];
+
+  var id = label.trim().toLowerCase().replace(/[^a-z]+/ig, '_').toLowerCase();
   return _react.default.createElement(_react.default.Fragment, null, _react.default.createElement("label", {
     htmlFor: id
   }, label), _react.default.createElement(_select.Select, _extends({
@@ -27866,7 +27928,7 @@ var _propTypes = _interopRequireDefault(require("prop-types"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const component = _propTypes.default.oneOfType([_propTypes.default.oneOf([_react.Fragment]), // Fragment - which is a symbol
+var component = _propTypes.default.oneOfType([_propTypes.default.oneOf([_react.Fragment]), // Fragment - which is a symbol
 _propTypes.default.string, // Native element
 _propTypes.default.func, // function, stateless or class component
 _propTypes.default.shape({
@@ -27895,26 +27957,43 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
-const PopupButton = (0, _react.forwardRef)(({
-  children,
-  expanded,
-  hasPopup,
-  setExpanded,
-  ButtonComponent,
-  ...props
-}, ref) => {
-  const buttonRef = (0, _react.useRef)();
-  const [skipExpand, setSkipExpand] = (0, _react.useState)(false);
-  (0, _react.useImperativeHandle)(ref, () => ({
-    focus() {
-      buttonRef.current.focus();
-    },
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
 
-    contains(el) {
-      return buttonRef.current.contains(el);
-    }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
 
-  }));
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+var PopupButton = (0, _react.forwardRef)(function (_ref, ref) {
+  var children = _ref.children,
+      expanded = _ref.expanded,
+      hasPopup = _ref.hasPopup,
+      setExpanded = _ref.setExpanded,
+      ButtonComponent = _ref.ButtonComponent,
+      props = _objectWithoutProperties(_ref, ["children", "expanded", "hasPopup", "setExpanded", "ButtonComponent"]);
+
+  var buttonRef = (0, _react.useRef)();
+
+  var _useState = (0, _react.useState)(false),
+      _useState2 = _slicedToArray(_useState, 2),
+      skipExpand = _useState2[0],
+      setSkipExpand = _useState2[1];
+
+  (0, _react.useImperativeHandle)(ref, function () {
+    return {
+      focus: function focus() {
+        buttonRef.current.focus();
+      },
+      contains: function contains(el) {
+        return buttonRef.current.contains(el);
+      }
+    };
+  });
 
   function clickHandler() {
     if (!expanded && !skipExpand) {
@@ -27930,7 +28009,9 @@ const PopupButton = (0, _react.forwardRef)(({
     "aria-haspopup": hasPopup,
     "aria-expanded": expanded ? 'true' : null,
     onClick: clickHandler,
-    onMouseDown: () => expanded && setSkipExpand(true)
+    onMouseDown: function onMouseDown() {
+      return expanded && setSkipExpand(true);
+    }
   }, props), children);
 });
 exports.PopupButton = PopupButton;
@@ -27957,7 +28038,7 @@ exports.Context = void 0;
 
 var _react = require("react");
 
-const Context = (0, _react.createContext)();
+var Context = (0, _react.createContext)();
 exports.Context = Context;
 },{"react":"../node_modules/react/index.js"}],"../src/components/list_box.jsx":[function(require,module,exports) {
 "use strict";
@@ -27985,43 +28066,53 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
-const ListBox = (0, _react.forwardRef)(({
-  id,
-  setValue,
-  options,
-  valueIndex,
-  selectedIndex,
-  managedFocus,
-  ListBoxComponent,
-  GroupComponent,
-  OptionComponent,
-  ValueComponent,
-  ...props
-}, ref) => {
-  const listRef = (0, _react.useRef)();
-  const currentContext = (0, _react.useContext)(_context.Context);
-  (0, _react.useImperativeHandle)(ref, () => ({
-    focus() {
-      listRef.current.focus();
-    },
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
 
-    contains(el) {
-      return listRef.current.contains(el);
-    }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-  }));
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 
-  const onClick = newValue => e => {
-    if (e.button > 0) {
-      return;
-    }
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
-    setValue(newValue);
+var ListBox = (0, _react.forwardRef)(function (_ref, ref) {
+  var id = _ref.id,
+      setValue = _ref.setValue,
+      options = _ref.options,
+      valueIndex = _ref.valueIndex,
+      selectedIndex = _ref.selectedIndex,
+      managedFocus = _ref.managedFocus,
+      ListBoxComponent = _ref.ListBoxComponent,
+      GroupComponent = _ref.GroupComponent,
+      OptionComponent = _ref.OptionComponent,
+      ValueComponent = _ref.ValueComponent,
+      props = _objectWithoutProperties(_ref, ["id", "setValue", "options", "valueIndex", "selectedIndex", "managedFocus", "ListBoxComponent", "GroupComponent", "OptionComponent", "ValueComponent"]);
+
+  var listRef = (0, _react.useRef)();
+  var currentContext = (0, _react.useContext)(_context.Context);
+  (0, _react.useImperativeHandle)(ref, function () {
+    return {
+      focus: function focus() {
+        listRef.current.focus();
+      },
+      contains: function contains(el) {
+        return listRef.current.contains(el);
+      }
+    };
+  });
+
+  var onClick = function onClick(newValue) {
+    return function (e) {
+      if (e.button > 0) {
+        return;
+      }
+
+      setValue(newValue);
+    };
   };
 
-  const grouped = (0, _use_grouped.useGrouped)(options);
-  const selectedRef = (0, _react.useRef)();
-  (0, _react.useEffect)(() => {
+  var grouped = (0, _use_grouped.useGrouped)(options);
+  var selectedRef = (0, _react.useRef)();
+  (0, _react.useEffect)(function () {
     if (selectedRef.current && managedFocus) {
       selectedRef.current.focus();
     }
@@ -28032,49 +28123,49 @@ const ListBox = (0, _react.forwardRef)(({
       tabIndex: -1,
       ref: listRef,
       id: id
-    }, props), grouped.map(({
-      name,
-      children
-    }, i) => _react.default.createElement(_react.Fragment, {
-      key: name || i
-    }, name && _react.default.createElement(_context.Context.Provider, {
-      value: { ...currentContext,
-        group: {
-          name,
-          children
-        }
-      }
-    }, _react.default.createElement(GroupComponent, {
-      id: `${id}_group_${i}`
-    }, name)), children.map(option => {
-      const {
-        id: optionId,
-        index,
-        label,
-        key,
-        disabled,
-        data: _ignore,
-        ...more
-      } = option;
-      return (// eslint-disable-next-line jsx-a11y/click-events-have-key-events
-        _react.default.createElement(_context.Context.Provider, {
-          key: key || optionId,
-          value: { ...currentContext,
-            option
+    }, props), grouped.map(function (_ref2, i) {
+      var name = _ref2.name,
+          children = _ref2.children;
+      return _react.default.createElement(_react.Fragment, {
+        key: name || i
+      }, name && _react.default.createElement(_context.Context.Provider, {
+        value: _objectSpread({}, currentContext, {
+          group: {
+            name: name,
+            children: children
           }
-        }, _react.default.createElement(OptionComponent, _extends({
-          id: optionId,
-          role: "option",
-          tabIndex: -1,
-          "aria-selected": index === valueIndex ? 'true' : null,
-          "aria-disabled": disabled ? 'true' : null,
-          "data-focused": index === selectedIndex ? 'true' : null,
-          ref: index === selectedIndex ? selectedRef : null,
-          onClick: !disabled && onClick(option),
-          "aria-labelledby": `${id}_group_${i} ${optionId}`
-        }, more), _react.default.createElement(ValueComponent, null, label)))
-      );
-    }))))
+        })
+      }, _react.default.createElement(GroupComponent, {
+        id: "".concat(id, "_group_").concat(i)
+      }, name)), children.map(function (option) {
+        var optionId = option.id,
+            index = option.index,
+            label = option.label,
+            key = option.key,
+            disabled = option.disabled,
+            _ignore = option.data,
+            more = _objectWithoutProperties(option, ["id", "index", "label", "key", "disabled", "data"]);
+
+        return (// eslint-disable-next-line jsx-a11y/click-events-have-key-events
+          _react.default.createElement(_context.Context.Provider, {
+            key: key || optionId,
+            value: _objectSpread({}, currentContext, {
+              option: option
+            })
+          }, _react.default.createElement(OptionComponent, _extends({
+            id: optionId,
+            role: "option",
+            tabIndex: -1,
+            "aria-selected": index === valueIndex ? 'true' : null,
+            "aria-disabled": disabled ? 'true' : null,
+            "data-focused": index === selectedIndex ? 'true' : null,
+            ref: index === selectedIndex ? selectedRef : null,
+            onClick: !disabled && onClick(option),
+            "aria-labelledby": name ? "".concat(id, "_group_").concat(i, " ").concat(optionId) : null
+          }, more), _react.default.createElement(ValueComponent, null, label)))
+        );
+      }));
+    }))
   );
 });
 exports.ListBox = ListBox;
@@ -28114,13 +28205,31 @@ var _reinspect = require("reinspect");
 
 var _react = require("react");
 
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 function useThunkReducer(reducer, props, initialState, name) {
-  const [state, dispatch] = (0, _reinspect.useReducer)(reducer, props, initialState, name);
-  const stateRef = (0, _react.useRef)(state);
-  const propsRef = (0, _react.useRef)(props);
+  var _useReducer = (0, _reinspect.useReducer)(reducer, props, initialState, name),
+      _useReducer2 = _slicedToArray(_useReducer, 2),
+      state = _useReducer2[0],
+      dispatch = _useReducer2[1];
+
+  var stateRef = (0, _react.useRef)(state);
+  var propsRef = (0, _react.useRef)(props);
   stateRef.current = state;
   propsRef.current = props;
-  const thunkDispatch = (0, _react.useCallback)(data => typeof data === 'function' ? data(thunkDispatch, () => stateRef.current, () => propsRef.current) : dispatch(data), []);
+  var thunkDispatch = (0, _react.useCallback)(function (data) {
+    return typeof data === 'function' ? data(thunkDispatch, function () {
+      return stateRef.current;
+    }, function () {
+      return propsRef.current;
+    }) : dispatch(data);
+  }, []);
   return [state, thunkDispatch];
 }
 },{"reinspect":"../node_modules/reinspect/dist/index.es.js","react":"../node_modules/react/index.js"}],"../src/helpers/next_in_list.js":[function(require,module,exports) {
@@ -28131,8 +28240,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.nextInList = nextInList;
 
-function nextInList(options, index = -1, allowEmpty = false) {
-  let i = index + 1;
+function nextInList(options) {
+  var index = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : -1;
+  var allowEmpty = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  var i = index + 1;
 
   if (i >= options.length) {
     if (allowEmpty) {
@@ -28152,8 +28263,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.previousInList = previousInList;
 
-function previousInList(options, index = -1, allowEmpty = false) {
-  let i = index - 1;
+function previousInList(options) {
+  var index = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : -1;
+  var allowEmpty = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  var i = index - 1;
 
   if (i === -1 && allowEmpty) {
     return null;
@@ -28183,7 +28296,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.rNonPrintableKey = void 0;
-const rNonPrintableKey = /^[A-Z][A-Za-z0-9]/;
+var rNonPrintableKey = /^[A-Z][A-Za-z0-9]/;
 exports.rNonPrintableKey = rNonPrintableKey;
 },{}],"../src/components/drop_down/actions.js":[function(require,module,exports) {
 "use strict";
@@ -28212,21 +28325,21 @@ var _equal_values = require("../../helpers/equal_values.js");
 
 var _r_non_printable_key = require("../../constants/r_non_printable_key.js");
 
-const SET_EXPANDED = 'SET_EXPANDED';
+var SET_EXPANDED = 'SET_EXPANDED';
 exports.SET_EXPANDED = SET_EXPANDED;
-const CLEAR_SEARCH = 'CLEAR_SEARCH';
+var CLEAR_SEARCH = 'CLEAR_SEARCH';
 exports.CLEAR_SEARCH = CLEAR_SEARCH;
-const SET_SEARCH_KEY = 'SET_SEARCH_KEY';
+var SET_SEARCH_KEY = 'SET_SEARCH_KEY';
 exports.SET_SEARCH_KEY = SET_SEARCH_KEY;
-const SET_SELECTED = 'SET_SELECTED';
+var SET_SELECTED = 'SET_SELECTED';
 exports.SET_SELECTED = SET_SELECTED;
-const SET_SELECTED_VALUE = 'SET_SELECTED_VALUE';
+var SET_SELECTED_VALUE = 'SET_SELECTED_VALUE';
 exports.SET_SELECTED_VALUE = SET_SELECTED_VALUE;
 
 function setExpanded(expanded) {
   return {
     type: SET_EXPANDED,
-    expanded
+    expanded: expanded
   };
 }
 
@@ -28239,30 +28352,30 @@ function clearSearch() {
 function setSearchKey(key) {
   return {
     type: SET_SEARCH_KEY,
-    key
+    key: key
   };
 }
 
 function setSelectedValue(selectedValue) {
   return {
     type: SET_SELECTED_VALUE,
-    selectedValue
+    selectedValue: selectedValue
   };
 }
 
 function setSelected(selectedValue) {
   return {
     type: SET_SELECTED,
-    selectedValue
+    selectedValue: selectedValue
   };
 }
 
 function onSelectValue(value) {
-  return (dispatch, getState, getProps) => {
-    const {
-      setValue,
-      buttonRef
-    } = getProps();
+  return function (dispatch, getState, getProps) {
+    var _getProps = getProps(),
+        setValue = _getProps.setValue,
+        buttonRef = _getProps.buttonRef;
+
     dispatch(setSelected(value));
     setValue(value);
     buttonRef.current.focus();
@@ -28270,15 +28383,13 @@ function onSelectValue(value) {
 }
 
 function onButtonKeyDown(event) {
-  return (dispatch, getState, getProps) => {
-    const {
-      value
-    } = getProps();
-    const {
-      metaKey,
-      ctrlKey,
-      key
-    } = event;
+  return function (dispatch, getState, getProps) {
+    var _getProps2 = getProps(),
+        value = _getProps2.value;
+
+    var metaKey = event.metaKey,
+        ctrlKey = event.ctrlKey,
+        key = event.key;
 
     if (metaKey || ctrlKey) {
       return;
@@ -28292,21 +28403,19 @@ function onButtonKeyDown(event) {
 }
 
 function onKeyDown(event) {
-  return (dispatch, getState, getProps) => {
-    const {
-      expanded,
-      selectedValue
-    } = getState();
-    const {
-      options,
-      buttonRef
-    } = getProps();
-    const {
-      altKey,
-      metaKey,
-      ctrlKey,
-      key
-    } = event;
+  return function (dispatch, getState, getProps) {
+    var _getState = getState(),
+        expanded = _getState.expanded,
+        selectedValue = _getState.selectedValue;
+
+    var _getProps3 = getProps(),
+        options = _getProps3.options,
+        buttonRef = _getProps3.buttonRef;
+
+    var altKey = event.altKey,
+        metaKey = event.metaKey,
+        ctrlKey = event.ctrlKey,
+        key = event.key;
 
     if (metaKey || ctrlKey) {
       return;
@@ -28319,7 +28428,9 @@ function onKeyDown(event) {
       return;
     }
 
-    const selectedIndex = selectedValue ? options.findIndex(o => o.value === selectedValue.value) : -1;
+    var selectedIndex = selectedValue ? options.findIndex(function (o) {
+      return o.value === selectedValue.value;
+    }) : -1;
 
     switch (key) {
       case 'ArrowUp':
@@ -28383,10 +28494,9 @@ function onKeyDown(event) {
 }
 
 function onToggleOpen(open) {
-  return (dispatch, getState, getProps) => {
-    const {
-      value
-    } = getProps();
+  return function (dispatch, getState, getProps) {
+    var _getProps4 = getProps(),
+        value = _getProps4.value;
 
     if (open) {
       dispatch(setSelectedValue(value));
@@ -28397,30 +28507,28 @@ function onToggleOpen(open) {
 }
 
 function onFocus() {
-  return (dispatch, getState, getProps) => {
-    const {
-      expanded
-    } = getState();
+  return function (dispatch, getState, getProps) {
+    var _getState2 = getState(),
+        expanded = _getState2.expanded;
 
     if (expanded) {
       return;
     }
 
-    const {
-      value
-    } = getProps();
+    var _getProps5 = getProps(),
+        value = _getProps5.value;
+
     dispatch(setSelectedValue(value));
   };
 }
 
 function onBlur() {
-  return (dispatch, getState, getProps) => {
-    const {
-      value
-    } = getProps();
-    const {
-      selectedValue
-    } = getState();
+  return function (dispatch, getState, getProps) {
+    var _getProps6 = getProps(),
+        value = _getProps6.value;
+
+    var _getState3 = getState(),
+        selectedValue = _getState3.selectedValue;
 
     if (!(0, _equal_values.equalValues)(value, selectedValue)) {
       dispatch(onSelectValue(selectedValue));
@@ -28439,42 +28547,46 @@ exports.reducer = reducer;
 
 var _actions = require("./actions.js");
 
-function reducer(state, {
-  type,
-  expanded,
-  key,
-  selectedValue
-}) {
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function reducer(state, _ref) {
+  var type = _ref.type,
+      expanded = _ref.expanded,
+      key = _ref.key,
+      selectedValue = _ref.selectedValue;
+
   switch (type) {
     case _actions.SET_EXPANDED:
-      return { ...state,
-        expanded
-      };
+      return _objectSpread({}, state, {
+        expanded: expanded
+      });
 
     case _actions.CLEAR_SEARCH:
-      return { ...state,
+      return _objectSpread({}, state, {
         search: ''
-      };
+      });
 
     case _actions.SET_SEARCH_KEY:
-      return { ...state,
+      return _objectSpread({}, state, {
         search: (state.search || '') + key
-      };
+      });
 
     case _actions.SET_SELECTED:
-      return { ...state,
+      return _objectSpread({}, state, {
         expanded: false,
-        selectedValue
-      };
+        selectedValue: selectedValue
+      });
 
     case _actions.SET_SELECTED_VALUE:
-      return { ...state,
-        selectedValue,
+      return _objectSpread({}, state, {
+        selectedValue: selectedValue,
         expanded: true
-      };
+      });
 
     default:
-      throw new Error(`${type} unknown`);
+      throw new Error("".concat(type, " unknown"));
   }
 }
 },{"./actions.js":"../src/components/drop_down/actions.js"}],"../src/components/drop_down/initial_state.js":[function(require,module,exports) {
@@ -28485,9 +28597,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.initialState = initialState;
 
-function initialState({
-  value
-}) {
+function initialState(_ref) {
+  var value = _ref.value;
   return {
     expanded: false,
     search: '',
@@ -28504,15 +28615,16 @@ exports.useSelectedIndex = useSelectedIndex;
 
 var _react = require("react");
 
-function useSelectedIndex({
-  options,
-  selectedValue
-}) {
-  return (0, _react.useMemo)(() => {
-    let selectedIndex = -1;
+function useSelectedIndex(_ref) {
+  var options = _ref.options,
+      selectedValue = _ref.selectedValue;
+  return (0, _react.useMemo)(function () {
+    var selectedIndex = -1;
 
     if (selectedValue) {
-      selectedIndex = options.findIndex(o => o.value === selectedValue.value);
+      selectedIndex = options.findIndex(function (o) {
+        return o.value === selectedValue.value;
+      });
     }
 
     return selectedIndex;
@@ -28529,20 +28641,22 @@ exports.useOnBlur = useOnBlur;
 var _react = require("react");
 
 function useOnBlur(fn, ref) {
-  const onBlur = (0, _react.useCallback)(() => {
-    setTimeout(() => {
+  var onBlur = (0, _react.useCallback)(function () {
+    setTimeout(function () {
       if (!ref.current.contains(document.activeElement)) {
         fn();
       }
     }, 0);
   }, [fn, ref]);
-  (0, _react.useEffect)(() => {
+  (0, _react.useEffect)(function () {
     window.addEventListener('focus', onBlur, {
       passive: true
     });
-    return () => window.removeEventListener('focus', onBlur, {
-      passive: true
-    });
+    return function () {
+      return window.removeEventListener('focus', onBlur, {
+        passive: true
+      });
+    };
   }, [onBlur]);
   return onBlur;
 }
@@ -28553,11 +28667,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.tokenise = void 0;
-const rAccent = /[\u0300-\u036f]/g;
-const rSpace = /\s+/;
-const rPunctuation = /['"()/\\\-.,!@$%^&*{}[\]:;~`<>?‹›«»‘’“”–]/g;
+var rAccent = /[\u0300-\u036f]/g;
+var rSpace = /\s+/;
+var rPunctuation = /['"()/\\\-.,!@$%^&*{}[\]:;~`<>?‹›«»‘’“”–]/g;
 
-const toNormalizedString = value => {
+var toNormalizedString = function toNormalizedString(value) {
   if (value === null || value === undefined) {
     return '';
   }
@@ -28571,7 +28685,9 @@ const toNormalizedString = value => {
   return String(value);
 };
 
-const tokenise = item => toNormalizedString(item).toLowerCase().replace(rPunctuation, ' ').split(rSpace).filter(Boolean);
+var tokenise = function tokenise(item) {
+  return toNormalizedString(item).toLowerCase().replace(rPunctuation, ' ').split(rSpace).filter(Boolean);
+};
 
 exports.tokenise = tokenise;
 },{}],"../src/helpers/make_search.js":[function(require,module,exports) {
@@ -28586,17 +28702,24 @@ var _tokenise = require("./tokenise.js");
 
 var _optionise = require("./optionise.js");
 
-const makeSearch = options => {
-  const indexed = options.map(_optionise.optionise).map(({
-    label
-  }) => label).map(_tokenise.tokenise);
-  return query => {
+var makeSearch = function makeSearch(options) {
+  var indexed = options.map(_optionise.optionise).map(function (_ref) {
+    var label = _ref.label;
+    return label;
+  }).map(_tokenise.tokenise);
+  return function (query) {
     if (!query || !query.trim()) {
       return options;
     }
 
-    const tokenised = (0, _tokenise.tokenise)(query);
-    return indexed.map((tokens, i) => tokenised.every(token => tokens.some(part => part.indexOf(token) === 0)) ? options[i] : null).filter(Boolean);
+    var tokenised = (0, _tokenise.tokenise)(query);
+    return indexed.map(function (tokens, i) {
+      return tokenised.every(function (token) {
+        return tokens.some(function (part) {
+          return part.indexOf(token) === 0;
+        });
+      }) ? options[i] : null;
+    }).filter(Boolean);
   };
 };
 
@@ -28643,82 +28766,115 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
-function DropDown({
-  ButtonComponent,
-  ListBoxComponent,
-  OptionComponent,
-  GroupComponent,
-  ValueComponent,
-  ...rawProps
-}) {
-  const optionisedProps = (0, _use_optionised_props.useOptionisedProps)(rawProps);
-  const {
-    options,
-    value,
-    valueIndex,
-    setValue,
-    blank,
-    id,
-    children
-  } = optionisedProps;
-  const buttonRef = (0, _react.useRef)();
-  const listRef = (0, _react.useRef)();
-  const [state, dispatch] = (0, _use_thunk_reducer.useThunkReducer)(_reducer.reducer, { ...optionisedProps,
-    buttonRef
-  }, _initial_state.initialState, id);
-  const {
-    expanded,
-    search,
-    selectedValue
-  } = state;
-  const selectedIndex = (0, _use_selected_index.useSelectedIndex)({
-    options,
-    selectedValue
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function DropDown(_ref) {
+  var ButtonComponent = _ref.ButtonComponent,
+      ListBoxComponent = _ref.ListBoxComponent,
+      OptionComponent = _ref.OptionComponent,
+      GroupComponent = _ref.GroupComponent,
+      ValueComponent = _ref.ValueComponent,
+      rawProps = _objectWithoutProperties(_ref, ["ButtonComponent", "ListBoxComponent", "OptionComponent", "GroupComponent", "ValueComponent"]);
+
+  var optionisedProps = (0, _use_optionised_props.useOptionisedProps)(rawProps);
+  var options = optionisedProps.options,
+      value = optionisedProps.value,
+      valueIndex = optionisedProps.valueIndex,
+      setValue = optionisedProps.setValue,
+      blank = optionisedProps.blank,
+      id = optionisedProps.id,
+      children = optionisedProps.children;
+  var buttonRef = (0, _react.useRef)();
+  var listRef = (0, _react.useRef)();
+
+  var _useReducer = (0, _use_thunk_reducer.useThunkReducer)(_reducer.reducer, _objectSpread({}, optionisedProps, {
+    buttonRef: buttonRef
+  }), _initial_state.initialState, id),
+      _useReducer2 = _slicedToArray(_useReducer, 2),
+      state = _useReducer2[0],
+      dispatch = _useReducer2[1];
+
+  var expanded = state.expanded,
+      search = state.search,
+      selectedValue = state.selectedValue;
+  var selectedIndex = (0, _use_selected_index.useSelectedIndex)({
+    options: options,
+    selectedValue: selectedValue
   });
-  const onBlurHandler = (0, _use_on_blur.useOnBlur)(() => dispatch((0, _actions.onBlur)()), listRef);
-  (0, _react.useLayoutEffect)(() => {
+  var onBlurHandler = (0, _use_on_blur.useOnBlur)(function () {
+    return dispatch((0, _actions.onBlur)());
+  }, listRef);
+  (0, _react.useLayoutEffect)(function () {
     if (expanded) {
       listRef.current.focus();
     }
   }, [expanded]);
-  const searcher = (0, _react.useMemo)(() => (0, _make_search.makeSearch)(options), [options]);
-  (0, _react.useEffect)(() => {
+  var searcher = (0, _react.useMemo)(function () {
+    return (0, _make_search.makeSearch)(options);
+  }, [options]);
+  (0, _react.useEffect)(function () {
     if (!search) {
       return undefined;
     }
 
-    const found = searcher(search);
+    var found = searcher(search);
 
     if (found && found.length) {
       dispatch((0, _actions.setSelectedValue)(found[0]));
     }
 
-    const timeout = setTimeout(() => dispatch((0, _actions.clearSearch)()), 1000);
-    return () => clearTimeout(timeout);
+    var timeout = setTimeout(function () {
+      return dispatch((0, _actions.clearSearch)());
+    }, 1000);
+    return function () {
+      return clearTimeout(timeout);
+    };
   }, [options, searcher, search, setValue]);
   return _react.default.createElement(_context.Context.Provider, {
-    value: {
-      dispatch,
-      ...optionisedProps,
-      ...state
-    }
+    value: _objectSpread({
+      dispatch: dispatch
+    }, optionisedProps, state)
   }, _react.default.createElement(_popup_button.PopupButton, {
     ref: buttonRef,
     hasPopup: "listbox",
     expanded: expanded,
-    setExpanded: newExpanded => dispatch((0, _actions.onToggleOpen)(newExpanded)),
-    onKeyDown: e => dispatch((0, _actions.onButtonKeyDown)(e)),
+    setExpanded: function setExpanded(newExpanded) {
+      return dispatch((0, _actions.onToggleOpen)(newExpanded));
+    },
+    onKeyDown: function onKeyDown(e) {
+      return dispatch((0, _actions.onButtonKeyDown)(e));
+    },
     ButtonComponent: ButtonComponent,
     id: id
   }, children || value && value.label || blank), _react.default.createElement(_list_box.ListBox, {
-    id: `${id}_listbox`,
+    id: "".concat(id, "_listbox"),
     options: options,
     hidden: !expanded,
     ref: listRef,
-    onFocus: e => dispatch((0, _actions.onFocus)(e)),
+    onFocus: function onFocus(e) {
+      return dispatch((0, _actions.onFocus)(e));
+    },
     onBlur: onBlurHandler,
-    onKeyDown: e => dispatch((0, _actions.onKeyDown)(e)),
-    setValue: newValue => dispatch((0, _actions.onSelectValue)(newValue)),
+    onKeyDown: function onKeyDown(e) {
+      return dispatch((0, _actions.onKeyDown)(e));
+    },
+    setValue: function setValue(newValue) {
+      return dispatch((0, _actions.onSelectValue)(newValue));
+    },
     valueIndex: valueIndex,
     selectedIndex: selectedIndex,
     blank: blank,
@@ -28774,13 +28930,15 @@ var _drop_down = require("./drop_down.jsx");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function Inspector({
-  children,
-  ...props
-}) {
-  const {
-    id
-  } = props;
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function Inspector(_ref) {
+  var children = _ref.children,
+      props = _objectWithoutProperties(_ref, ["children"]);
+
+  var id = props.id;
   return _react.default.createElement(_reinspect.StateInspector, {
     name: id
   }, _react.default.createElement(_drop_down.DropDown, props, children));
@@ -28813,23 +28971,40 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
-function DropDownField({
-  label,
-  ...props
-}) {
-  const {
-    value: initialValue
-  } = props;
-  const [value, setValue] = (0, _react.useState)(initialValue);
-  const id = label.trim().toLowerCase().replace(/[^a-z]+/ig, '_').toLowerCase();
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function DropDownField(_ref) {
+  var label = _ref.label,
+      props = _objectWithoutProperties(_ref, ["label"]);
+
+  var initialValue = props.value;
+
+  var _useState = (0, _react.useState)(initialValue),
+      _useState2 = _slicedToArray(_useState, 2),
+      value = _useState2[0],
+      _setValue = _useState2[1];
+
+  var id = label.trim().toLowerCase().replace(/[^a-z]+/ig, '_').toLowerCase();
   return _react.default.createElement(_react.default.Fragment, null, _react.default.createElement("label", {
     htmlFor: id
   }, label), _react.default.createElement(_index.DropDown, _extends({
     id: id,
-    "aria-labelledby": `label_${id} ${id}`
+    "aria-labelledby": "label_".concat(id, " ").concat(id)
   }, props, {
     value: value,
-    setValue: newValue => setValue(newValue)
+    setValue: function setValue(newValue) {
+      return _setValue(newValue);
+    }
   })));
 }
 
@@ -28880,48 +29055,47 @@ var _r_non_printable_key = require("../../constants/r_non_printable_key.js");
 
 var _only_option_is_selected = require("../../helpers/only_option_is_selected.js");
 
-const SET_ACTIVE = 'SET_ACTIVE';
+var SET_ACTIVE = 'SET_ACTIVE';
 exports.SET_ACTIVE = SET_ACTIVE;
-const SET_EXPANDED = 'SET_EXPANDED';
+var SET_EXPANDED = 'SET_EXPANDED';
 exports.SET_EXPANDED = SET_EXPANDED;
-const SET_INACTIVE = 'SET_INACTIVE';
+var SET_INACTIVE = 'SET_INACTIVE';
 exports.SET_INACTIVE = SET_INACTIVE;
-const SET_SELECTED = 'SET_SELECTED';
+var SET_SELECTED = 'SET_SELECTED';
 exports.SET_SELECTED = SET_SELECTED;
-const SET_SELECTED_VALUE = 'SET_SELECTED_VALUE';
+var SET_SELECTED_VALUE = 'SET_SELECTED_VALUE';
 exports.SET_SELECTED_VALUE = SET_SELECTED_VALUE;
 
 function setExpanded(expanded) {
   return {
     type: SET_EXPANDED,
-    expanded
+    expanded: expanded
   };
 }
 
-function setActive({
-  search,
-  selectedValue,
-  expanded
-}) {
+function setActive(_ref) {
+  var search = _ref.search,
+      selectedValue = _ref.selectedValue,
+      expanded = _ref.expanded;
   return {
     type: SET_ACTIVE,
-    search,
-    selectedValue,
-    expanded
+    search: search,
+    selectedValue: selectedValue,
+    expanded: expanded
   };
 }
 
 function setInactive(selectedValue) {
   return {
     type: SET_INACTIVE,
-    selectedValue
+    selectedValue: selectedValue
   };
 }
 
 function setSelected(selectedValue) {
   return {
     type: SET_SELECTED,
-    selectedValue,
+    selectedValue: selectedValue,
     search: selectedValue ? selectedValue.label : ''
   };
 }
@@ -28929,16 +29103,16 @@ function setSelected(selectedValue) {
 function setSelectedValue(selectedValue) {
   return {
     type: SET_SELECTED_VALUE,
-    selectedValue
+    selectedValue: selectedValue
   };
 }
 
 function onSelectValue(value) {
-  return (dispatch, getState, getProps) => {
-    const {
-      setValue,
-      onSearch
-    } = getProps();
+  return function (dispatch, getState, getProps) {
+    var _getProps = getProps(),
+        setValue = _getProps.setValue,
+        onSearch = _getProps.onSearch;
+
     dispatch(setSelected(value));
     setValue(value);
     onSearch(value ? value.label : '');
@@ -28946,26 +29120,24 @@ function onSelectValue(value) {
 }
 
 function onKeyDown(event) {
-  return (dispatch, getState, getProps) => {
-    const {
-      search,
-      expanded,
-      selectedValue,
-      listBoxFocused
-    } = getState();
-    const {
-      busy,
-      options,
-      value,
-      managedFocus,
-      inputRef
-    } = getProps();
-    const {
-      altKey,
-      metaKey,
-      ctrlKey,
-      key
-    } = event;
+  return function (dispatch, getState, getProps) {
+    var _getState = getState(),
+        search = _getState.search,
+        expanded = _getState.expanded,
+        selectedValue = _getState.selectedValue,
+        listBoxFocused = _getState.listBoxFocused;
+
+    var _getProps2 = getProps(),
+        busy = _getProps2.busy,
+        options = _getProps2.options,
+        value = _getProps2.value,
+        managedFocus = _getProps2.managedFocus,
+        inputRef = _getProps2.inputRef;
+
+    var altKey = event.altKey,
+        metaKey = event.metaKey,
+        ctrlKey = event.ctrlKey,
+        key = event.key;
 
     if (metaKey || ctrlKey) {
       return;
@@ -28981,7 +29153,9 @@ function onKeyDown(event) {
       return;
     }
 
-    const selectedIndex = selectedValue ? options.findIndex(o => o.value === selectedValue.value) : -1;
+    var selectedIndex = selectedValue ? options.findIndex(function (o) {
+      return o.value === selectedValue.value;
+    }) : -1;
 
     switch (key) {
       case 'ArrowUp':
@@ -29069,15 +29243,12 @@ function onKeyDown(event) {
 }
 
 function onChange(event) {
-  return (dispatch, getState, getProps) => {
-    const {
-      target: {
-        value
-      }
-    } = event;
-    const {
-      onSearch
-    } = getProps();
+  return function (dispatch, getState, getProps) {
+    var value = event.target.value;
+
+    var _getProps3 = getProps(),
+        onSearch = _getProps3.onSearch;
+
     dispatch(setActive({
       search: value,
       selectedValue: null,
@@ -29088,39 +29259,37 @@ function onChange(event) {
 }
 
 function onFocus() {
-  return (dispatch, getState, getProps) => {
-    const {
-      options,
-      value,
-      onSearch
-    } = getProps();
-    const {
-      focused
-    } = getState();
+  return function (dispatch, getState, getProps) {
+    var _getProps4 = getProps(),
+        options = _getProps4.options,
+        value = _getProps4.value,
+        onSearch = _getProps4.onSearch;
+
+    var _getState2 = getState(),
+        focused = _getState2.focused;
 
     if (focused) {
       return;
     }
 
-    const expanded = !(0, _only_option_is_selected.onlyOptionIsSelected)(options, value);
+    var expanded = !(0, _only_option_is_selected.onlyOptionIsSelected)(options, value);
     dispatch(setActive({
       search: value ? value.label : '',
       selectedValue: value,
-      expanded
+      expanded: expanded
     }));
     onSearch(value ? value.label : '');
   };
 }
 
 function onBlur() {
-  return (dispatch, getState, getProps) => {
-    const {
-      setValue,
-      value
-    } = getProps();
-    const {
-      selectedValue
-    } = getState();
+  return function (dispatch, getState, getProps) {
+    var _getProps5 = getProps(),
+        setValue = _getProps5.setValue,
+        value = _getProps5.value;
+
+    var _getState3 = getState(),
+        selectedValue = _getState3.selectedValue;
 
     if (!(0, _equal_values.equalValues)(value, selectedValue)) {
       dispatch(setInactive(selectedValue));
@@ -29140,52 +29309,56 @@ exports.reducer = reducer;
 
 var _actions = require("./actions.js");
 
-function reducer(state, {
-  type,
-  expanded,
-  search,
-  selectedValue
-}) {
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function reducer(state, _ref) {
+  var type = _ref.type,
+      expanded = _ref.expanded,
+      search = _ref.search,
+      selectedValue = _ref.selectedValue;
+
   switch (type) {
     case _actions.SET_ACTIVE:
-      return { ...state,
-        search,
-        expanded,
+      return _objectSpread({}, state, {
+        search: search,
+        expanded: expanded,
         listBoxFocused: false,
-        selectedValue,
+        selectedValue: selectedValue,
         focused: true
-      };
+      });
 
     case _actions.SET_INACTIVE:
-      return { ...state,
+      return _objectSpread({}, state, {
         expanded: false,
         focused: false,
         listBoxFocused: false
-      };
+      });
 
     case _actions.SET_EXPANDED:
-      return { ...state,
-        expanded,
+      return _objectSpread({}, state, {
+        expanded: expanded,
         listBoxFocused: expanded ? state.listBoxFocused : false
-      };
+      });
 
     case _actions.SET_SELECTED:
-      return { ...state,
+      return _objectSpread({}, state, {
         expanded: false,
-        selectedValue,
-        search,
+        selectedValue: selectedValue,
+        search: search,
         listBoxFocused: false
-      };
+      });
 
     case _actions.SET_SELECTED_VALUE:
-      return { ...state,
-        selectedValue,
+      return _objectSpread({}, state, {
+        selectedValue: selectedValue,
         expanded: true,
         listBoxFocused: !!selectedValue
-      };
+      });
 
     default:
-      throw new Error(`${type} unknown`);
+      throw new Error("".concat(type, " unknown"));
   }
 }
 },{"./actions.js":"../src/components/combo_box/actions.js"}],"../src/components/combo_box/initial_state.js":[function(require,module,exports) {
@@ -29196,9 +29369,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.initialState = initialState;
 
-function initialState({
-  value
-}) {
+function initialState(_ref) {
+  var value = _ref.value;
   return {
     expanded: false,
     search: '',
@@ -29215,8 +29387,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.joinTokens = joinTokens;
 
-function joinTokens(...names) {
-  return [].concat(...names).filter(Boolean).join(' ') || null;
+function joinTokens() {
+  var _ref;
+
+  return (_ref = []).concat.apply(_ref, arguments).filter(Boolean).join(' ') || null;
 }
 },{}],"../src/components/combo_box/combo_box.jsx":[function(require,module,exports) {
 "use strict";
@@ -29258,71 +29432,89 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
-function ComboBox({
-  ComboBoxComponent,
-  OptionComponent,
-  GroupComponent,
-  ListBoxComponent,
-  InputComponent,
-  SpinnerComponent,
-  NotFoundComponent,
-  InfoDescriptionComponent,
-  ClearButtonComponent,
-  OpenButtonComponent,
-  ValueComponent,
-  ...rawProps
-}) {
-  const comboRef = (0, _react.useRef)();
-  const inputRef = (0, _react.useRef)();
-  const optionisedProps = (0, _use_optionised_props.useOptionisedProps)({ ...rawProps
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function ComboBox(_ref) {
+  var ComboBoxComponent = _ref.ComboBoxComponent,
+      OptionComponent = _ref.OptionComponent,
+      GroupComponent = _ref.GroupComponent,
+      ListBoxComponent = _ref.ListBoxComponent,
+      InputComponent = _ref.InputComponent,
+      SpinnerComponent = _ref.SpinnerComponent,
+      NotFoundComponent = _ref.NotFoundComponent,
+      DescriptionComponent = _ref.DescriptionComponent,
+      ClearButtonComponent = _ref.ClearButtonComponent,
+      OpenButtonComponent = _ref.OpenButtonComponent,
+      ValueComponent = _ref.ValueComponent,
+      rawProps = _objectWithoutProperties(_ref, ["ComboBoxComponent", "OptionComponent", "GroupComponent", "ListBoxComponent", "InputComponent", "SpinnerComponent", "NotFoundComponent", "DescriptionComponent", "ClearButtonComponent", "OpenButtonComponent", "ValueComponent"]);
+
+  var comboRef = (0, _react.useRef)();
+  var inputRef = (0, _react.useRef)();
+  var optionisedProps = (0, _use_optionised_props.useOptionisedProps)(_objectSpread({}, rawProps));
+  var notFoundMessage = optionisedProps.notFoundMessage,
+      options = optionisedProps.options,
+      value = optionisedProps.value,
+      valueIndex = optionisedProps.valueIndex,
+      id = optionisedProps.id,
+      busy = optionisedProps.busy,
+      managedFocus = optionisedProps.managedFocus,
+      className = optionisedProps.className;
+
+  var _useReducer = (0, _use_thunk_reducer.useThunkReducer)(_reducer.reducer, _objectSpread({}, optionisedProps, {
+    inputRef: inputRef
+  }), _initial_state.initialState, id),
+      _useReducer2 = _slicedToArray(_useReducer, 2),
+      state = _useReducer2[0],
+      dispatch = _useReducer2[1];
+
+  var expanded = state.expanded,
+      search = state.search,
+      listBoxFocused = state.listBoxFocused,
+      selectedValue = state.selectedValue,
+      focused = state.focused;
+  var selectedIndex = (0, _use_selected_index.useSelectedIndex)({
+    options: options,
+    selectedValue: selectedValue
   });
-  const {
-    notFoundMessage,
-    options,
-    value,
-    valueIndex,
-    id,
-    busy,
-    managedFocus
-  } = optionisedProps;
-  const [state, dispatch] = (0, _use_thunk_reducer.useThunkReducer)(_reducer.reducer, { ...optionisedProps,
-    inputRef
-  }, _initial_state.initialState, id);
-  const {
-    expanded,
-    search,
-    listBoxFocused,
-    selectedValue,
-    focused
-  } = state;
-  const selectedIndex = (0, _use_selected_index.useSelectedIndex)({
-    options,
-    selectedValue
-  });
-  const activeId = listBoxFocused && selectedIndex > -1 ? selectedValue.id : null;
-  const showListBox = expanded && options.length;
-  const showNotFound = expanded && !options.length && search && search.trim();
-  const inputLabel = search !== null ? search : value && value.label || '';
-  const showBusy = busy && search !== (value && value.label);
-  const blur = (0, _use_on_blur.useOnBlur)(() => dispatch((0, _actions.onBlur)()), comboRef);
-  (0, _react.useEffect)(() => {
+  var activeId = listBoxFocused && selectedIndex > -1 ? selectedValue.id : null;
+  var showListBox = expanded && options.length;
+  var showNotFound = expanded && !options.length && search && search.trim();
+  var inputLabel = search !== null ? search : value && value.label || '';
+  var showBusy = busy && search !== (value && value.label);
+  var blur = (0, _use_on_blur.useOnBlur)(function () {
+    return dispatch((0, _actions.onBlur)());
+  }, comboRef);
+  (0, _react.useEffect)(function () {
     dispatch((0, _actions.setSelected)(value));
   }, [value]);
-  (0, _react.useEffect)(() => {
+  (0, _react.useEffect)(function () {
     if (managedFocus && !listBoxFocused && focused) {
       inputRef.current.focus();
     }
   }, [listBoxFocused, focused, managedFocus]);
   return _react.default.createElement(_context.Context.Provider, {
-    value: {
-      dispatch,
-      ...optionisedProps,
-      ...state
-    }
+    value: _objectSpread({
+      dispatch: dispatch
+    }, optionisedProps, state)
   }, _react.default.createElement(ComboBoxComponent, {
+    "aria-busy": showBusy ? 'true' : 'false',
+    className: className,
     onBlur: blur,
-    ref: comboRef,
-    "aria-busy": showBusy ? 'true' : 'false'
+    ref: comboRef
   }, _react.default.createElement(SpinnerComponent, {
     className: "spinner",
     hidden: !showBusy
@@ -29332,99 +29524,117 @@ function ComboBox({
     role: "combobox",
     "aria-autocomplete": "both",
     "aria-haspopup": "true",
-    "aria-owns": `${id}_list_box`,
+    "aria-owns": "".concat(id, "_list_box"),
     "aria-expanded": showListBox ? 'true' : 'false',
     "aria-activedescendant": activeId,
     "data-focused": focused ? 'true' : null,
     value: inputLabel,
-    onKeyDown: e => dispatch((0, _actions.onKeyDown)(e)),
-    onChange: e => dispatch((0, _actions.onChange)(e)),
-    onFocus: e => dispatch((0, _actions.onFocus)(e)),
-    "aria-describedby": (0, _join_tokens.joinTokens)(showNotFound && `${id}_not_found`, `${id}_info`),
+    onKeyDown: function onKeyDown(e) {
+      return dispatch((0, _actions.onKeyDown)(e));
+    },
+    onChange: function onChange(e) {
+      return dispatch((0, _actions.onChange)(e));
+    },
+    onFocus: function onFocus(e) {
+      return dispatch((0, _actions.onFocus)(e));
+    },
+    "aria-describedby": (0, _join_tokens.joinTokens)(showNotFound && "".concat(id, "_not_found"), "".concat(id, "_info")),
     autoComplete: "off",
     ref: inputRef
   }), _react.default.createElement(ClearButtonComponent, {
     type: "button",
-    onMouseDown: e => e.preventDefault(),
-    onClick: () => {
+    onMouseDown: function onMouseDown(e) {
+      return e.preventDefault();
+    },
+    onClick: function onClick() {
       inputRef.current.focus();
       dispatch((0, _actions.onSelectValue)(null));
     },
     hidden: !value,
     "aria-label": "Clear",
-    id: `${id}_clear_button`,
-    "aria-labelledby": `${id}_clear_button ${id}`
+    id: "".concat(id, "_clear_button"),
+    "aria-labelledby": "".concat(id, "_clear_button ").concat(id)
   }, "\xD7"), _react.default.createElement(OpenButtonComponent, {
-    onMouseDown: e => e.preventDefault(),
-    onClick: () => {
+    onMouseDown: function onMouseDown(e) {
+      return e.preventDefault();
+    },
+    onClick: function onClick() {
       inputRef.current.focus();
       dispatch((0, _actions.setExpanded)(true));
     },
     "aria-hidden": "true"
   }, "\u25BC"), _react.default.createElement(_list_box.ListBox, {
-    id: `${id}_list_box`,
+    id: "".concat(id, "_list_box"),
     options: options,
     hidden: !showListBox,
-    setValue: newValue => dispatch((0, _actions.onSelectValue)(newValue)),
+    setValue: function setValue(newValue) {
+      return dispatch((0, _actions.onSelectValue)(newValue));
+    },
     valueIndex: valueIndex,
     selectedIndex: selectedIndex,
-    onMouseDown: e => e.preventDefault(),
+    onMouseDown: function onMouseDown(e) {
+      return e.preventDefault();
+    },
     ListBoxComponent: ListBoxComponent,
     OptionComponent: OptionComponent,
     GroupComponent: GroupComponent,
     ValueComponent: ValueComponent,
-    onKeyDown: e => dispatch((0, _actions.onKeyDown)(e)),
+    onKeyDown: function onKeyDown(e) {
+      return dispatch((0, _actions.onKeyDown)(e));
+    },
     managedFocus: managedFocus && listBoxFocused
   }), _react.default.createElement(NotFoundComponent, {
-    id: `${id}_not_found`,
+    id: "".concat(id, "_not_found"),
     hidden: !showNotFound,
     role: "alert",
     "aria-live": "polite"
-  }, notFoundMessage), _react.default.createElement(InfoDescriptionComponent, {
-    id: `${id}_info`,
+  }, notFoundMessage), _react.default.createElement(DescriptionComponent, {
+    id: "".concat(id, "_info"),
     hidden: true
-  }, options.length && showListBox && `Found ${options.length} options`)));
+  }, options.length && showListBox && "Found ".concat(options.length, " options"))));
 }
 
 ComboBox.propTypes = {
   busy: _propTypes.default.bool,
+  className: _propTypes.default.string,
   id: _propTypes.default.string.isRequired,
+  managedFocus: _propTypes.default.bool,
   notFoundMessage: _propTypes.default.node,
+  onSearch: _propTypes.default.func.isRequired,
+  // eslint-disable-line react/no-unused-prop-types
   options: _options.options.isRequired,
   setValue: _propTypes.default.func.isRequired,
   // eslint-disable-line react/no-unused-prop-types
-  onSearch: _propTypes.default.func.isRequired,
-  // eslint-disable-line react/no-unused-prop-types
   value: _propTypes.default.any,
   // eslint-disable-line react/forbid-prop-types
-  managedFocus: _propTypes.default.bool,
-  ComboBoxComponent: _component.component,
-  InputComponent: _component.component,
-  SpinnerComponent: _component.component,
-  NotFoundComponent: _component.component,
-  InfoDescriptionComponent: _component.component,
   ClearButtonComponent: _component.component,
+  ComboBoxComponent: _component.component,
+  GroupComponent: _component.component,
+  DescriptionComponent: _component.component,
+  InputComponent: _component.component,
+  ListBoxComponent: _component.component,
+  NotFoundComponent: _component.component,
   OpenButtonComponent: _component.component,
   OptionComponent: _component.component,
-  GroupComponent: _component.component,
-  ListBoxComponent: _component.component,
+  SpinnerComponent: _component.component,
   ValueComponent: _component.component
 };
 ComboBox.defaultProps = {
   busy: null,
+  className: 'combobox',
+  managedFocus: true,
   notFoundMessage: 'No matches found',
   value: null,
-  managedFocus: true,
-  ComboBoxComponent: 'div',
-  InputComponent: 'input',
-  SpinnerComponent: 'span',
-  NotFoundComponent: 'div',
-  InfoDescriptionComponent: 'div',
   ClearButtonComponent: 'button',
+  ComboBoxComponent: 'div',
+  GroupComponent: undefined,
+  DescriptionComponent: 'div',
+  InputComponent: 'input',
+  ListBoxComponent: undefined,
+  NotFoundComponent: 'div',
   OpenButtonComponent: 'span',
   OptionComponent: undefined,
-  GroupComponent: undefined,
-  ListBoxComponent: undefined,
+  SpinnerComponent: 'span',
   ValueComponent: undefined
 };
 },{"react":"../node_modules/react/index.js","prop-types":"../node_modules/prop-types/index.js","../list_box.jsx":"../src/components/list_box.jsx","../../hooks/use_thunk_reducer.js":"../src/hooks/use_thunk_reducer.js","./reducer.js":"../src/components/combo_box/reducer.js","./initial_state.js":"../src/components/combo_box/initial_state.js","./actions.js":"../src/components/combo_box/actions.js","../../context.js":"../src/context.js","../../validators/options.js":"../src/validators/options.js","../../hooks/use_optionised_props.js":"../src/hooks/use_optionised_props.js","../../hooks/use_selected_index.js":"../src/hooks/use_selected_index.js","../../hooks/use_on_blur.js":"../src/hooks/use_on_blur.js","../../helpers/join_tokens.js":"../src/helpers/join_tokens.js","../../validators/component.js":"../src/validators/component.js"}],"../src/components/combo_box/index.jsx":[function(require,module,exports) {
@@ -29445,13 +29655,15 @@ var _combo_box = require("./combo_box.jsx");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function Inspector({
-  children,
-  ...props
-}) {
-  const {
-    id
-  } = props;
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function Inspector(_ref) {
+  var children = _ref.children,
+      props = _objectWithoutProperties(_ref, ["children"]);
+
+  var id = props.id;
   return _react.default.createElement(_reinspect.StateInspector, {
     name: id
   }, _react.default.createElement(_combo_box.ComboBox, props, children));
@@ -29478,12 +29690,29 @@ var _make_search = require("../helpers/make_search.js");
 
 var _optionise = require("../helpers/optionise.js");
 
-const useSearch = rawOptions => {
-  const options = (0, _react.useMemo)(() => rawOptions.map(_optionise.optionise), [rawOptions]);
-  const [filteredOptions, setFilteredOptions] = (0, _react.useState)(rawOptions);
-  const onSearch = (0, _react.useMemo)(() => {
-    const search = (0, _make_search.makeSearch)(options);
-    return query => setFilteredOptions(search(query));
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+var useSearch = function useSearch(rawOptions) {
+  var options = (0, _react.useMemo)(function () {
+    return rawOptions.map(_optionise.optionise);
+  }, [rawOptions]);
+
+  var _useState = (0, _react.useState)(rawOptions),
+      _useState2 = _slicedToArray(_useState, 2),
+      filteredOptions = _useState2[0],
+      setFilteredOptions = _useState2[1];
+
+  var onSearch = (0, _react.useMemo)(function () {
+    var search = (0, _make_search.makeSearch)(options);
+    return function (query) {
+      return setFilteredOptions(search(query));
+    };
   }, [options]);
   return [filteredOptions, onSearch];
 };
@@ -29505,11 +29734,20 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
-function Highlight({
-  children
-}) {
-  const parts = children.map(part => Array.isArray(part) ? _react.default.createElement("mark", null, part) : part);
-  return _react.default.createElement(_react.Fragment, null, ...parts);
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+function Highlight(_ref) {
+  var children = _ref.children;
+  var parts = children.map(function (part) {
+    return Array.isArray(part) ? _react.default.createElement("mark", null, part) : part;
+  });
+  return _react.default.createElement.apply(_react.default, [_react.Fragment, null].concat(_toConsumableArray(parts)));
 }
 
 Highlight.propTypes = {
@@ -29535,11 +29773,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
-function HighlightValue({
-  children: value,
-  highlight
-}) {
-  const state = (0, _react.useContext)(_context.Context);
+function HighlightValue(_ref) {
+  var value = _ref.children,
+      highlight = _ref.highlight;
+  var state = (0, _react.useContext)(_context.Context);
   return _react.default.createElement(_highlight.Highlight, null, highlight(value, state.search, state));
 }
 
@@ -29559,7 +29796,7 @@ exports.normaliseHighlight = normaliseHighlight;
  * Filters out empty strings and joins consecutive strings
  */
 function normaliseHighlight(highlight) {
-  let normalised = highlight.filter(Boolean).reduce((collection, part) => {
+  var normalised = highlight.filter(Boolean).reduce(function (collection, part) {
     if (part && typeof part === 'string' && typeof collection[0] === 'string') {
       collection[0] += part; // eslint-disable-line no-param-reassign
     } else if (part && part[0]) {
@@ -29571,7 +29808,9 @@ function normaliseHighlight(highlight) {
 
   if (String.prototype.normalize) {
     // Renormalise as Open Sans can't cope with canonical composition
-    normalised = normalised.map(item => typeof item === 'string' ? item.normalize('NFC') : [item[0].normalize('NFC')]);
+    normalised = normalised.map(function (item) {
+      return typeof item === 'string' ? item.normalize('NFC') : [item[0].normalize('NFC')];
+    });
   }
 
   return normalised.length ? normalised : [''];
@@ -29583,7 +29822,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.rAccent = void 0;
-const rAccent = /[\u0300-\u036f]/g;
+var rAccent = /[\u0300-\u036f]/g;
 exports.rAccent = rAccent;
 },{}],"../src/constants/r_punctuation.js":[function(require,module,exports) {
 "use strict";
@@ -29592,7 +29831,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.rPunctuation = void 0;
-const rPunctuation = /['"()/\\\-.,!@$%^&*{}[\]:;~`<>?‹›«»‘’“”–]/g;
+var rPunctuation = /['"()/\\\-.,!@$%^&*{}[\]:;~`<>?‹›«»‘’“”–]/g;
 exports.rPunctuation = rPunctuation;
 },{}],"../src/constants/r_space.js":[function(require,module,exports) {
 "use strict";
@@ -29601,7 +29840,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.rSpace = void 0;
-const rSpace = /\s+/;
+var rSpace = /\s+/;
 exports.rSpace = rSpace;
 },{}],"../src/highlighters/token_highlighter.js":[function(require,module,exports) {
 "use strict";
@@ -29633,14 +29872,14 @@ function tokenHighlighter(term, query) {
     term = term.normalize('NFD'); // eslint-disable-line no-param-reassign
   }
 
-  const tokenised = (0, _tokenise.tokenise)(query);
-  const result = [];
-  let cursor = 0;
-  let char = '';
-  let buffer = '';
-  let currentTerm = '';
-  let highlightEnds = 0;
-  let match; // Because of the accent and punctuation handling, a parser is the easiest approach
+  var tokenised = (0, _tokenise.tokenise)(query);
+  var result = [];
+  var cursor = 0;
+  var char = '';
+  var buffer = '';
+  var currentTerm = '';
+  var highlightEnds = 0;
+  var match; // Because of the accent and punctuation handling, a parser is the easiest approach
 
   do {
     char = term[cursor++] || ''; // eslint-disable-line no-plusplus
@@ -29672,7 +29911,9 @@ function tokenHighlighter(term, query) {
 
       currentTerm += char.toLowerCase(); // eslint-disable-next-line no-loop-func
 
-      match = tokenised.find(token => currentTerm.indexOf(token) === 0);
+      match = tokenised.find(function (token) {
+        return currentTerm.indexOf(token) === 0;
+      });
 
       if (match) {
         if (currentTerm.length <= match.length) {
@@ -29741,17 +29982,36 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
-function ComboBoxField({
-  label,
-  ...props
-}) {
-  const {
-    value: initialValue,
-    options: initialOptions
-  } = props;
-  const [value, setValue] = (0, _react.useState)(initialValue);
-  const [options, onSearch] = (0, _use_search.useSearch)(initialOptions);
-  const id = label.trim().replace(/[^a-z]+/ig, '_').toLowerCase();
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function ComboBoxField(_ref) {
+  var label = _ref.label,
+      props = _objectWithoutProperties(_ref, ["label"]);
+
+  var initialValue = props.value,
+      initialOptions = props.options;
+
+  var _useState = (0, _react.useState)(initialValue),
+      _useState2 = _slicedToArray(_useState, 2),
+      value = _useState2[0],
+      setValue = _useState2[1];
+
+  var _useSearch = (0, _use_search.useSearch)(initialOptions),
+      _useSearch2 = _slicedToArray(_useSearch, 2),
+      options = _useSearch2[0],
+      onSearch = _useSearch2[1];
+
+  var id = label.trim().replace(/[^a-z]+/ig, '_').toLowerCase();
   return _react.default.createElement(_react.default.Fragment, null, _react.default.createElement("label", {
     htmlFor: id
   }, label), _react.default.createElement(_index.ComboBox, _extends({
@@ -29789,21 +30049,23 @@ exports.debouncerFactory = debouncerFactory;
  * @param {Number} [options.maxDelay] do not delay a callback running longer than this
  * @returns {Function}
  */
-function debouncerFactory({
-  delay = 0,
-  maxDelay
-} = {}) {
-  let timeout;
-  let forceTimeout;
-  let force = false;
-  return fn => {
+function debouncerFactory() {
+  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      _ref$delay = _ref.delay,
+      delay = _ref$delay === void 0 ? 0 : _ref$delay,
+      maxDelay = _ref.maxDelay;
+
+  var timeout;
+  var forceTimeout;
+  var force = false;
+  return function (fn) {
     if (maxDelay && !forceTimeout) {
-      forceTimeout = setTimeout(() => {
+      forceTimeout = setTimeout(function () {
         force = true;
       }, maxDelay);
     }
 
-    const call = () => {
+    var call = function call() {
       force = false;
       clearTimeout(forceTimeout);
       forceTimeout = null;
@@ -29834,10 +30096,24 @@ var _optionise = require("../helpers/optionise.js");
 
 var _debouncer_factory = require("../helpers/debouncer_factory.js");
 
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function reduce(state, action) {
-  return { ...state,
-    ...action
-  };
+  return _objectSpread({}, state, action);
 }
 
 function init(initialOptions) {
@@ -29848,81 +30124,135 @@ function init(initialOptions) {
   };
 }
 
-const useAsyncSearch = (search, {
-  initialOptions = [],
-  cache = true,
-  debounce = 200
-} = {}) => {
-  const [{
-    options,
-    error,
-    busy
-  }, dispatch] = (0, _react.useReducer)(reduce, initialOptions, init);
-  const lastSearch = (0, _react.useRef)(null);
-  const [cacheMap] = (0, _react.useState)(new Map());
-  const [debouncer] = (0, _react.useState)(() => (0, _debouncer_factory.debouncerFactory)({
-    delay: debounce
-  }));
-  const onSearch = (0, _react.useCallback)(query => debouncer(async () => {
-    lastSearch.current = query;
-    const timeout = setTimeout(() => {
-      if (lastSearch.current === query) {
-        dispatch({
-          busy: true,
-          error: undefined
-        });
-      }
-    }, 200);
-    let results;
+var useAsyncSearch = function useAsyncSearch(search) {
+  var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      _ref$initialOptions = _ref.initialOptions,
+      initialOptions = _ref$initialOptions === void 0 ? [] : _ref$initialOptions,
+      _ref$cache = _ref.cache,
+      cache = _ref$cache === void 0 ? true : _ref$cache,
+      _ref$debounce = _ref.debounce,
+      debounce = _ref$debounce === void 0 ? 200 : _ref$debounce;
 
-    if (cache) {
-      results = cacheMap.get(query);
-    }
+  var _useReducer = (0, _react.useReducer)(reduce, initialOptions, init),
+      _useReducer2 = _slicedToArray(_useReducer, 2),
+      _useReducer2$ = _useReducer2[0],
+      options = _useReducer2$.options,
+      error = _useReducer2$.error,
+      busy = _useReducer2$.busy,
+      dispatch = _useReducer2[1];
 
-    if (results === undefined) {
-      try {
-        results = await search(query);
+  var lastSearch = (0, _react.useRef)(null);
 
-        if (cache) {
-          cacheMap.set(query, results);
+  var _useState = (0, _react.useState)(new Map()),
+      _useState2 = _slicedToArray(_useState, 1),
+      cacheMap = _useState2[0];
+
+  var _useState3 = (0, _react.useState)(function () {
+    return (0, _debouncer_factory.debouncerFactory)({
+      delay: debounce
+    });
+  }),
+      _useState4 = _slicedToArray(_useState3, 1),
+      debouncer = _useState4[0];
+
+  var onSearch = (0, _react.useCallback)(function (query) {
+    return debouncer(
+    /*#__PURE__*/
+    _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee() {
+      var timeout, results;
+      return regeneratorRuntime.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              lastSearch.current = query;
+              timeout = setTimeout(function () {
+                if (lastSearch.current === query) {
+                  dispatch({
+                    busy: true,
+                    error: undefined
+                  });
+                }
+              }, 200);
+
+              if (cache) {
+                results = cacheMap.get(query);
+              }
+
+              if (!(results === undefined)) {
+                _context.next = 17;
+                break;
+              }
+
+              _context.prev = 4;
+              _context.next = 7;
+              return search(query);
+
+            case 7:
+              results = _context.sent;
+
+              if (cache) {
+                cacheMap.set(query, results);
+              }
+
+              _context.next = 17;
+              break;
+
+            case 11:
+              _context.prev = 11;
+              _context.t0 = _context["catch"](4);
+              clearTimeout(timeout);
+              console.error(_context.t0); // eslint-disable-line no-console
+
+              dispatch({
+                busy: false,
+                error: _context.t0.message,
+                options: []
+              });
+              return _context.abrupt("return");
+
+            case 17:
+              // Discard out of sequence results
+              clearTimeout(timeout);
+
+              if (!(lastSearch.current !== query)) {
+                _context.next = 20;
+                break;
+              }
+
+              return _context.abrupt("return");
+
+            case 20:
+              dispatch({
+                busy: false
+              });
+
+              if (!(results === null)) {
+                _context.next = 23;
+                break;
+              }
+
+              return _context.abrupt("return");
+
+            case 23:
+              dispatch({
+                options: results.map(_optionise.optionise)
+              });
+
+            case 24:
+            case "end":
+              return _context.stop();
+          }
         }
-      } catch (e) {
-        clearTimeout(timeout);
-        console.error(e); // eslint-disable-line no-console
-
-        dispatch({
-          busy: false,
-          error: e.message,
-          options: []
-        });
-        return;
-      }
-    } // Discard out of sequence results
-
-
-    clearTimeout(timeout);
-
-    if (lastSearch.current !== query) {
-      return;
-    }
-
-    dispatch({
-      busy: false
-    });
-
-    if (results === null) {
-      return;
-    }
-
-    dispatch({
-      options: results.map(_optionise.optionise)
-    });
-  }), [debouncer, search, cacheMap, cache]);
+      }, _callee, null, [[4, 11]]);
+    })));
+  }, [debouncer, search, cacheMap, cache]);
   return {
-    options,
-    busy,
-    onSearch,
-    error
+    options: options,
+    busy: busy,
+    onSearch: onSearch,
+    error: error
   };
 };
 
@@ -29959,30 +30289,84 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
-function AsyncComboBoxField({
-  label,
-  ...props
-}) {
-  const {
-    value: initialValue,
-    options: initialOptions
-  } = props;
-  const [value, setValue] = (0, _react.useState)(initialValue);
-  const [search] = (0, _react.useState)(() => (0, _make_search.makeSearch)(_fruits.default));
-  const {
-    options,
-    busy,
-    onSearch,
-    error
-  } = (0, _use_async_search.useAsyncSearch)(async query => {
-    if (query === 'fail') {
-      throw new Error('failure');
-    }
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
-    await new Promise(resolve => setTimeout(resolve, Math.random() * 3000));
-    return search(query);
-  }, initialOptions);
-  const id = label.trim().replace(/[^a-z]+/ig, '_').toLowerCase();
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function AsyncComboBoxField(_ref) {
+  var label = _ref.label,
+      props = _objectWithoutProperties(_ref, ["label"]);
+
+  var initialValue = props.value,
+      initialOptions = props.options;
+
+  var _useState = (0, _react.useState)(initialValue),
+      _useState2 = _slicedToArray(_useState, 2),
+      value = _useState2[0],
+      setValue = _useState2[1];
+
+  var _useState3 = (0, _react.useState)(function () {
+    return (0, _make_search.makeSearch)(_fruits.default);
+  }),
+      _useState4 = _slicedToArray(_useState3, 1),
+      search = _useState4[0];
+
+  var _useAsyncSearch = (0, _use_async_search.useAsyncSearch)(
+  /*#__PURE__*/
+  function () {
+    var _ref2 = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee(query) {
+      return regeneratorRuntime.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              if (!(query === 'fail')) {
+                _context.next = 2;
+                break;
+              }
+
+              throw new Error('failure');
+
+            case 2:
+              _context.next = 4;
+              return new Promise(function (resolve) {
+                return setTimeout(resolve, Math.random() * 3000);
+              });
+
+            case 4:
+              return _context.abrupt("return", search(query));
+
+            case 5:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee);
+    }));
+
+    return function (_x) {
+      return _ref2.apply(this, arguments);
+    };
+  }(), initialOptions),
+      options = _useAsyncSearch.options,
+      busy = _useAsyncSearch.busy,
+      onSearch = _useAsyncSearch.onSearch,
+      error = _useAsyncSearch.error;
+
+  var id = label.trim().replace(/[^a-z]+/ig, '_').toLowerCase();
   return _react.default.createElement(_react.default.Fragment, null, _react.default.createElement("label", {
     htmlFor: id
   }, label), _react.default.createElement(_index.ComboBox, _extends({
@@ -30119,7 +30503,7 @@ var _examples = require("./examples.jsx");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const container = document.createElement('div');
+var container = document.createElement('div');
 document.body.appendChild(container);
 
 _reactDom.default.render(_react.default.createElement(_examples.Examples, null), container);
@@ -30151,7 +30535,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60339" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49284" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
