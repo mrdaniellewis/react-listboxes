@@ -1,4 +1,4 @@
 [hidden]{display:none!important}body{font:1em/1.5 sans-serif;padding-bottom:10em}.label,label{display:block;margin-top:1em}input,select,textarea{font-family:inherit;font-size:inherit}[role=option][data-focused]{font-weight:700}[aria-selected=true]::marker{content:"✓ "}[role=listbox]>:not([role=option]){list-style-type:none;margin-left:-2em}[aria-disabled=true]{opacity:.5}.spinner{vertical-align:middle;width:1em;height:1em;display:inline-block;margin-right:.2em;
   /*! https://fontawesome.com/license */background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M371 133a168 168 0 0 0-278 82c-1 5-6 9-12 9H24c-7 0-13-7-12-14A248 248 0 0 1 427 77l36-36c15-15 41-4 41 17v134c0 13-11 24-24 24H346c-21 0-32-26-17-41l42-42zM32 296h134c21 0 32 26 17 41l-42 42a168 168 0 0 0 278-82c1-5 6-9 12-9h57c7 0 13 7 12 14A248 248 0 0 1 85 435l-36 36c-15 15-41 4-41-17V320c0-13 11-24 24-24z'/%3E%3C/svg%3E");animation:spin 2s linear infinite}@keyframes spin{0%{transform:rotate(0deg)}to{transform:rotate(359deg)}}
 
-/*# sourceMappingURL=/styles.283eecdd.css.map */
+/*# sourceMappingURL=styles.283eecdd.css.map */
