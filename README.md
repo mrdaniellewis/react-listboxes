@@ -122,7 +122,6 @@ It is often desired to highlight the search results.
 ## TODO
 
 - menu
-  - pre-map options
   - divider
   - hover intent
 - drop down / combo-box

@@ -124,6 +124,7 @@ export function Examples() {
               disabled: true,
               onClick: () => console.log(2),
             },
+            <div role="separator" />,
             {
               label: 'Foe',
               onClick: () => console.log(3),
@@ -133,12 +134,13 @@ export function Examples() {
               onClick: () => console.log(4),
             },
             (
-              <a href="http://www.citizensadvice.org.uk" tabIndex={null}>
+              <a href="http://www.citizensadvice.org.uk" tabIndex={null} role={null}>
                  www.citizensadvice.org.uk
               </a>
             ),
           ]}
           id="menu"
+          openOnHover
         >
           Menu
         </MenuButton>

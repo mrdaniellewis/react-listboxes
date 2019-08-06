@@ -102,3 +102,25 @@ export function onKeyDown(event) {
     }
   };
 }
+
+export function onMouseEnter() {
+  return (dispatch, getState) => {
+    const { expanded } = getState();
+    if (expanded) {
+      return;
+    }
+
+    dispatch(setExpanded(true));
+  };
+}
+
+export function onMouseLeave() {
+  return (dispatch, getState) => {
+    const { expanded } = getState();
+    if (!expanded) {
+      return;
+    }
+
+    dispatch(setExpanded(false));
+  };
+}

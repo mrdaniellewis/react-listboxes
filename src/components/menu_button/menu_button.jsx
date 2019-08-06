@@ -1,26 +1,50 @@
-import React, { useRef, useLayoutEffect, Fragment, isValidElement } from 'react';
+import React, { useRef, useMemo, useEffect, useLayoutEffect, Fragment, isValidElement, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useThunkReducer as useReducer } from '../../hooks/use_thunk_reducer.js';
+import { usePrevious } from '../../hooks/use_previous.js';
 import { options as validateOptions } from '../../validators/options.js';
 import { reducer } from './reducer.js';
 import { initialState } from './initial_state.js';
 import { onButtonKeyDown, onKeyDown, setExpanded, onClick, setSelectedIndex } from './actions.js';
 import { Context } from '../../context.js';
 import { useOnBlur } from '../../hooks/use_on_blur.js';
+import { useHoverIntent } from '../../hooks/use_hover_intent.js';
+import { useOnMouseLeave } from '../../hooks/use_on_mouse_leave.js';
 import { component } from '../../validators/component.js';
 
 export function MenuButton({
   MenuButtonComponent, MenuComponent, MenuItemComponent, ButtonComponent,
   children, ...props
 }) {
-  const { options, id, managedFocus, ...componentProps } = props;
+  const { options: rawOptions, id, managedFocus, openOnHover, ...componentProps } = props;
+  const options = useMemo(() => rawOptions.map((option, index) => {
+    const derivedId = `${id}_option_${index}`;
+    if (isValidElement(option)) {
+      return { id: derivedId, ...option.props, Component: option.type };
+    }
+    return { id: derivedId, ...option };
+  }), [rawOptions, id]);
+
   const buttonRef = useRef();
   const menuRef = useRef();
   const selectedRef = useRef();
-  const [state, dispatch] = useReducer(reducer, { ...props, buttonRef }, initialState, id);
-  const { expanded, selectedIndex } = state;
 
-  const onBlurHandler = useOnBlur(() => dispatch(setExpanded(false)), menuRef);
+  const [state, dispatch] = useReducer(reducer, { ...props, options, buttonRef }, initialState, id);
+  const { expanded, selectedIndex } = state;
+  const selectedId = (selectedIndex > -1 && options[selectedIndex]?.id) || null;
+
+  const dispatchExpandedFalse = useCallback(() => dispatch(setExpanded(false)), []);
+  const dispatchExpandedTrue = useCallback(() => dispatch(setExpanded(true)), []);
+  const onBlurHandler = useOnBlur(dispatchExpandedFalse, menuRef);
+  const prevOptions = usePrevious(options);
+  const onMouseEnterHandler = useHoverIntent(dispatchExpandedTrue);
+  const onMouseLeaveHandler = useOnMouseLeave(dispatchExpandedFalse, buttonRef, menuRef);
+
+  useEffect(() => {
+    if (selectedIndex > -1 && prevOptions[selectedIndex]?.id !== options[selectedIndex]?.id) {
+      dispatch.setSelectedIndex(options.findIndex(o => o.id === prevOptions[selectedIndex]?.id));
+    }
+  }, [options, selectedIndex, prevOptions]);
 
   useLayoutEffect(() => {
     if (expanded && selectedRef.current && managedFocus) {
@@ -44,6 +68,8 @@ export function MenuButton({
           ref={buttonRef}
           onClick={() => dispatch(setExpanded(true))}
           onKeyDown={e => dispatch(onButtonKeyDown(e))}
+          onMouseEnter={openOnHover ? onMouseEnterHandler : null}
+          onMouseLeave={openOnHover ? onMouseLeaveHandler : null}
         >
           {children}
         </ButtonComponent>
@@ -55,36 +81,32 @@ export function MenuButton({
           hidden={!expanded}
           onBlur={onBlurHandler}
           onKeyDown={e => dispatch(onKeyDown(e))}
-          aria-activedescendant={selectedIndex > -1 ? options[selectedIndex].id : null}
+          aria-activedescendant={selectedId}
+          onMouseLeave={openOnHover ? onMouseLeaveHandler : null}
         >
           {options.map((option, index) => {
-            if (isValidElement(option)) {
-              option = { // eslint-disable-line no-param-reassign
-                ...option.props,
-                type: option.type,
-              };
-            }
-
             const {
-              type: Component = MenuItemComponent, label, key, id: optionId,
+              Component = MenuItemComponent, label, key, id: optionId,
               disabled, children: optionChildren, ...more
             } = option;
 
             return (
-              <Component
-                key={key || optionId || index}
-                id={optionId || `${id}_option_index`}
-                role="menuitem"
-                tabIndex={-1}
-                aria-disabled={disabled ? 'true' : null}
-                data-focused={index === selectedIndex ? 'true' : null}
-                ref={index === selectedIndex ? selectedRef : null}
-                {...more}
-                onClick={disabled ? null : () => dispatch(onClick(option))}
-                onFocus={() => dispatch(setSelectedIndex(index))}
-              >
-                {optionChildren || label}
-              </Component>
+              <Context.Provider key={key || id} value={{ dispatch, ...state, ...props, ...option }}>
+                <Component
+                  key={key || optionId || index}
+                  id={optionId || `${id}_option_index`}
+                  role="menuitem"
+                  tabIndex={-1}
+                  aria-disabled={disabled ? 'true' : null}
+                  data-focused={index === selectedIndex ? 'true' : null}
+                  ref={index === selectedIndex ? selectedRef : null}
+                  {...more}
+                  onClick={disabled ? null : () => dispatch(onClick(option))}
+                  onFocus={() => dispatch(setSelectedIndex(index))}
+                >
+                  {optionChildren || label}
+                </Component>
+              </Context.Provider>
             );
           })}
         </MenuComponent>
@@ -98,6 +120,7 @@ MenuButton.propTypes = {
   id: PropTypes.string.isRequired,
   options: validateOptions.isRequired,
   managedFocus: PropTypes.bool,
+  openOnHover: PropTypes.bool,
   ButtonComponent: component,
   MenuButtonComponent: component,
   MenuComponent: component,
@@ -107,6 +130,7 @@ MenuButton.propTypes = {
 MenuButton.defaultProps = {
   children: null,
   managedFocus: true,
+  openOnHover: false,
   ButtonComponent: 'button',
   MenuItemComponent: 'li',
   MenuComponent: 'ul',
