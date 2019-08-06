@@ -133,7 +133,7 @@ export function Examples() {
               onClick: () => console.log(4),
             },
             (
-              <a href="http://www.citizensadvice.org.uk">
+              <a href="http://www.citizensadvice.org.uk" tabIndex={null}>
                  www.citizensadvice.org.uk
               </a>
             ),

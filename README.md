@@ -122,12 +122,14 @@ It is often desired to highlight the search results.
 ## TODO
 
 - menu
-  - how to merge in a node? 
+  - pre-map options
   - divider
   - hover intent
-- drop down
+- drop down / combo-box
   - consolidate list box
+  - fix
   - focus on group
+  - change node to children
 - combo box
   - consolidate list box
 - validate options on listbox
@@ -139,6 +141,7 @@ It is often desired to highlight the search results.
 - ie11 only reading "clear" on clear button
 - labelledby passthrough
 - describedby passthough
+- do we still need data-focused?
 - class name generation
 - Styling
 - Positioning

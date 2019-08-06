@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect, Fragment } from 'react';
+import React, { useRef, useLayoutEffect, Fragment, isValidElement } from 'react';
 import PropTypes from 'prop-types';
 import { useThunkReducer as useReducer } from '../../hooks/use_thunk_reducer.js';
 import { options as validateOptions } from '../../validators/options.js';
@@ -58,29 +58,33 @@ export function MenuButton({
           aria-activedescendant={selectedIndex > -1 ? options[selectedIndex].id : null}
         >
           {options.map((option, index) => {
+            if (isValidElement(option)) {
+              option = { // eslint-disable-line no-param-reassign
+                ...option.props,
+                type: option.type,
+              };
+            }
+
             const {
-              id: optionId, label, key, disabled, node, ...more
+              type: Component = MenuItemComponent, label, key, id: optionId,
+              disabled, children: optionChildren, ...more
             } = option;
 
             return (
-              <Context.Provider
+              <Component
                 key={key || optionId || index}
-                value={{ dispatch, ...props, ...state, option }}
+                id={optionId || `${id}_option_index`}
+                role="menuitem"
+                tabIndex={-1}
+                aria-disabled={disabled ? 'true' : null}
+                data-focused={index === selectedIndex ? 'true' : null}
+                ref={index === selectedIndex ? selectedRef : null}
+                {...more}
+                onClick={disabled ? null : () => dispatch(onClick(option))}
+                onFocus={() => dispatch(setSelectedIndex(index))}
               >
-                <MenuItemComponent
-                  id={optionId}
-                  role="menuitem"
-                  tabIndex={-1}
-                  aria-disabled={disabled ? 'true' : null}
-                  data-focused={index === selectedIndex ? 'true' : null}
-                  ref={index === selectedIndex ? selectedRef : null}
-                  {...more}
-                  onClick={disabled ? null : () => dispatch(onClick(option))}
-                  onFocus={() => dispatch(setSelectedIndex(index))}
-                >
-                  {node || label}
-                </MenuItemComponent>
-              </Context.Provider>
+                {optionChildren || label}
+              </Component>
             );
           })}
         </MenuComponent>
