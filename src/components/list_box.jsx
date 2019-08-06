@@ -1,9 +1,9 @@
 import React, { forwardRef, Fragment, useRef, useImperativeHandle, useContext, useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
 import { options as validateOptions } from '../validators/options.js';
-import { useGrouped } from '../hooks/use_grouped.js';
 import { component } from '../validators/component.js';
 import { Context } from '../context.js';
+import { GROUP } from '../constants/group.js';
 
 export const ListBox = forwardRef((
   { id, setValue, options, valueIndex, selectedIndex, managedFocus, expanded,
@@ -31,7 +31,6 @@ export const ListBox = forwardRef((
     }
   );
 
-  const grouped = useGrouped(options);
   const selectedRef = useRef();
 
   useLayoutEffect(() => {
@@ -49,23 +48,20 @@ export const ListBox = forwardRef((
       id={id}
       {...props}
     >
-      {grouped.map(({ name, children }, i) => (
-        <Fragment key={name || i}>
-          {name && (
-            <Context.Provider value={{ ...currentContext, group: { name, children } }}>
-              <GroupComponent
-                id={`${id}_group_${i}`}
-              >
-                {name}
-              </GroupComponent>
-            </Context.Provider>
-          )}
-          {children.map((option) => {
-            const {
-              id: optionId, index, label, key, disabled, data: _1, onClick: _2, ...more
-            } = option;
-            return (
-              <Context.Provider key={key || optionId} value={{ ...currentContext, option }}>
+      {options.map((option, i) => {
+        const {
+          id: optionId, index, label, key, disabled, node, data: _1, onClick: _2, ...more
+        } = option;
+
+        return (
+          <Context.Provider key={key || i} value={{ ...currentContext, ...option }}>
+            {option.value === GROUP
+              ? (
+                <GroupComponent>
+                  {option.label}
+                </GroupComponent>
+              )
+              : (
                 <OptionComponent
                   id={optionId}
                   role="option"
@@ -75,18 +71,17 @@ export const ListBox = forwardRef((
                   data-focused={index === selectedIndex ? 'true' : null}
                   ref={index === selectedIndex ? selectedRef : null}
                   onClick={disabled ? null : onClick(option)}
-                  aria-labelledby={name ? `${id}_group_${i} ${optionId}` : null}
                   {...more}
                 >
                   <ValueComponent>
-                    {label}
+                    {node || label}
                   </ValueComponent>
                 </OptionComponent>
-              </Context.Provider>
-            );
-          })}
-        </Fragment>
-      ))}
+              )
+            }
+          </Context.Provider>
+        );
+      })}
     </ListBoxComponent>
   );
 });

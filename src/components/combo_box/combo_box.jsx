@@ -104,6 +104,7 @@ export function ComboBox({
         </OpenButtonComponent>
         <ListBox
           id={`${id}_list_box`}
+          expanded={expanded}
           options={options}
           hidden={!showListBox}
           setValue={newValue => dispatch(onSelectValue(newValue))}

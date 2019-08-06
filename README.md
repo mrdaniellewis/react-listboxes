@@ -121,16 +121,16 @@ It is often desired to highlight the search results.
 
 ## TODO
 
-- drop down
-  - fix mousedown issue
-  - remove popup button
-  - allow custom node?
-  - allow focusing on groups
-  - searcher should just be based on prefix
 - menu
+  - how to merge in a node? 
+  - divider
   - hover intent
-  - value is an array of nodes
-  - no hover on focus
+- drop down
+  - consolidate list box
+  - focus on group
+- combo box
+  - consolidate list box
+- validate options on listbox
 - auto-id
 - showing loader on delete?
 - errors if ref is missing

@@ -5,8 +5,8 @@ import { SelectField } from './select_field.jsx';
 import { DropDownField } from './drop_down_field.jsx';
 import { ComboBoxField } from './combo_box_field.jsx';
 import { AsyncComboBoxField } from './async_combo_box_field.jsx';
-import { Menu } from '../src/components/menu/index.jsx';
-import { NavigationMenu } from '../src/components/navigation_menu.jsx';
+import { MenuButton } from '../src/components/menu_button/index.jsx';
+import { NavigationMenuButton } from '../src/components/navigation_menu_button/navigation_menu_button.jsx';
 
 export function Examples() {
   return (
@@ -85,61 +85,92 @@ export function Examples() {
         options={['Foo', 'Bar', 'Foe', 'Fee']}
         blank="Please choose…"
       />
+      <DropDownField
+        label="Dropdown grouped"
+        value={1}
+        options={[
+          {
+            label: 'Foo',
+            value: 1,
+            group: 'One',
+          },
+          {
+            label: 'Boo',
+            value: 2,
+            disabled: true,
+            group: 'One',
+          },
+          {
+            label: 'Foe',
+            value: 3,
+            group: 'Two',
+          },
+          {
+            label: 'Thumb',
+            value: 4,
+            group: 'Two',
+          },
+        ]}
+      />
       <div>
-        <Menu
+        <MenuButton
           options={[
             {
               label: 'Foo',
-              value: 1,
               onClick: () => console.log(1),
             },
             {
               label: 'Boo',
-              value: 2,
               disabled: true,
               onClick: () => console.log(2),
             },
             {
               label: 'Foe',
-              value: 3,
-              group: 'Two',
               onClick: () => console.log(3),
             },
             {
               label: 'Thumb',
-              value: 4,
-              group: 'Two',
               onClick: () => console.log(4),
             },
+            (
+              <a href="http://www.citizensadvice.org.uk">
+                 www.citizensadvice.org.uk
+              </a>
+            ),
           ]}
           id="menu"
         >
           Menu
-        </Menu>
+        </MenuButton>
       </div>
       <div>
-        <NavigationMenu
+        <NavigationMenuButton
           options={[
             {
-              label: 'Example.com',
-              value: 1,
+              label: 'example.com',
               href: 'http://example.com',
+              tabIndex: null,
             },
             {
               label: 'bbc.co.uk',
-              value: 2,
               href: 'http://bbc.co.uk',
+              tabIndex: null,
+            },
+            {
+              label: 'bbc.co.uk',
+              href: 'http://bbc.co.uk',
+              tabIndex: null,
             },
             {
               label: 'wikipedia.org',
-              value: 3,
               href: 'http://wikipedia.org',
+              tabIndex: null,
             },
           ]}
-          id="navigation_menu"
+          id="menu"
         >
           Navigation menu
-        </NavigationMenu>
+        </NavigationMenuButton>
       </div>
       <ComboBoxField
         label="ComboBox"

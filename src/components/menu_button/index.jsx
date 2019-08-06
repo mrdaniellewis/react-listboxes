@@ -1,15 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { StateInspector } from '../../reinspect.js';
-import { Menu } from './menu.jsx';
+import { MenuButton } from './menu_button.jsx';
 
 function Inspector({ children, ...props }) {
   const { id } = props;
   return (
     <StateInspector name={id}>
-      <Menu {...props}>
+      <MenuButton {...props}>
         {children}
-      </Menu>
+      </MenuButton>
     </StateInspector>
   );
 }
@@ -23,4 +23,4 @@ Inspector.defaultProps = {
   children: null,
 };
 
-export { Inspector as Menu };
+export { Inspector as MenuButton };

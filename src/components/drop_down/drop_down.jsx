@@ -13,7 +13,7 @@ import { options as validateOptions } from '../../validators/options.js';
 import { useOptionisedProps } from '../../hooks/use_optionised_props.js';
 import { useSelectedIndex } from '../../hooks/use_selected_index.js';
 import { useOnBlur } from '../../hooks/use_on_blur.js';
-import { makeSearch } from '../../helpers/make_search.js';
+import { makePrefixSearch } from '../../helpers/make_prefix_search.js';
 import { component } from '../../validators/component.js';
 
 export function DropDown({
@@ -37,7 +37,7 @@ export function DropDown({
   const selectedIndex = useSelectedIndex({ options, selectedValue });
 
   const onBlurHandler = useOnBlur(() => dispatch(onBlur()), listRef);
-  const searcher = useMemo(() => makeSearch(options), [options]);
+  const searcher = useMemo(() => makePrefixSearch(options), [options]);
 
   useEffect(() => {
     if (!search) {
@@ -53,10 +53,10 @@ export function DropDown({
   }, [options, searcher, search, setValue]);
 
   useLayoutEffect(() => {
-    if (expanded) {
+    if (expanded && !(managedFocus && selectedValue)) {
       listRef.current.focus();
     }
-  }, [expanded]);
+  }, [expanded, managedFocus, selectedValue]);
 
   return (
     <Context.Provider value={{ dispatch, ...optionisedProps, ...state }}>
@@ -72,7 +72,6 @@ export function DropDown({
           ref={buttonRef}
           onClick={() => dispatch(onToggleOpen())}
           onKeyDown={e => dispatch(onButtonKeyDown(e))}
-          onMouseDown={() => dispatch(setButtonMouseDown(true))}
         >
           {children || (value && value.label) || blank}
         </ButtonComponent>

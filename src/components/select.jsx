@@ -1,14 +1,14 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { options as validateOptions } from '../validators/options.js';
 import { useOptionisedProps } from '../hooks/use_optionised_props.js';
-import { useGrouped } from '../hooks/use_grouped.js';
+import { reGroup } from '../helpers/re_group.js';
 
 export function Select(rawProps) {
   const {
     options, valueIndex, setValue, blank: _1, value: _2, ...props
   } = useOptionisedProps(rawProps);
-  const grouped = useGrouped(options);
+  const grouped = useMemo(() => reGroup(options), [options]);
 
   return (
     <select
@@ -16,7 +16,7 @@ export function Select(rawProps) {
       onChange={({ target: { value: index } }) => setValue(options[+index])}
       {...props}
     >
-      {grouped.map(({ name, children }) => {
+      {grouped.map(({ label: groupLabel, children }) => {
         const optionElements = children.map(({
           index, label, key, value: optionValue, ...more
         }) => (
@@ -28,9 +28,9 @@ export function Select(rawProps) {
             {label}
           </option>
         ));
-        if (name) {
+        if (groupLabel) {
           return (
-            <optgroup label={name} key={name}>
+            <optgroup label={groupLabel} key={groupLabel}>
               {optionElements}
             </optgroup>
           );

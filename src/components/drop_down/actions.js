@@ -133,10 +133,12 @@ export function onKeyDown(event) {
 
 export function onToggleOpen() {
   return (dispatch, getState, getProps) => {
-    const { expanded } = getState();
+    const { expanded, mouseDown } = getState();
     const { value } = getProps();
     if (expanded) {
       dispatch(setExpanded(false));
+    } else if (mouseDown) {
+      dispatch(setButtonMouseDown(false));
     } else {
       dispatch(setSelectedValue(value));
     }

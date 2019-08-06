@@ -16,6 +16,7 @@ export const options = PropTypes.arrayOf(PropTypes.oneOfType([
     value: PropTypes.any,
     label: PropTypes.string.isRequired,
     group: PropTypes.string,
+    node: PropTypes.node,
     id: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.number,

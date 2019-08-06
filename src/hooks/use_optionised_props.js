@@ -1,16 +1,20 @@
 import { useCallback, useMemo } from 'react';
 import { optionise } from '../helpers/optionise.js';
+import { groupOptions } from '../helpers/group_options.js';
 
 export const useOptionisedProps = ({
   id, options: rawOptions, value: rawValue, blank, setValue: rawSetValue, ...props
 }) => {
   const options = useMemo(
-    () => (
-      (blank
+    () => {
+      let newOptions = blank
         ? [{ value: null, label: blank, id: `${id}_blank` }, ...rawOptions]
-        : rawOptions
-      ).map((o, i) => ({ id: `${id}_${i}`, ...optionise(o) }))
-    ),
+        : rawOptions;
+      newOptions = newOptions.map(o => optionise(o));
+      newOptions = groupOptions(newOptions);
+      newOptions = newOptions.map((o, i) => ({ id: `${id}_${i}`, ...o }));
+      return newOptions;
+    },
     [id, rawOptions, blank],
   );
 
