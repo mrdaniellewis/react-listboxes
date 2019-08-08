@@ -1,11 +1,10 @@
 import React, { useRef, useEffect, useLayoutEffect, useMemo, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { ListBox } from '../list_box.jsx';
 import { useThunkReducer as useReducer } from '../../hooks/use_thunk_reducer.js';
 import { reducer } from './reducer.js';
 import { initialState } from './initial_state.js';
 import {
-  clearSearch, onKeyDown, setSelectedValue, onBlur, setButtonMouseDown,
+  clearSearch, onKeyDown, setSelectedValue, onBlur,
   onToggleOpen, onFocus, onButtonKeyDown, onClick,
 } from './actions.js';
 import { Context } from '../../context.js';
@@ -14,7 +13,8 @@ import { useOptionisedProps } from '../../hooks/use_optionised_props.js';
 import { useSelectedIndex } from '../../hooks/use_selected_index.js';
 import { useOnBlur } from '../../hooks/use_on_blur.js';
 import { makePrefixSearch } from '../../helpers/make_prefix_search.js';
-import { component } from '../../validators/component.js';
+import { componentCustomiser } from '../../validators/component_customiser.js';
+import { GROUP } from '../../constants/group.js';
 
 export function DropDown({
   ButtonComponent, ListBoxComponent, OptionComponent,
@@ -27,6 +27,8 @@ export function DropDown({
   } = optionisedProps;
   const buttonRef = useRef();
   const listRef = useRef();
+  const selectedRef = useRef();
+
   const [state, dispatch] = useReducer(
     reducer,
     { ...optionisedProps, buttonRef, listRef },
@@ -53,7 +55,9 @@ export function DropDown({
   }, [options, searcher, search, setValue]);
 
   useLayoutEffect(() => {
-    if (expanded && !(managedFocus && selectedValue)) {
+    if (expanded && selectedRef.current && managedFocus) {
+      selectedRef.current.focus();
+    } else if (expanded && !(managedFocus && selectedValue)) {
       listRef.current.focus();
     }
   }, [expanded, managedFocus, selectedValue]);
@@ -75,26 +79,55 @@ export function DropDown({
         >
           {children || (value && value.label) || blank}
         </ButtonComponent>
-        <ListBox
-          id={`${id}_listbox`}
-          options={options}
-          hidden={!expanded}
+        <ListBoxComponent
           ref={listRef}
+          id={`${id}_listbox`}
+          role="listbox"
+          tabIndex={-1}
+          hidden={!expanded}
+          aria-activedescendant={selectedIndex > -1 ? options[selectedIndex].id : null}
           onFocus={e => dispatch(onFocus(e))}
           onBlur={onBlurHandler}
           onKeyDown={e => dispatch(onKeyDown(e))}
-          setValue={newValue => dispatch(onClick(newValue))}
-          valueIndex={valueIndex}
-          selectedIndex={selectedIndex}
-          blank={blank}
-          aria-activedescendant={selectedIndex > -1 ? options[selectedIndex].id : null}
-          managedFocus={managedFocus}
-          expanded={expanded}
-          ListBoxComponent={ListBoxComponent}
-          OptionComponent={OptionComponent}
-          GroupComponent={GroupComponent}
-          ValueComponent={ValueComponent}
-        />
+        >
+          {options.map((option, i) => {
+            const {
+              id: optionId, index, label, key, disabled, node, data: _1, onClick: _2, ...more
+            } = option;
+
+            return (
+              <Context.Provider
+                key={key || i}
+                value={{ dispatch, ...optionisedProps, ...state, option }}
+              >
+                {option.value === GROUP
+                  ? (
+                    <GroupComponent>
+                      {option.label}
+                    </GroupComponent>
+                  )
+                  : (
+                    <OptionComponent
+                      id={optionId}
+                      role="option"
+                      tabIndex={-1}
+                      aria-selected={index === valueIndex ? 'true' : null}
+                      aria-disabled={disabled ? 'true' : null}
+                      data-focused={index === selectedIndex ? 'true' : null}
+                      ref={index === selectedIndex ? selectedRef : null}
+                      onClick={disabled ? null : e => onClick(e, option)}
+                      {...more}
+                    >
+                      <ValueComponent>
+                        {node || label}
+                      </ValueComponent>
+                    </OptionComponent>
+                  )
+                }
+              </Context.Provider>
+            );
+          })}
+        </ListBoxComponent>
       </DropDownComponent>
     </Context.Provider>
   );
@@ -108,12 +141,12 @@ DropDown.propTypes = {
   setValue: PropTypes.func.isRequired,
   value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
   managedFocus: PropTypes.bool,
-  ListBoxComponent: component,
-  ButtonComponent: component,
-  GroupComponent: component,
-  OptionComponent: component,
-  ValueComponent: component,
-  DropDownComponent: component,
+  ListBoxComponent: componentCustomiser,
+  ButtonComponent: componentCustomiser,
+  GroupComponent: componentCustomiser,
+  OptionComponent: componentCustomiser,
+  ValueComponent: componentCustomiser,
+  DropDownComponent: componentCustomiser,
 };
 
 DropDown.defaultProps = {
@@ -121,10 +154,10 @@ DropDown.defaultProps = {
   children: null,
   value: null,
   managedFocus: true,
-  ListBoxComponent: undefined,
+  ListBoxComponent: 'ul',
   ButtonComponent: 'button',
-  GroupComponent: undefined,
-  OptionComponent: undefined,
-  ValueComponent: undefined,
+  GroupComponent: 'li',
+  OptionComponent: 'li',
+  ValueComponent: Fragment,
   DropDownComponent: Fragment,
 };

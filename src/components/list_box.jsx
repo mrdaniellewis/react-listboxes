@@ -1,7 +1,7 @@
 import React, { forwardRef, Fragment, useRef, useImperativeHandle, useContext, useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
 import { options as validateOptions } from '../validators/options.js';
-import { component } from '../validators/component.js';
+import { componentCustomiser } from '../validators/component_customiser.js';
 import { Context } from '../context.js';
 import { GROUP } from '../constants/group.js';
 
@@ -95,10 +95,10 @@ ListBox.propTypes = {
   valueIndex: PropTypes.number,
   selectedIndex: PropTypes.number,
   managedFocus: PropTypes.bool,
-  ListBoxComponent: component,
-  OptionComponent: component,
-  GroupComponent: component,
-  ValueComponent: component,
+  ListBoxComponent: componentCustomiser,
+  OptionComponent: componentCustomiser,
+  GroupComponent: componentCustomiser,
+  ValueComponent: componentCustomiser,
 };
 
 ListBox.defaultProps = {

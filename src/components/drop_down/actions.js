@@ -172,8 +172,12 @@ export function onBlur() {
   };
 }
 
-export function onClick(value) {
+export function onClick(e, value) {
   return (dispatch, getState, getProps) => {
+    if (e.button > 0) {
+      return;
+    }
+
     const { buttonRef } = getProps();
     dispatch(onSelectValue(value));
     buttonRef.current.focus();

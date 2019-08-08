@@ -21,44 +21,52 @@ You can use [Redux Dev Tools](https://github.com/zalmoxisus/redux-devtools-exten
 
 ### Select
 
-This is a HTML `<select>`.  Unlike a standard react `<select>` it takes the options from an array
-and calls `setValue` with an object rather than a string.
+A HTML `<select>`.
+
+This uses the same options as `<DropDown>` and `<ComboBox>` and can use used interchangeably.
 
 This is stateless controlled component.  You must respond to `setValue` to update the selected value.
 
 ```js
+const [value, setValue] = useState(initialValue);
+
 <Select
   options={options}
   value={value}
-  setValue={value => useValue(value)}
+  setValue={value => setValue(value)}
 />
 ```
 
-| Prop               | Purpose                                          |
-| ----               | ----                                             |
-| blank              | Set a placeholder option                         |
-| options            | An array of options.  See below.                 |
-| value              | The `value` of the option to set                 |
-| setValue           | Will be called with the value of selected option |
-| Any other property | Will be added to the select element              |
+| Prop               | Type     | Purpose                             |
+| ----               | ----     | ----                                |
+| blank              | String   | Set a placeholder option            |
+| options            | Array    | The set of options.  See below.     |
+| value              | Any      | The currently selected option       |
+| setValue           | Function | Callback when the option changes    |
+| Any other property | -        | Will be added to the select element |
 
 #### Options
 
 Options is an array of either:
 - strings
 - numbers
-- an array that destructures as `[value, label]`
-- null or undefined - will be treated as an option with an empty label
+- an array that destructures as `[key, label]`
+- null or undefined - will be treated as a label with an empty string
+- an array of groups of options
 - an object with the following properties:
 
-| Prop               | Purpose                                       |
-| ----               | ----                                          |
-| value              | The value of the option                       |
-| label              | The label of the option                       |
-| group              | Group labels to generate `<optgroup>`s        |
-| disabled           | Set the option to disabled                    |
-| data               | This key is ignored and can store custom data |
-| Any other property | Will be added to the React option             |
+| Prop               | Type          | Purpose                                                   |
+| ----               | ----          | ----                                                      |
+| label              | String/Number | The label of the option (required)                        |
+| disabled           | Boolean       | Is the option disabled                                    |
+| group              | Option like   | Group the options                                         |
+| value              | String/Number | Option value. See key                                     |
+| id                 | String        | HTML id                                                   |
+| key                | String/Number | An option and value are considered equal if their keys match.  Defaults to `id | value | label` |
+| data               | Any           | This key is ignored and can store custom data             |
+| node               | Node          | Displayed instead of the label in a list of options       |
+| options            | Array         | If preset the option will be treated as a group           |
+| Any other property | -             | Will be added to the React option                         |
 
 ### Drop down
 
@@ -66,16 +74,17 @@ Produces a listbox opened by a button. It is equivalent to a custom HTML `<selec
 
 In ARIA terms, it is a `<button>` `aria-haspopup` of `menu` that opens a listbox.
 
-The interaction pattern is the same as the [aria practices collapsible dropdown example](https://www.w3.org/TR/wai-aria-practices/examples/listbox/listbox-collapsible.html)
+The interaction pattern is the same as the [aria practices collapsible dropdown example](https://www.w3.org/TR/wai-aria-practices/examples/listbox/listbox-collapsible.html).
 
-This is a controlled component.  You must change the `value` in response to `setValue` to change the selection.
-The component maintains an internal state to control if opened or closed. 
+This is a controlled component.  You must respond to `setValue` to change the selection.
 
 ```js
+const [value, setValue] = useState(initialValue);
+
 <Dropdown
   options={options}
   value={value}
-  setValue={value => useValue(value)}
+  setValue={value => setValue(value)}
 />
 ```
 
@@ -86,9 +95,6 @@ The component maintains an internal state to control if opened or closed.
 | value       | The `value` of the option to set                 |
 | setValue    | Will be called with the value of selected option |
 | onToggle    | Called when opened or closed                     |
-| Button      | Supply a custom button component                 |
-| Listbox     | Supply a custom listbox component                |
-| Option      | Supply a custom option component                 |
 
 ### Combo box
 
@@ -121,17 +127,18 @@ It is often desired to highlight the search results.
 
 ## TODO
 
-- menu
-  - divider
-  - hover intent
-- drop down / combo-box
-  - consolidate list box
-  - fix
-  - focus on group
-  - change node to children
+- groups can be optionised
+- useGrouped to group options
+- can we pass in groups
+- select
+  - fix option rendering
+- drop down
+  - update to use new options 
+  - update validator
 - combo box
   - consolidate list box
-- validate options on listbox
+  - update to use new options 
+  - update validator
 - auto-id
 - showing loader on delete?
 - errors if ref is missing

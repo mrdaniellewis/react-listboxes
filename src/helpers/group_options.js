@@ -1,22 +1,20 @@
-import { GROUP } from '../constants/group.js';
-
 export function groupOptions(options) {
   const groups = new Map();
 
   options.forEach(({ group, ...value }) => {
     let items = groups.get(group);
     if (!items) {
-      items = { label: group, children: [], value: GROUP };
+      items = { label: group, options: [], identity: `__group_${group}` };
       groups.set(group, items);
     }
-    items.children.push(value);
+    items.options.push(value);
   });
 
   return [...groups.values()].reduce((array, group) => {
     if (group.label) {
       array.push(group);
     }
-    array.push(...group.children);
+    array.push(...group.options);
     return array;
   }, []);
 }

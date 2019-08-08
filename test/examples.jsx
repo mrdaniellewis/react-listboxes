@@ -6,7 +6,7 @@ import { DropDownField } from './drop_down_field.jsx';
 import { ComboBoxField } from './combo_box_field.jsx';
 import { AsyncComboBoxField } from './async_combo_box_field.jsx';
 import { MenuButton } from '../src/components/menu_button/index.jsx';
-import { NavigationMenuButton } from '../src/components/navigation_menu_button/navigation_menu_button.jsx';
+import { NavigationMenuButton } from '../src/components/navigation_menu_button.jsx';
 
 export function Examples() {
   return (
@@ -47,20 +47,44 @@ export function Examples() {
         label="Grouped objects"
         options={[
           {
+            label: 'Not grouped',
+          },
+          {
             label: 'Foo',
-            value: 1,
             group: 'One',
           },
           {
             label: 'Boo',
-            value: 2,
             disabled: true,
             group: 'One',
           },
           {
             label: 'Foe',
-            value: 3,
             group: 'Two',
+          },
+        ]}
+      />
+      <SelectField
+        label="Pre-grouped objects"
+        options={[
+          {
+            label: 'Not grouped',
+          },
+          {
+            label: 'One',
+            options: [
+              'Foo',
+              {
+                label: 'Boo',
+                disabled: true,
+              },
+            ],
+          },
+          {
+            label: 'Two',
+            options: [
+              'Foe',
+            ],
           },
         ]}
       />

@@ -1,41 +1,46 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { options as validateOptions } from '../validators/options.js';
-import { useOptionisedProps } from '../hooks/use_optionised_props.js';
-import { reGroup } from '../helpers/re_group.js';
+import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
+import { useGroupedOptions } from '../hooks/use_grouped_options.js';
 
 export function Select(rawProps) {
   const {
-    options, valueIndex, setValue, blank: _1, value: _2, ...props
-  } = useOptionisedProps(rawProps);
-  const grouped = useMemo(() => reGroup(options), [options]);
+    options, setValue, blank: _1, value: _2, ...props
+  } = useNormalisedOptions(rawProps);
+  const groupedOptions = useGroupedOptions(options);
 
   return (
     <select
-      value={valueIndex === -1 ? '' : valueIndex}
-      onChange={({ target: { value: index } }) => setValue(options[+index])}
+      value={options.find(o => o.selected)?.index ?? ''}
+      onChange={({ target: { value: index } }) => setValue(options[+index]?.value ?? null)}
       {...props}
     >
-      {grouped.map(({ label: groupLabel, children }) => {
-        const optionElements = children.map(({
-          index, label, key, value: optionValue, ...more
+      {groupedOptions.map((group) => {
+        const optionNodes = group.options.map(({
+          label, index, key, node, selected: _3, value: _4, ...more
         }) => (
           <option
             value={index}
-            key={key || optionValue}
+            key={key}
             {...more}
           >
-            {label}
+            {label ?? node}
           </option>
         ));
-        if (groupLabel) {
+
+        if (group.label) {
+          const { key, ...more } = group;
           return (
-            <optgroup label={groupLabel} key={groupLabel}>
-              {optionElements}
+            <optgroup
+              key={key}
+              {...more}
+            >
+              {optionNodes}
             </optgroup>
           );
         }
-        return optionElements;
+        return optionNodes;
       })}
     </select>
   );

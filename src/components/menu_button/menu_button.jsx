@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useEffect, useLayoutEffect, Fragment, isValidElement, useCallback } from 'react';
+import React, { useRef, useMemo, useEffect, useLayoutEffect, Fragment, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useThunkReducer as useReducer } from '../../hooks/use_thunk_reducer.js';
 import { usePrevious } from '../../hooks/use_previous.js';
@@ -10,20 +10,28 @@ import { Context } from '../../context.js';
 import { useOnBlur } from '../../hooks/use_on_blur.js';
 import { useHoverIntent } from '../../hooks/use_hover_intent.js';
 import { useOnMouseLeave } from '../../hooks/use_on_mouse_leave.js';
-import { component } from '../../validators/component.js';
+import { componentCustomiser } from '../../validators/component_customiser.js';
+import { dismemberComponent } from '../../helpers/dismember_component.js';
 
 export function MenuButton({
   MenuButtonComponent, MenuComponent, MenuItemComponent, ButtonComponent,
   children, ...props
 }) {
   const { options: rawOptions, id, managedFocus, openOnHover, ...componentProps } = props;
-  const options = useMemo(() => rawOptions.map((option, index) => {
-    const derivedId = `${id}_option_${index}`;
-    if (isValidElement(option)) {
-      return { id: derivedId, ...option.props, Component: option.type };
-    }
-    return { id: derivedId, ...option };
-  }), [rawOptions, id]);
+
+  const options = useMemo(() => {
+    const customMenuItem = dismemberComponent(MenuItemComponent);
+    return rawOptions.map((option, index) => {
+      const optionComponent = dismemberComponent(option);
+      const derivedId = `${id}_option_${index}`;
+      return {
+        ...customMenuItem.props,
+        id: derivedId,
+        ...optionComponent.props,
+        Component: optionComponent.type || customMenuItem.type,
+      };
+    });
+  }, [rawOptions, id, MenuItemComponent]);
 
   const buttonRef = useRef();
   const menuRef = useRef();
@@ -54,12 +62,17 @@ export function MenuButton({
     }
   }, [expanded, managedFocus, selectedIndex]);
 
+  const customMenuButton = dismemberComponent(MenuButtonComponent);
+  const customButton = dismemberComponent(ButtonComponent);
+  const customMenu = dismemberComponent(MenuComponent);
+
   return (
     <Context.Provider value={{ dispatch, ...props, ...state }}>
-      <MenuButtonComponent
+      <customMenuButton.type
         {...componentProps}
+        {...customMenuButton.props}
       >
-        <ButtonComponent
+        <customButton.type
           type="button"
           id={id}
           aria-haspopup="menu"
@@ -70,10 +83,11 @@ export function MenuButton({
           onKeyDown={e => dispatch(onButtonKeyDown(e))}
           onMouseEnter={openOnHover ? onMouseEnterHandler : null}
           onMouseLeave={openOnHover ? onMouseLeaveHandler : null}
+          {...customButton.props}
         >
           {children}
-        </ButtonComponent>
-        <MenuComponent
+        </customButton.type>
+        <customMenu.type
           ref={menuRef}
           id={`${id}_menu`}
           role="menu"
@@ -83,6 +97,7 @@ export function MenuButton({
           onKeyDown={e => dispatch(onKeyDown(e))}
           aria-activedescendant={selectedId}
           onMouseLeave={openOnHover ? onMouseLeaveHandler : null}
+          {...customMenu.props}
         >
           {options.map((option, index) => {
             const {
@@ -91,9 +106,11 @@ export function MenuButton({
             } = option;
 
             return (
-              <Context.Provider key={key || id} value={{ dispatch, ...state, ...props, ...option }}>
+              <Context.Provider
+                key={key || optionId}
+                value={{ dispatch, ...state, ...props, ...option }}
+              >
                 <Component
-                  key={key || optionId || index}
                   id={optionId || `${id}_option_index`}
                   role="menuitem"
                   tabIndex={-1}
@@ -109,8 +126,8 @@ export function MenuButton({
               </Context.Provider>
             );
           })}
-        </MenuComponent>
-      </MenuButtonComponent>
+        </customMenu.type>
+      </customMenuButton.type>
     </Context.Provider>
   );
 }
@@ -118,13 +135,13 @@ export function MenuButton({
 MenuButton.propTypes = {
   children: PropTypes.node,
   id: PropTypes.string.isRequired,
-  options: validateOptions.isRequired,
+  options: PropTypes.arrayOf(componentCustomiser).isRequired,
   managedFocus: PropTypes.bool,
   openOnHover: PropTypes.bool,
-  ButtonComponent: component,
-  MenuButtonComponent: component,
-  MenuComponent: component,
-  MenuItemComponent: component,
+  ButtonComponent: componentCustomiser,
+  MenuButtonComponent: componentCustomiser,
+  MenuComponent: componentCustomiser,
+  MenuItemComponent: componentCustomiser,
 };
 
 MenuButton.defaultProps = {

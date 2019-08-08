@@ -1,6 +1,5 @@
 import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { ListBox } from '../list_box.jsx';
 import { useThunkReducer as useReducer } from '../../hooks/use_thunk_reducer.js';
 import { reducer } from './reducer.js';
 import { initialState } from './initial_state.js';
@@ -11,7 +10,8 @@ import { useOptionisedProps } from '../../hooks/use_optionised_props.js';
 import { useSelectedIndex } from '../../hooks/use_selected_index.js';
 import { useOnBlur } from '../../hooks/use_on_blur.js';
 import { joinTokens } from '../../helpers/join_tokens.js';
-import { component } from '../../validators/component.js';
+import { componentCustomiser } from '../../validators/component_customiser.js';
+import { ListBox } from '../list_box.jsx';
 
 export function ComboBox({
   ComboBoxComponent, OptionComponent, GroupComponent, ListBoxComponent, InputComponent,
@@ -150,17 +150,17 @@ ComboBox.propTypes = {
   setValue: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
   value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
 
-  ClearButtonComponent: component,
-  ComboBoxComponent: component,
-  GroupComponent: component,
-  DescriptionComponent: component,
-  InputComponent: component,
-  ListBoxComponent: component,
-  NotFoundComponent: component,
-  OpenButtonComponent: component,
-  OptionComponent: component,
-  SpinnerComponent: component,
-  ValueComponent: component,
+  ClearButtonComponent: componentCustomiser,
+  ComboBoxComponent: componentCustomiser,
+  GroupComponent: componentCustomiser,
+  DescriptionComponent: componentCustomiser,
+  InputComponent: componentCustomiser,
+  ListBoxComponent: componentCustomiser,
+  NotFoundComponent: componentCustomiser,
+  OpenButtonComponent: componentCustomiser,
+  OptionComponent: componentCustomiser,
+  SpinnerComponent: componentCustomiser,
+  ValueComponent: componentCustomiser,
 };
 
 ComboBox.defaultProps = {
