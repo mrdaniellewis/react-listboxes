@@ -8,11 +8,12 @@ export const optioniseGroup = (item) => {
   if (typeof item === 'object') {
     return {
       ...item,
-      key: item.key ?? item.id ?? item.value ?? `${groupKeyPrefix}_${item.label}`,
+      identity: item.value ?? item.id ?? `${groupKeyPrefix}_${item.label}`,
       options: undefined,
+      value: item,
     };
   }
 
   // A primitive
-  return { label: item, key: `${groupKeyPrefix}_${item}` };
+  return { label: item, identity: `${groupKeyPrefix}_${item}`, value: item };
 };

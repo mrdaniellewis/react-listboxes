@@ -4,11 +4,11 @@ export function useGroupedOptions(options) {
   return useMemo(() => {
     const grouped = new Map();
     options.forEach((option) => {
-      const key = option?.group?.key;
-      if (!grouped.has(key)) {
-        grouped.set(key, { ...option.group, options: [] });
+      const identity = option?.group?.identity;
+      if (!grouped.has(identity)) {
+        grouped.set(identity, { ...option.group, options: [] });
       }
-      grouped.get(key).options.push(option);
+      grouped.get(identity).options.push(option);
     });
     return [...grouped.values()];
   }, [options]);

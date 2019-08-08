@@ -8,6 +8,12 @@ A set of react components based on [WAI-ARIA Authoring Practices](https://www.w3
 import { Component } from '@citizensadvice/react-components';
 ```
 
+This uses the following Babel plugins:
+
+* `@babel/plugin-proposal-nullish-coalescing-operator`
+* `@babel/plugin-proposal-optional-chaining`
+
+
 ## Development
 
 To start `npm start`  
@@ -55,18 +61,16 @@ Options is an array of either:
 - an array of groups of options
 - an object with the following properties:
 
-| Prop               | Type          | Purpose                                                   |
-| ----               | ----          | ----                                                      |
-| label              | String/Number | The label of the option (required)                        |
-| disabled           | Boolean       | Is the option disabled                                    |
-| group              | Option like   | Group the options                                         |
-| value              | String/Number | Option value. See key                                     |
-| id                 | String        | HTML id                                                   |
-| key                | String/Number | An option and value are considered equal if their keys match.  Defaults to `id | value | label` |
-| data               | Any           | This key is ignored and can store custom data             |
-| node               | Node          | Displayed instead of the label in a list of options       |
-| options            | Array         | If preset the option will be treated as a group           |
-| Any other property | -             | Will be added to the React option                         |
+| Prop               | Type          | Purpose                                                                        |
+| ----               | ----          | ----                                                                           |
+| label              | String/Number | The label of the option (required)                                             |
+| disabled           | Boolean       | Is the option disabled                                                         |
+| group              | As an option  | Group the options                                                              |
+| value              | Object        | Used to compare `value` to the option.  Will default to `value ?? id ?? label` |
+| data               | Any           | This key is ignored and can store custom data                                  |
+| node               | Node          | Displayed instead of the label in a list of options                            |
+| options            | Array         | If preset the option will be treated as a group                                |
+| Any other property | -             | Will be added to the React option                                              |
 
 ### Drop down
 
@@ -128,8 +132,8 @@ It is often desired to highlight the search results.
 ## TODO
 
 - drop down
-  - update to use new options 
-  - update validator
+  - fix group key
+  - fix opening with invalid value
 - combo box
   - consolidate list box
   - update to use new options 
@@ -139,6 +143,7 @@ It is often desired to highlight the search results.
 - auto-id
 - showing loader on delete?
 - errors if ref is missing
+- remove regenerator now babelrc is fixed
 - tab trapped in ie11 on button
 - do not label button (ie11)
 - ie11 only reading "clear" on clear button

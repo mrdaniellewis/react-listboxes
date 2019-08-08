@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { optionise } from '../helpers/optionise.js';
 import { optioniseGroup } from '../helpers/optionise_group.js';
 import { blankKey } from '../constants/blank_key.js';
+import { uniqueIdGenerator } from '../helpers/unique_id_generator.js';
 
 export function useNormalisedOptions({ id, options, blank, value, ...props }) {
   const normalisedValue = useMemo(() => (
@@ -12,7 +13,7 @@ export function useNormalisedOptions({ id, options, blank, value, ...props }) {
     let newOptions = options.map(optionise);
 
     if (blank) {
-      newOptions.unshift({ label: blank, key: blankKey });
+      newOptions.unshift({ label: blank, identity: blankKey, value: null });
     }
 
     // expand any groups
@@ -25,15 +26,18 @@ export function useNormalisedOptions({ id, options, blank, value, ...props }) {
       return array;
     }, []);
 
+    const uniqueId = uniqueIdGenerator();
+
     newOptions = newOptions.map((o, index) => ({
       ...o,
       group: optioniseGroup(o.group),
       index,
-      selected: o.key === normalisedValue?.key,
+      selected: o.identity === normalisedValue?.identity,
+      key: uniqueId(o.id || `${id}_${index}`),
     }));
 
     return newOptions;
-  }, [options, blank, normalisedValue]);
+  }, [id, options, blank, normalisedValue]);
 
   return {
     id,

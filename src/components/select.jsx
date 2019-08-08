@@ -22,10 +22,11 @@ export function Select(rawProps) {
         }) => (
           <option
             value={index}
+            id={key}
             key={key}
             {...more}
           >
-            {label ?? node}
+            {node ?? label}
           </option>
         ));
 
