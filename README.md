@@ -127,11 +127,6 @@ It is often desired to highlight the search results.
 
 ## TODO
 
-- groups can be optionised
-- useGrouped to group options
-- can we pass in groups
-- select
-  - fix option rendering
 - drop down
   - update to use new options 
   - update validator
@@ -139,6 +134,8 @@ It is often desired to highlight the search results.
   - consolidate list box
   - update to use new options 
   - update validator
+- menu
+  - auto open don't close on click
 - auto-id
 - showing loader on delete?
 - errors if ref is missing
