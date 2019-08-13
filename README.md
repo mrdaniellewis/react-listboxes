@@ -131,18 +131,11 @@ It is often desired to highlight the search results.
 
 ## TODO
 
-- drop down
-  - fix group key
-  - fix opening with invalid value
-- combo box
-  - consolidate list box
-  - update to use new options 
-  - update validator
 - menu
   - auto open don't close on click
 - auto-id
 - showing loader on delete?
-- errors if ref is missing
+- fix validators
 - remove regenerator now babelrc is fixed
 - tab trapped in ie11 on button
 - do not label button (ie11)

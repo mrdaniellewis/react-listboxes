@@ -2,45 +2,42 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { options as validateOptions } from '../validators/options.js';
 import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
+import { renderGroupedOptions } from '../helpers/render_grouped_options.js';
 
 export function Select(rawProps) {
   const {
-    options, flatOptions, setValue, blank: _1, value: _2, ...props
+    options, setValue, blank: _1, value: _2, ...props
   } = useNormalisedOptions(rawProps);
-
-  console.log(options);
-  console.log(flatOptions);
 
   return (
     <select
-      value={flatOptions.findIndex(o => o.selected)?.index ?? ''}
-      onChange={({ target: { value: index } }) => setValue(flatOptions[+index]?.value ?? null)}
+      value={options.findIndex(o => o.selected)}
+      onChange={({ target: { value: index } }) => setValue(options[+index]?.value ?? null)}
       {...props}
     >
-      {options.map(function mapOptions(option) {
-        if (option.options) {
-          const { key, ...more } = option;
+      {renderGroupedOptions({
+        options,
+        renderGroup({ key, html, children, label }) { // eslint-disable-line react/prop-types
           return (
-            <optgroup
-              key={key}
-              {...more}
-            >
-              {option.options.map(mapOptions)}
+            <optgroup key={key} label={label} {...html}>
+              {children}
             </optgroup>
           );
-        }
-
-        const { label, index, key, node, selected: _3, value: _4, ...more } = option;
-        return (
-          <option
-            value={index}
-            id={key}
-            key={key}
-            {...more}
-          >
-            {node ?? label}
-          </option>
-        );
+        },
+        // eslint-disable-next-line react/prop-types
+        renderOption({ label, key, node, html, disabled, index }) {
+          return (
+            <option
+              value={index}
+              id={key}
+              key={key}
+              disabled={disabled}
+              {...html}
+            >
+              {node ?? label}
+            </option>
+          );
+        },
       })}
     </select>
   );

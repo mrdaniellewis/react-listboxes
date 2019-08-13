@@ -36,10 +36,11 @@ export function setSelectedValue(selectedValue) {
 
 export function onSelectValue(value) {
   return (dispatch, getState, getProps) => {
-    const { setValue, onSearch } = getProps();
+    const { setValue, onSearch, inputRef } = getProps();
     dispatch(setSelected(value));
-    setValue(value);
-    onSearch(value ? value.label : '');
+    setValue(value?.value);
+    onSearch(value?.label ?? '');
+    inputRef.current.focus();
   };
 }
 
@@ -111,7 +112,11 @@ export function onKeyDown(event) {
         if (expanded) {
           if (selectedIndex !== -1 && options[selectedIndex]) {
             event.preventDefault();
-            dispatch(onSelectValue(options[selectedIndex]));
+            const option = options[selectedIndex];
+            if (option.disabled) {
+              return;
+            }
+            dispatch(onSelectValue(option));
           } else if (!search) {
             event.preventDefault();
             dispatch(onSelectValue(null));

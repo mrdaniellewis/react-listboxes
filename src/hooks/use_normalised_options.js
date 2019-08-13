@@ -1,9 +1,23 @@
+/* eslint-disable no-param-reassign */
 import { useMemo } from 'react';
 import { optionise } from '../helpers/optionise.js';
 import { optioniseGroup } from '../helpers/optionise_group.js';
 import { blankKey } from '../constants/blank_key.js';
 import { uniqueIdGenerator } from '../helpers/unique_id_generator.js';
 
+/**
+ * Turn options into a regular structure
+ *
+ * Options can be supplied as:
+ *
+ *  - String[]
+ *  - Number[]
+ *  - [*, String|Number][]
+ *  - { label: String|Number, value: *, id: String, group: String|Object, disabled: Boolean, options: [] }
+ *
+ *  If the option has a group property, it will be grouped into that group
+ *  If the option has a options property it is a group
+ */
 export function useNormalisedOptions({ id, options, blank, value, ...props }) {
   const normalisedValue = useMemo(() => (
     value != null || blank ? optionise(value) : null
@@ -11,57 +25,59 @@ export function useNormalisedOptions({ id, options, blank, value, ...props }) {
 
   const normalisedOptions = useMemo(() => {
     const uniqueId = uniqueIdGenerator();
-    const emptyGroup = { identity: undefined, options: [] };
-    const groups = new Map([[undefined, emptyGroup]]);
-    let index = 0;
+    const groups = new Map();
+    let normalised = [];
 
+    // Add a blank option
     if (blank) {
-      emptyGroup.options.unshift({ label: blank, identity: blankKey, value: null });
+      normalised.push({ label: blank, identity: blankKey, value: null });
     }
 
-    const mapOption = (option) => {
-      const o = optionise(option);
-      return {
-        ...o,
-        selected: option.identity === normalisedValue?.identity,
-        key: uniqueId(option.id || `${id}_${index}`),
-        index: index++, // eslint-disable-line no-plusplus
-      };
+    const normaliseOption = (rawOption) => {
+      const option = optionise(rawOption);
+      option.selected = option.identity === normalisedValue?.identity;
+      return option;
     };
 
+    // Group options
     options.forEach((option) => {
-      const group = optioniseGroup(Array.isArray(option?.options) ? option : option?.group);
-      if (!groups.has(group.identity)) {
-        groups.set(group.identity, {
-          ...group,
-          key: uniqueId(option.id || `${id}_group_${group.label}`),
-        });
-      }
-      if (!Array.isArray(option?.options)) {
-        groups.get(group.identity).options.push(mapOption(option));
+      if (Array.isArray(option?.options)) {
+        // Option is a group
+        const group = optioniseGroup(option);
+        if (!groups.has(group.identity)) {
+          groups.set(group.identity, group);
+          normalised.push(group);
+        }
+        group.options = group.options.map(o => ({ ...normaliseOption(o), group }));
+      } else if (option?.group) {
+        // Options should be sorted into a group
+        const group = optioniseGroup(option.group);
+        if (!groups.has(group.identity)) {
+          groups.set(group.identity, group);
+          normalised.push(group);
+        }
+        groups.get(group.identity).options.push({ ...normaliseOption(option), group });
       } else {
-        group.options = group.options.map(mapOption);
+        normalised.push(normaliseOption(option));
       }
     });
 
-    return [...emptyGroup.options, ...[...groups.values()].slice(1).filter(o => o.options.length)];
-  }, [id, options, blank, normalisedValue]);
+    // Flatten the options
+    normalised = [].concat(...normalised.map(option => option.options || option));
 
-  const flatOptions = useMemo(() => (
-    normalisedOptions.reduce((array, option) => {
-      array.push(option);
-      if (Array.isArray(option.options)) {
-        array.push(...option.options);
-      }
-      return array;
-    }, [])
-  ), [normalisedOptions]);
+    // Add keys
+    normalised.forEach((option, index) => {
+      option.key = uniqueId(option.html?.id || `${id}_${index}`);
+      option.index = index;
+    });
+
+    return normalised;
+  }, [id, options, blank, normalisedValue]);
 
   return {
     id,
     blank,
     options: normalisedOptions,
-    flatOptions,
     value: normalisedValue,
     ...props,
   };

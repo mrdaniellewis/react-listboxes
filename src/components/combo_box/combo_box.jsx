@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useLayoutEffect, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { useThunkReducer as useReducer } from '../../hooks/use_thunk_reducer.js';
 import { reducer } from './reducer.js';
@@ -6,12 +6,12 @@ import { initialState } from './initial_state.js';
 import { onKeyDown, onChange, onFocus, onSelectValue, onBlur, setExpanded, setSelected } from './actions.js';
 import { Context } from '../../context.js';
 import { options as validateOptions } from '../../validators/options.js';
-import { useOptionisedProps } from '../../hooks/use_optionised_props.js';
+import { useNormalisedOptions } from '../../hooks/use_normalised_options.js';
 import { useSelectedIndex } from '../../hooks/use_selected_index.js';
 import { useOnBlur } from '../../hooks/use_on_blur.js';
 import { joinTokens } from '../../helpers/join_tokens.js';
 import { componentCustomiser } from '../../validators/component_customiser.js';
-import { ListBox } from '../list_box.jsx';
+import { renderGroupedOptions } from '../../helpers/render_grouped_options.js';
 
 export function ComboBox({
   ComboBoxComponent, OptionComponent, GroupComponent, ListBoxComponent, InputComponent,
@@ -20,10 +20,12 @@ export function ComboBox({
 }) {
   const comboRef = useRef();
   const inputRef = useRef();
-  const optionisedProps = useOptionisedProps({ ...rawProps });
+  const selectedRef = useRef();
+
+  const optionisedProps = useNormalisedOptions({ ...rawProps });
   const {
-    notFoundMessage, options, value, valueIndex, id, busy, managedFocus,
-    className, setValue: _1, onSearch: _2, ...componentProps
+    notFoundMessage, options, value, id, busy, managedFocus,
+    className, setValue: _1, onSearch: _2, valueIndex: _3, ...componentProps
   } = optionisedProps;
   const [state, dispatch] = useReducer(reducer, { ...optionisedProps, inputRef }, initialState, id);
   const { expanded, search, listBoxFocused, selectedValue, focused } = state;
@@ -41,11 +43,13 @@ export function ComboBox({
     dispatch(setSelected(value));
   }, [value]);
 
-  useEffect(() => {
-    if (managedFocus && !listBoxFocused && focused) {
+  useLayoutEffect(() => {
+    if (expanded && options[selectedIndex] && managedFocus) {
+      selectedRef.current.focus();
+    } else if (expanded) {
       inputRef.current.focus();
     }
-  }, [listBoxFocused, focused, managedFocus]);
+  }, [expanded, managedFocus, selectedIndex, options]);
 
   return (
     <Context.Provider value={{ dispatch, ...optionisedProps, ...state }}>
@@ -102,22 +106,64 @@ export function ComboBox({
         >
           ▼
         </OpenButtonComponent>
-        <ListBox
+        <ListBoxComponent
           id={`${id}_list_box`}
-          expanded={expanded}
-          options={options}
+          role="listbox"
+          tabIndex={-1}
           hidden={!showListBox}
-          setValue={newValue => dispatch(onSelectValue(newValue))}
-          valueIndex={valueIndex}
-          selectedIndex={selectedIndex}
-          onMouseDown={e => e.preventDefault()}
-          ListBoxComponent={ListBoxComponent}
-          OptionComponent={OptionComponent}
-          GroupComponent={GroupComponent}
-          ValueComponent={ValueComponent}
+          aria-activedescendant={options[selectedIndex]?.id ?? null}
           onKeyDown={e => dispatch(onKeyDown(e))}
-          managedFocus={managedFocus && listBoxFocused}
-        />
+          onMouseDown={e => e.preventDefault()}
+        >
+          {renderGroupedOptions({
+            options,
+            renderGroup(group) {
+              const { key, html, label, node, children: groupChildren } = group;
+              return (
+                <Context.Provider
+                  key={key}
+                  value={{ dispatch, ...optionisedProps, ...state, group }}
+                >
+                  <GroupComponent
+                    id={key}
+                    tabIndex={-1}
+                    aria-hidden="true" // Hidden otherwise VoiceOver counts the wrong number of options
+                    {...html}
+                  >
+                    {node ?? label}
+                  </GroupComponent>
+                  {groupChildren}
+                </Context.Provider>
+              );
+            },
+            // eslint-disable-next-line react/prop-types
+            renderOption(option) {
+              const { label, key, node, html, disabled, index, selected } = option;
+              return (
+                <Context.Provider
+                  key={key}
+                  value={{ dispatch, ...optionisedProps, ...state, option }}
+                >
+                  <OptionComponent
+                    id={key}
+                    role="option"
+                    tabIndex={-1}
+                    aria-selected={selected ? 'true' : null}
+                    aria-disabled={disabled ? 'true' : null}
+                    data-focused={index === selectedIndex ? 'true' : null}
+                    ref={index === selectedIndex ? selectedRef : null}
+                    {...html}
+                    onClick={disabled ? null : () => dispatch(onSelectValue(option))}
+                  >
+                    <ValueComponent>
+                      {node ?? label}
+                    </ValueComponent>
+                  </OptionComponent>
+                </Context.Provider>
+              );
+            },
+          })}
+        </ListBoxComponent>
         <NotFoundComponent
           id={`${id}_not_found`}
           hidden={!showNotFound}
@@ -172,13 +218,13 @@ ComboBox.defaultProps = {
 
   ClearButtonComponent: 'button',
   ComboBoxComponent: 'div',
-  GroupComponent: undefined,
+  GroupComponent: 'li',
   DescriptionComponent: 'div',
   InputComponent: 'input',
-  ListBoxComponent: undefined,
+  ListBoxComponent: 'ul',
   NotFoundComponent: 'div',
   OpenButtonComponent: 'span',
-  OptionComponent: undefined,
+  OptionComponent: 'li',
   SpinnerComponent: 'span',
-  ValueComponent: undefined,
+  ValueComponent: Fragment,
 };

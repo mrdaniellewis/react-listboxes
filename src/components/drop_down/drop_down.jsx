@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useLayoutEffect, useMemo, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { useThunkReducer as useReducer } from '../../hooks/use_thunk_reducer.js';
-import { usePrevious } from '../../hooks/use_previous.js';
 import { reducer } from './reducer.js';
 import { initialState } from './initial_state.js';
 import {
@@ -11,11 +10,11 @@ import {
 import { Context } from '../../context.js';
 import { options as validateOptions } from '../../validators/options.js';
 import { useNormalisedOptions } from '../../hooks/use_normalised_options.js';
-import { useGroupedOptions } from '../../hooks/use_grouped_options.js';
 import { useSelectedIndex } from '../../hooks/use_selected_index.js';
 import { useOnBlur } from '../../hooks/use_on_blur.js';
 import { makePrefixSearch } from '../../helpers/make_prefix_search.js';
 import { componentCustomiser } from '../../validators/component_customiser.js';
+import { renderGroupedOptions } from '../../helpers/render_grouped_options.js';
 
 export function DropDown({
   ButtonComponent, ListBoxComponent, OptionComponent,
@@ -56,14 +55,12 @@ export function DropDown({
   }, [options, searcher, search, setValue]);
 
   useLayoutEffect(() => {
-    if (expanded && selectedRef.current && managedFocus) {
+    if (expanded && options[selectedIndex] && managedFocus) {
       selectedRef.current.focus();
-    } else if (expanded && !(managedFocus && selectedValue)) {
+    } else if (expanded) {
       listRef.current.focus();
     }
-  }, [expanded, managedFocus, selectedValue]);
-
-  const groupedOptions = useGroupedOptions(options);
+  }, [expanded, managedFocus, options, selectedIndex]);
 
   return (
     <Context.Provider value={{ dispatch, ...optionisedProps, ...state }}>
@@ -84,23 +81,39 @@ export function DropDown({
         </ButtonComponent>
         <ListBoxComponent
           ref={listRef}
-          id={`${id}_listbox`}
+          id={`${id}_list_box`}
           role="listbox"
           tabIndex={-1}
           hidden={!expanded}
-          aria-activedescendant={selectedIndex > -1 ? options[selectedIndex].id : null}
+          aria-activedescendant={options[selectedIndex]?.id ?? null}
           onFocus={e => dispatch(onFocus(e))}
           onBlur={onBlurHandler}
           onKeyDown={e => dispatch(onKeyDown(e))}
         >
-          {groupedOptions.map((group) => {
-            const optionNodes = group.options.map((option) => {
-              const {
-                label, index, key, disabled, node, selected, data: _1, ...more
-              } = option;
-
-              console.log(key);
-
+          {renderGroupedOptions({
+            options,
+            renderGroup(group) {
+              const { key, html, label, node, children: groupChildren } = group;
+              return (
+                <Context.Provider
+                  key={key}
+                  value={{ dispatch, ...optionisedProps, ...state, group }}
+                >
+                  <GroupComponent
+                    id={key}
+                    tabIndex={-1}
+                    aria-hidden="true" // Hidden otherwise VoiceOver counts the wrong number of options
+                    {...html}
+                  >
+                    {node ?? label}
+                  </GroupComponent>
+                  {groupChildren}
+                </Context.Provider>
+              );
+            },
+            // eslint-disable-next-line react/prop-types
+            renderOption(option) {
+              const { label, key, node, html, disabled, index, selected } = option;
               return (
                 <Context.Provider
                   key={key}
@@ -114,7 +127,7 @@ export function DropDown({
                     aria-disabled={disabled ? 'true' : null}
                     data-focused={index === selectedIndex ? 'true' : null}
                     ref={index === selectedIndex ? selectedRef : null}
-                    {...more}
+                    {...html}
                     onClick={disabled ? null : e => onClick(e, option)}
                   >
                     <ValueComponent>
@@ -123,26 +136,7 @@ export function DropDown({
                   </OptionComponent>
                 </Context.Provider>
               );
-            });
-
-            if (group.label) {
-              const { key, label, node, ...more } = group;
-              console.log(key, group);
-              return (
-                <Context.Provider
-                  key={key}
-                  value={{ dispatch, ...optionisedProps, ...state, group }}
-                >
-                  <GroupComponent
-                    id={key}
-                    {...more}
-                  >
-                    {node ?? label}
-                  </GroupComponent>
-                </Context.Provider>
-              );
-            }
-            return optionNodes;
+            },
           })}
         </ListBoxComponent>
       </DropDownComponent>

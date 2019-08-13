@@ -41,7 +41,7 @@ export function onSelectValue(value) {
   return (dispatch, getState, getProps) => {
     const { setValue } = getProps();
     dispatch(setSelected(value));
-    setValue(value);
+    setValue(value?.value);
   };
 }
 
@@ -79,7 +79,7 @@ export function onKeyDown(event) {
     }
 
     const selectedIndex = selectedValue
-      ? options.findIndex(o => o.value === selectedValue.value)
+      ? options.findIndex(o => o.identity === selectedValue.identity)
       : -1;
 
     switch (key) {
@@ -119,7 +119,11 @@ export function onKeyDown(event) {
         // Select current item if one is selected
         if (expanded && selectedIndex !== -1 && options[selectedIndex]) {
           event.preventDefault();
-          dispatch(onSelectValue(options[selectedIndex]));
+          const option = options[selectedIndex];
+          if (option.disabled) {
+            return;
+          }
+          dispatch(onSelectValue(option));
           buttonRef.current.focus();
         }
         break;
