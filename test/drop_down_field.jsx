@@ -8,7 +8,7 @@ export function DropDownField({ label, ...props }) {
   const id = label.trim().toLowerCase().replace(/[^a-z]+/ig, '_').toLowerCase();
   return (
     <>
-      <label htmlFor={id}>
+      <label htmlFor={id} id={`${id}_label`}>
         {label}
       </label>
       <DropDown
@@ -16,6 +16,7 @@ export function DropDownField({ label, ...props }) {
         {...props}
         value={value}
         setValue={newValue => setValue(newValue)}
+        labelId={`${id}_label`}
       />
     </>
   );

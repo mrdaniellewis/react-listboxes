@@ -193,7 +193,7 @@ export function Examples() {
               tabIndex: null,
             },
           ]}
-          id="menu"
+          id="menu_navigation"
         >
           Navigation menu
         </NavigationMenuButton>

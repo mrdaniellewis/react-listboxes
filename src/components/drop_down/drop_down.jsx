@@ -23,7 +23,7 @@ export function DropDown({
   const optionisedProps = useNormalisedOptions(rawProps);
   const {
     options, value, setValue, blank, id,
-    children, managedFocus, ...componentProps
+    children, managedFocus, labelId, ...componentProps
   } = optionisedProps;
   const buttonRef = useRef();
   const listRef = useRef();
@@ -62,6 +62,8 @@ export function DropDown({
     }
   }, [expanded, managedFocus, options, selectedIndex]);
 
+  console.log(options);
+
   return (
     <Context.Provider value={{ dispatch, ...optionisedProps, ...state }}>
       <DropDownComponent
@@ -72,7 +74,8 @@ export function DropDown({
           id={id}
           aria-haspopup="listbox"
           aria-expanded={expanded ? 'true' : null}
-          aria-controls={`${id}_listbox`}
+          aria-controls={`${id}_list_box`}
+          aria-labelledby={labelId ? `${labelId} ${id}` : null}
           ref={buttonRef}
           onClick={() => dispatch(onToggleOpen())}
           onKeyDown={e => dispatch(onButtonKeyDown(e))}
@@ -85,7 +88,7 @@ export function DropDown({
           role="listbox"
           tabIndex={-1}
           hidden={!expanded}
-          aria-activedescendant={options[selectedIndex]?.id ?? null}
+          aria-activedescendant={options[selectedIndex]?.id || null}
           onFocus={e => dispatch(onFocus(e))}
           onBlur={onBlurHandler}
           onKeyDown={e => dispatch(onKeyDown(e))}
@@ -101,7 +104,6 @@ export function DropDown({
                 >
                   <GroupComponent
                     id={key}
-                    tabIndex={-1}
                     aria-hidden="true" // Hidden otherwise VoiceOver counts the wrong number of options
                     {...html}
                   >
@@ -113,7 +115,7 @@ export function DropDown({
             },
             // eslint-disable-next-line react/prop-types
             renderOption(option) {
-              const { label, key, node, html, disabled, index, selected } = option;
+              const { label, key, node, html, disabled, index, selected, group } = option;
               return (
                 <Context.Provider
                   key={key}
@@ -125,6 +127,7 @@ export function DropDown({
                     tabIndex={-1}
                     aria-selected={selected ? 'true' : null}
                     aria-disabled={disabled ? 'true' : null}
+                    aria-labelledby={group ? `${group.key} ${key}` : null}
                     data-focused={index === selectedIndex ? 'true' : null}
                     ref={index === selectedIndex ? selectedRef : null}
                     {...html}
@@ -148,6 +151,7 @@ DropDown.propTypes = {
   blank: PropTypes.string,
   children: PropTypes.node,
   id: PropTypes.string.isRequired,
+  labelId: PropTypes.string,
   options: validateOptions.isRequired,
   setValue: PropTypes.func.isRequired,
   value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
@@ -164,6 +168,7 @@ DropDown.defaultProps = {
   blank: '',
   children: null,
   value: null,
+  labelId: null,
   managedFocus: true,
   ListBoxComponent: 'ul',
   ButtonComponent: 'button',

@@ -43,18 +43,24 @@ export function useNormalisedOptions({ id, options, blank, value, ...props }) {
     options.forEach((option) => {
       if (Array.isArray(option?.options)) {
         // Option is a group
-        const group = optioniseGroup(option);
+        let group = optioniseGroup(option);
+        const groupOptions = group.options.map(o => ({ ...normaliseOption(o), group }));
         if (!groups.has(group.identity)) {
           groups.set(group.identity, group);
           normalised.push(group);
+          group.options = groupOptions;
+        } else {
+          group = groups.get(group.identity);
+          group.options.push(...groupOptions);
         }
-        group.options = group.options.map(o => ({ ...normaliseOption(o), group }));
       } else if (option?.group) {
         // Options should be sorted into a group
-        const group = optioniseGroup(option.group);
+        let group = optioniseGroup(option.group);
         if (!groups.has(group.identity)) {
           groups.set(group.identity, group);
           normalised.push(group);
+        } else {
+          group = groups.get(group.identity);
         }
         groups.get(group.identity).options.push({ ...normaliseOption(option), group });
       } else {
@@ -65,10 +71,15 @@ export function useNormalisedOptions({ id, options, blank, value, ...props }) {
     // Flatten the options
     normalised = [].concat(...normalised.map(option => option.options || option));
 
-    // Add keys
+    // Add keys to options
     normalised.forEach((option, index) => {
       option.key = uniqueId(option.html?.id || `${id}_${index}`);
       option.index = index;
+    });
+
+    // Add keys to groups
+    [...groups.values()].forEach((group, index) => {
+      group.key = uniqueId(group.html?.id || `${id}_group_${index}`);
     });
 
     return normalised;

@@ -5,7 +5,7 @@ export function renderGroupedOptions({ options, renderGroup, renderOption }) {
       if (!groupChildren.has(option.group.identity)) {
         const children = [];
         groupChildren.set(option.group.identity, children);
-        accumulator.push(renderGroup({ ...option, children }));
+        accumulator.push(renderGroup({ ...option.group, children }));
       }
       groupChildren.get(option.group.identity).push(renderOption(option));
     } else {

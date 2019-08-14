@@ -24,18 +24,18 @@ export function ComboBox({
 
   const optionisedProps = useNormalisedOptions({ ...rawProps });
   const {
-    notFoundMessage, options, value, id, busy, managedFocus,
+    notFoundMessage, options, value, id, busy, managedFocus, labelId,
     className, setValue: _1, onSearch: _2, valueIndex: _3, ...componentProps
   } = optionisedProps;
   const [state, dispatch] = useReducer(reducer, { ...optionisedProps, inputRef }, initialState, id);
   const { expanded, search, listBoxFocused, selectedValue, focused } = state;
   const selectedIndex = useSelectedIndex({ options, selectedValue });
 
-  const activeId = listBoxFocused && selectedIndex > -1 ? selectedValue.id : null;
+  const activeId = (listBoxFocused && selectedValue?.id) || null;
   const showListBox = expanded && options.length;
-  const showNotFound = expanded && !options.length && search && search.trim();
-  const inputLabel = search !== null ? search : (value && value.label) || '';
-  const showBusy = busy && search !== (value && value.label);
+  const showNotFound = expanded && !options.length && search?.trim();
+  const inputLabel = search !== null ? search : (value?.label) || '';
+  const showBusy = busy && search !== (value?.label);
 
   const blur = useOnBlur(() => dispatch(onBlur()), comboRef);
 
@@ -92,7 +92,7 @@ export function ComboBox({
           hidden={!value}
           aria-label="Clear"
           id={`${id}_clear_button`}
-          aria-labelledby={`${id}_clear_button ${id}`}
+          aria-labelledby={joinTokens(`${id}_clear_button`, labelId, id)}
         >
           ×
         </ClearButtonComponent>
@@ -126,7 +126,6 @@ export function ComboBox({
                 >
                   <GroupComponent
                     id={key}
-                    tabIndex={-1}
                     aria-hidden="true" // Hidden otherwise VoiceOver counts the wrong number of options
                     {...html}
                   >
@@ -138,7 +137,7 @@ export function ComboBox({
             },
             // eslint-disable-next-line react/prop-types
             renderOption(option) {
-              const { label, key, node, html, disabled, index, selected } = option;
+              const { label, key, node, html, disabled, index, selected, group } = option;
               return (
                 <Context.Provider
                   key={key}
@@ -150,6 +149,7 @@ export function ComboBox({
                     tabIndex={-1}
                     aria-selected={selected ? 'true' : null}
                     aria-disabled={disabled ? 'true' : null}
+                    aria-labelledby={group ? `${group.key} ${key}` : null}
                     data-focused={index === selectedIndex ? 'true' : null}
                     ref={index === selectedIndex ? selectedRef : null}
                     {...html}

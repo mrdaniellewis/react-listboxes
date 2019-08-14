@@ -13,11 +13,12 @@ export function ComboBoxField({ label, ...props }) {
 
   return (
     <>
-      <label htmlFor={id}>
+      <label htmlFor={id} id={`${id}_label`}>
         {label}
       </label>
       <ComboBox
         id={id}
+        labelId={`${id}_label`}
         {...props}
         options={options}
         value={value}

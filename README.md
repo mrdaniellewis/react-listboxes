@@ -134,9 +134,8 @@ It is often desired to highlight the search results.
 - menu
   - auto open don't close on click
 - auto-id
-- showing loader on delete?
 - fix validators
-- remove regenerator now babelrc is fixed
+  - id validator
 - tab trapped in ie11 on button
 - do not label button (ie11)
 - ie11 only reading "clear" on clear button
