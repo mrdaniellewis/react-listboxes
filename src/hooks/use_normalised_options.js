@@ -13,7 +13,14 @@ import { uniqueIdGenerator } from '../helpers/unique_id_generator.js';
  *  - String[]
  *  - Number[]
  *  - [*, String|Number][]
- *  - { label: String|Number, value: *, id: String, group: String|Object, disabled: Boolean, options: [] }
+ *  - {
+ *      label: String|Number,
+ *      value: *,
+ *      id: String,
+ *      group: String|Object,
+ *      disabled: Boolean,
+ *      options: [],
+ *    }
  *
  *  If the option has a group property, it will be grouped into that group
  *  If the option has a options property it is a group

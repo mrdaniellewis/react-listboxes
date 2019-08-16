@@ -7,7 +7,7 @@ export function reducer(state, { type, expanded, key, selectedValue }) {
     case CLEAR_SEARCH:
       return { ...state, search: '' };
     case SET_SEARCH_KEY:
-      return { ...state, search: (state.search || '') + key };
+      return { ...state, search: (state.search || '') + key.toLowerCase() };
     case SET_SELECTED:
       return { ...state, expanded: false, selectedValue };
     case SET_SELECTED_VALUE:

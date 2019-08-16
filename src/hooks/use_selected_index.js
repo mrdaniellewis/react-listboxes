@@ -1,11 +1,9 @@
 import { useMemo } from 'react';
+import { findSelectedIndex } from '../helpers/find_selected_index.js';
 
-export function useSelectedIndex({ options, selectedValue }) {
-  return useMemo(() => {
-    let selectedIndex = -1;
-    if (selectedValue) {
-      selectedIndex = options.findIndex(o => o.identity === selectedValue.identity);
-    }
-    return selectedIndex;
-  }, [options, selectedValue]);
+export function useSelectedIndex({ options, selectedValue, required }) {
+  return useMemo(
+    () => findSelectedIndex({ options, selectedValue, required }),
+    [options, selectedValue, required],
+  );
 }

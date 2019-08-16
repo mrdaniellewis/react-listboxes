@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useLayoutEffect, useMemo, Fragment } from 'react';
+import React, { useRef, useEffect, useLayoutEffect, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { useThunkReducer as useReducer } from '../../hooks/use_thunk_reducer.js';
 import { reducer } from './reducer.js';
@@ -12,9 +12,10 @@ import { options as validateOptions } from '../../validators/options.js';
 import { useNormalisedOptions } from '../../hooks/use_normalised_options.js';
 import { useSelectedIndex } from '../../hooks/use_selected_index.js';
 import { useOnBlur } from '../../hooks/use_on_blur.js';
-import { makePrefixSearch } from '../../helpers/make_prefix_search.js';
 import { componentCustomiser } from '../../validators/component_customiser.js';
 import { renderGroupedOptions } from '../../helpers/render_grouped_options.js';
+import { dismemberComponent } from '../../helpers/dismember_component.js';
+import { getPlatform } from '../../helpers/get_platform.js';
 
 export function DropDown({
   ButtonComponent, ListBoxComponent, OptionComponent,
@@ -23,7 +24,7 @@ export function DropDown({
   const optionisedProps = useNormalisedOptions(rawProps);
   const {
     options, value, setValue, blank, id,
-    children, managedFocus, labelId, ...componentProps
+    children, managedFocus, labelId, platform, ...componentProps
   } = optionisedProps;
   const buttonRef = useRef();
   const listRef = useRef();
@@ -36,23 +37,22 @@ export function DropDown({
     id,
   );
   const { expanded, search, selectedValue } = state;
-
+  const selectedIndex = useSelectedIndex({ options, selectedValue, required: true });
   const onBlurHandler = useOnBlur(() => dispatch(onBlur()), listRef);
-  const searcher = useMemo(() => makePrefixSearch(options), [options]);
-  const selectedIndex = useSelectedIndex({ options, selectedValue });
+  const ariaExpanded = expanded ? 'true' : { mac: null, windows: false }[platform];
 
   useEffect(() => {
     if (!search) {
       return undefined;
     }
-    const found = searcher(search);
-    if (found && found.length) {
-      dispatch(setSelectedValue(found[0]));
+    const found = options.find(o => o.label.toLowerCase().startsWith(search));
+    if (found) {
+      dispatch(setSelectedValue(found));
     }
     const timeout = setTimeout(() => dispatch(clearSearch()), 1000);
 
     return () => clearTimeout(timeout);
-  }, [options, searcher, search, setValue]);
+  }, [options, search, setValue]);
 
   useLayoutEffect(() => {
     if (expanded && options[selectedIndex] && managedFocus) {
@@ -62,36 +62,45 @@ export function DropDown({
     }
   }, [expanded, managedFocus, options, selectedIndex]);
 
-  console.log(options);
+  const customDropDownComponent = dismemberComponent(DropDownComponent);
+  const customButtonComponent = dismemberComponent(ButtonComponent, 'button');
+  const customListBoxComponent = dismemberComponent(ListBoxComponent, 'ul');
+  const customGroupComponent = dismemberComponent(GroupComponent, 'li');
+  const customOptionComponent = dismemberComponent(OptionComponent, 'li');
+  const customValueComponent = dismemberComponent(ValueComponent);
 
   return (
     <Context.Provider value={{ dispatch, ...optionisedProps, ...state }}>
-      <DropDownComponent
+      <customDropDownComponent.type
+        {...customDropDownComponent.props}
         {...componentProps}
       >
-        <ButtonComponent
+        <customButtonComponent.type
           type="button"
+          role={platform === 'win' ? 'combobox' : null}
           id={id}
-          aria-haspopup="listbox"
-          aria-expanded={expanded ? 'true' : null}
           aria-controls={`${id}_list_box`}
           aria-labelledby={labelId ? `${labelId} ${id}` : null}
+          aria-expanded={expanded ? 'true' : { mac: null, windows: 'false' }[platform]}
+          aria-haspopup={platform === 'mac' ? 'menu' : 'listbox'}
           ref={buttonRef}
           onClick={() => dispatch(onToggleOpen())}
           onKeyDown={e => dispatch(onButtonKeyDown(e))}
+          {...customButtonComponent.props}
         >
           {children || (value && value.label) || blank}
-        </ButtonComponent>
-        <ListBoxComponent
+        </customButtonComponent.type>
+        <customListBoxComponent.type
           ref={listRef}
           id={`${id}_list_box`}
-          role="listbox"
+          role={platform === 'mac' ? 'menu' : 'listbox'}
           tabIndex={-1}
           hidden={!expanded}
           aria-activedescendant={options[selectedIndex]?.id || null}
           onFocus={e => dispatch(onFocus(e))}
           onBlur={onBlurHandler}
           onKeyDown={e => dispatch(onKeyDown(e))}
+          {...customListBoxComponent.props}
         >
           {renderGroupedOptions({
             options,
@@ -102,13 +111,14 @@ export function DropDown({
                   key={key}
                   value={{ dispatch, ...optionisedProps, ...state, group }}
                 >
-                  <GroupComponent
+                  <customGroupComponent.type
                     id={key}
                     aria-hidden="true" // Hidden otherwise VoiceOver counts the wrong number of options
+                    {...customGroupComponent.props}
                     {...html}
                   >
                     {node ?? label}
-                  </GroupComponent>
+                  </customGroupComponent.type>
                   {groupChildren}
                 </Context.Provider>
               );
@@ -121,7 +131,7 @@ export function DropDown({
                   key={key}
                   value={{ dispatch, ...optionisedProps, ...state, option }}
                 >
-                  <OptionComponent
+                  <customOptionComponent.type
                     id={key}
                     role="option"
                     tabIndex={-1}
@@ -130,19 +140,22 @@ export function DropDown({
                     aria-labelledby={group ? `${group.key} ${key}` : null}
                     data-focused={index === selectedIndex ? 'true' : null}
                     ref={index === selectedIndex ? selectedRef : null}
+                    {...customOptionComponent.props}
                     {...html}
                     onClick={disabled ? null : e => onClick(e, option)}
                   >
-                    <ValueComponent>
+                    <customValueComponent.type
+                      {...customValueComponent.props}
+                    >
                       {node ?? label}
-                    </ValueComponent>
-                  </OptionComponent>
+                    </customValueComponent.type>
+                  </customOptionComponent.type>
                 </Context.Provider>
               );
             },
           })}
-        </ListBoxComponent>
-      </DropDownComponent>
+        </customListBoxComponent.type>
+      </customDropDownComponent.type>
     </Context.Provider>
   );
 }
@@ -156,6 +169,7 @@ DropDown.propTypes = {
   setValue: PropTypes.func.isRequired,
   value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
   managedFocus: PropTypes.bool,
+  platform: PropTypes.oneOf('mac', 'windows'),
   ListBoxComponent: componentCustomiser,
   ButtonComponent: componentCustomiser,
   GroupComponent: componentCustomiser,
@@ -170,6 +184,7 @@ DropDown.defaultProps = {
   value: null,
   labelId: null,
   managedFocus: true,
+  platform: getPlatform(),
   ListBoxComponent: 'ul',
   ButtonComponent: 'button',
   GroupComponent: 'li',

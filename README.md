@@ -131,6 +131,9 @@ It is often desired to highlight the search results.
 
 ## TODO
 
+- hide delete button
+- abandon navigation menu
+- ? should escape reset the current selection ?
 - menu
   - auto open don't close on click
 - auto-id

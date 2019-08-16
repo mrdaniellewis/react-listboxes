@@ -2,6 +2,7 @@ import { nextInList } from '../../helpers/next_in_list.js';
 import { previousInList } from '../../helpers/previous_in_list.js';
 import { equalValues } from '../../helpers/equal_values.js';
 import { rNonPrintableKey } from '../../constants/r_non_printable_key.js';
+import { findSelectedIndex } from '../../helpers/find_selected_index.js';
 
 export const SET_EXPANDED = 'SET_EXPANDED';
 export const CLEAR_SEARCH = 'CLEAR_SEARCH';
@@ -64,7 +65,7 @@ export function onButtonKeyDown(event) {
 export function onKeyDown(event) {
   return (dispatch, getState, getProps) => {
     const { expanded, selectedValue } = getState();
-    const { options, buttonRef } = getProps();
+    const { options, buttonRef, value, platform } = getProps();
     const { altKey, metaKey, ctrlKey, key } = event;
 
     if (metaKey || ctrlKey) {
@@ -73,14 +74,15 @@ export function onKeyDown(event) {
 
     if (key === 'Escape') {
       event.preventDefault();
+      if (platform === 'mac') {
+        dispatch(setSelectedValue(value));
+      }
       dispatch(setExpanded(false));
       buttonRef.current.focus();
       return;
     }
 
-    const selectedIndex = selectedValue
-      ? options.findIndex(o => o.identity === selectedValue.identity)
-      : -1;
+    const selectedIndex = findSelectedIndex({ options, selectedValue, required: true });
 
     switch (key) {
       case 'ArrowUp':

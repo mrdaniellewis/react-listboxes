@@ -12,10 +12,11 @@ import { useOnBlur } from '../../hooks/use_on_blur.js';
 import { joinTokens } from '../../helpers/join_tokens.js';
 import { componentCustomiser } from '../../validators/component_customiser.js';
 import { renderGroupedOptions } from '../../helpers/render_grouped_options.js';
+import { dismemberComponent } from '../../helpers/dismember_component.js';
 
 export function ComboBox({
   ComboBoxComponent, OptionComponent, GroupComponent, ListBoxComponent, InputComponent,
-  SpinnerComponent, NotFoundComponent, DescriptionComponent, ClearButtonComponent,
+  SpinnerComponent, NotFoundComponent, ClearButtonComponent,
   OpenButtonComponent, ValueComponent, ...rawProps
 }) {
   const comboRef = useRef();
@@ -51,20 +52,33 @@ export function ComboBox({
     }
   }, [expanded, managedFocus, selectedIndex, options]);
 
+  const customComboBoxComponent = dismemberComponent(ComboBoxComponent, 'div');
+  const customInputComponent = dismemberComponent(InputComponent, 'input');
+  const customListBoxComponent = dismemberComponent(ListBoxComponent, 'ul');
+  const customGroupComponent = dismemberComponent(GroupComponent, 'li');
+  const customOptionComponent = dismemberComponent(OptionComponent, 'li');
+  const customValueComponent = dismemberComponent(ValueComponent);
+  const customSpinnerComponent = dismemberComponent(SpinnerComponent, 'span');
+  const customClearButtonComponent = dismemberComponent(ClearButtonComponent, 'span');
+  const customOpenButtonComponent = dismemberComponent(OpenButtonComponent, 'span');
+  const customNotFoundComponent = dismemberComponent(NotFoundComponent, 'div');
+
   return (
     <Context.Provider value={{ dispatch, ...optionisedProps, ...state }}>
-      <ComboBoxComponent
+      <customComboBoxComponent.type
         aria-busy={showBusy ? 'true' : 'false'}
         className={className}
         onBlur={blur}
         ref={comboRef}
+        {...customComboBoxComponent.props}
         {...componentProps}
       >
-        <SpinnerComponent
+        <customSpinnerComponent.type
           className="spinner"
           hidden={!showBusy}
+          {...customSpinnerComponent.props}
         />
-        <InputComponent
+        <customInputComponent.type
           id={id}
           type="text"
           role="combobox"
@@ -81,11 +95,14 @@ export function ComboBox({
           aria-describedby={joinTokens(showNotFound && `${id}_not_found`, `${id}_info`)}
           autoComplete="off"
           ref={inputRef}
+          {...customInputComponent.props}
         />
-        <ClearButtonComponent
-          type="button"
+        <customClearButtonComponent.type
           onMouseDown={e => e.preventDefault()}
-          onClick={() => {
+          onClick={(e) => {
+            if (e.button > 0) {
+              return;
+            }
             inputRef.current.focus();
             dispatch(onSelectValue(null));
           }}
@@ -93,20 +110,25 @@ export function ComboBox({
           aria-label="Clear"
           id={`${id}_clear_button`}
           aria-labelledby={joinTokens(`${id}_clear_button`, labelId, id)}
+          {...customClearButtonComponent.props}
         >
           ×
-        </ClearButtonComponent>
-        <OpenButtonComponent
+        </customClearButtonComponent.type>
+        <customOpenButtonComponent.type
           onMouseDown={e => e.preventDefault()}
-          onClick={() => {
+          onClick={(e) => {
+            if (e.button > 0) {
+              return;
+            }
             inputRef.current.focus();
             dispatch(setExpanded(true));
           }}
           aria-hidden="true"
+          {...customOpenButtonComponent.props}
         >
           ▼
-        </OpenButtonComponent>
-        <ListBoxComponent
+        </customOpenButtonComponent.type>
+        <customListBoxComponent.type
           id={`${id}_list_box`}
           role="listbox"
           tabIndex={-1}
@@ -114,6 +136,7 @@ export function ComboBox({
           aria-activedescendant={options[selectedIndex]?.id ?? null}
           onKeyDown={e => dispatch(onKeyDown(e))}
           onMouseDown={e => e.preventDefault()}
+          {...customListBoxComponent.props}
         >
           {renderGroupedOptions({
             options,
@@ -124,13 +147,14 @@ export function ComboBox({
                   key={key}
                   value={{ dispatch, ...optionisedProps, ...state, group }}
                 >
-                  <GroupComponent
+                  <customGroupComponent.type
                     id={key}
                     aria-hidden="true" // Hidden otherwise VoiceOver counts the wrong number of options
+                    {...customGroupComponent.props}
                     {...html}
                   >
                     {node ?? label}
-                  </GroupComponent>
+                  </customGroupComponent.type>
                   {groupChildren}
                 </Context.Provider>
               );
@@ -143,7 +167,7 @@ export function ComboBox({
                   key={key}
                   value={{ dispatch, ...optionisedProps, ...state, option }}
                 >
-                  <OptionComponent
+                  <customOptionComponent.type
                     id={key}
                     role="option"
                     tabIndex={-1}
@@ -152,35 +176,31 @@ export function ComboBox({
                     aria-labelledby={group ? `${group.key} ${key}` : null}
                     data-focused={index === selectedIndex ? 'true' : null}
                     ref={index === selectedIndex ? selectedRef : null}
+                    {...customOptionComponent.props}
                     {...html}
                     onClick={disabled ? null : () => dispatch(onSelectValue(option))}
                   >
-                    <ValueComponent>
+                    <customValueComponent.type
+                      {...customValueComponent.props}
+                    >
                       {node ?? label}
-                    </ValueComponent>
-                  </OptionComponent>
+                    </customValueComponent.type>
+                  </customOptionComponent.type>
                 </Context.Provider>
               );
             },
           })}
-        </ListBoxComponent>
-        <NotFoundComponent
+        </customListBoxComponent.type>
+        <customNotFoundComponent.type
           id={`${id}_not_found`}
           hidden={!showNotFound}
           role="alert"
           aria-live="polite"
+          {...customNotFoundComponent.props}
         >
-          {notFoundMessage}
-        </NotFoundComponent>
-        <DescriptionComponent
-          id={`${id}_info`}
-          hidden
-        >
-          {options.length && showListBox && (
-            `Found ${options.length} options`
-          )}
-        </DescriptionComponent>
-      </ComboBoxComponent>
+          {showNotFound ? notFoundMessage : null}
+        </customNotFoundComponent.type>
+      </customComboBoxComponent.type>
     </Context.Provider>
   );
 }
@@ -199,7 +219,6 @@ ComboBox.propTypes = {
   ClearButtonComponent: componentCustomiser,
   ComboBoxComponent: componentCustomiser,
   GroupComponent: componentCustomiser,
-  DescriptionComponent: componentCustomiser,
   InputComponent: componentCustomiser,
   ListBoxComponent: componentCustomiser,
   NotFoundComponent: componentCustomiser,
@@ -216,10 +235,9 @@ ComboBox.defaultProps = {
   notFoundMessage: 'No matches found',
   value: null,
 
-  ClearButtonComponent: 'button',
+  ClearButtonComponent: 'span',
   ComboBoxComponent: 'div',
   GroupComponent: 'li',
-  DescriptionComponent: 'div',
   InputComponent: 'input',
   ListBoxComponent: 'ul',
   NotFoundComponent: 'div',

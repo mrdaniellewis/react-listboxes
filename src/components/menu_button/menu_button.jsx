@@ -2,7 +2,6 @@ import React, { useRef, useMemo, useEffect, useLayoutEffect, Fragment, useCallba
 import PropTypes from 'prop-types';
 import { useThunkReducer as useReducer } from '../../hooks/use_thunk_reducer.js';
 import { usePrevious } from '../../hooks/use_previous.js';
-import { options as validateOptions } from '../../validators/options.js';
 import { reducer } from './reducer.js';
 import { initialState } from './initial_state.js';
 import { onButtonKeyDown, onKeyDown, setExpanded, onClick, setSelectedIndex } from './actions.js';

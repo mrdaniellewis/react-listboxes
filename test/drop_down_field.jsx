@@ -8,7 +8,8 @@ export function DropDownField({ label, ...props }) {
   const id = label.trim().toLowerCase().replace(/[^a-z]+/ig, '_').toLowerCase();
   return (
     <>
-      <label htmlFor={id} id={`${id}_label`}>
+      {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+      <label id={`${id}_label`} onClick={() => document.getElementById(id).focus()}>
         {label}
       </label>
       <DropDown

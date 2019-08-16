@@ -1,6 +1,6 @@
 import { isValidElement, Fragment } from 'react';
 
-export function dismemberComponent(component) {
+export function dismemberComponent(component, type) {
   if (isValidElement(component)) {
     return component;
   }
@@ -9,5 +9,6 @@ export function dismemberComponent(component) {
   }
   return {
     props: component,
+    type,
   };
 }
