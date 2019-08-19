@@ -25,8 +25,8 @@ export function ComboBox({
 
   const optionisedProps = useNormalisedOptions({ ...rawProps });
   const {
-    notFoundMessage, options, value, id, busy, managedFocus, labelId,
-    className, setValue: _1, onSearch: _2, valueIndex: _3, ...componentProps
+    notFoundMessage, options, value, id, busy, managedFocus, labelId, className, 'aria-describedby': ariaDescribedby,
+    setValue: _1, onSearch: _2, valueIndex: _3, ...componentProps
   } = optionisedProps;
   const [state, dispatch] = useReducer(reducer, { ...optionisedProps, inputRef }, initialState, id);
   const { expanded, search, listBoxFocused, selectedValue, focused } = state;
@@ -74,7 +74,7 @@ export function ComboBox({
         {...componentProps}
       >
         <customSpinnerComponent.type
-          className="spinner"
+          className={className ? `${className}__spinner` : null}
           hidden={!showBusy}
           {...customSpinnerComponent.props}
         />
@@ -84,7 +84,7 @@ export function ComboBox({
           role="combobox"
           aria-autocomplete="both"
           aria-haspopup="true"
-          aria-owns={`${id}_list_box`}
+          aria-owns={`${id}_listbox`}
           aria-expanded={showListBox ? 'true' : 'false'}
           aria-activedescendant={activeId}
           data-focused={focused ? 'true' : null}
@@ -92,9 +92,10 @@ export function ComboBox({
           onKeyDown={e => dispatch(onKeyDown(e))}
           onChange={e => dispatch(onChange(e))}
           onFocus={e => dispatch(onFocus(e))}
-          aria-describedby={joinTokens(showNotFound && `${id}_not_found`, `${id}_info`)}
+          aria-describedby={joinTokens(showNotFound && `${id}_not_found`, ariaDescribedby)}
           autoComplete="off"
           ref={inputRef}
+          className={className ? `${className}__input` : null}
           {...customInputComponent.props}
         />
         <customClearButtonComponent.type
@@ -110,6 +111,7 @@ export function ComboBox({
           aria-label="Clear"
           id={`${id}_clear_button`}
           aria-labelledby={joinTokens(`${id}_clear_button`, labelId, id)}
+          className={className ? `${className}__clear-button` : null}
           {...customClearButtonComponent.props}
         >
           ×
@@ -124,18 +126,20 @@ export function ComboBox({
             dispatch(setExpanded(true));
           }}
           aria-hidden="true"
+          className={className ? `${className}__open-button` : null}
           {...customOpenButtonComponent.props}
         >
           ▼
         </customOpenButtonComponent.type>
         <customListBoxComponent.type
-          id={`${id}_list_box`}
+          id={`${id}_listbox`}
           role="listbox"
           tabIndex={-1}
           hidden={!showListBox}
           aria-activedescendant={options[selectedIndex]?.id ?? null}
           onKeyDown={e => dispatch(onKeyDown(e))}
           onMouseDown={e => e.preventDefault()}
+          className={className ? `${className}__listbox` : null}
           {...customListBoxComponent.props}
         >
           {renderGroupedOptions({
@@ -150,6 +154,7 @@ export function ComboBox({
                   <customGroupComponent.type
                     id={key}
                     aria-hidden="true" // Hidden otherwise VoiceOver counts the wrong number of options
+                    className={className ? `${className}__listbox__group` : null}
                     {...customGroupComponent.props}
                     {...html}
                   >
@@ -176,6 +181,7 @@ export function ComboBox({
                     aria-labelledby={group ? `${group.key} ${key}` : null}
                     data-focused={index === selectedIndex ? 'true' : null}
                     ref={index === selectedIndex ? selectedRef : null}
+                    className={className ? `${className}__listbox__option` : null}
                     {...customOptionComponent.props}
                     {...html}
                     onClick={disabled ? null : () => dispatch(onSelectValue(option))}
@@ -196,6 +202,7 @@ export function ComboBox({
           hidden={!showNotFound}
           role="alert"
           aria-live="polite"
+          className={className ? `${className}__not-found` : null}
           {...customNotFoundComponent.props}
         >
           {showNotFound ? notFoundMessage : null}

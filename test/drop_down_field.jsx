@@ -17,7 +17,7 @@ export function DropDownField({ label, ...props }) {
         {...props}
         value={value}
         setValue={newValue => setValue(newValue)}
-        labelId={`${id}_label`}
+        ButtonComponent={{ 'aria-labelledby': `${id}_label ${id}` }}
       />
     </>
   );

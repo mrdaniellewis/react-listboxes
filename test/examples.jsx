@@ -1,26 +1,11 @@
 /* eslint-disable no-console */
 
-import React, { forwardRef } from 'react';
+import React from 'react';
 import { SelectField } from './select_field.jsx';
 import { DropDownField } from './drop_down_field.jsx';
 import { ComboBoxField } from './combo_box_field.jsx';
 import { AsyncComboBoxField } from './async_combo_box_field.jsx';
 import { MenuButton } from '../src/components/menu_button/index.jsx';
-import { NavigationMenuButton } from '../src/components/navigation_menu_button.jsx';
-
-const WrappedButton = forwardRef((props, ref) => (
-  <div>
-    {/* eslint-disable-next-line react/button-has-type */}
-    <button {...props} ref={ref} />
-  </div>
-));
-
-const WrappedListBox = forwardRef((props, ref) => (
-  <div>
-    {/* eslint-disable-next-line react/button-has-type */}
-    <ul {...props} ref={ref} />
-  </div>
-));
 
 export function Examples() {
   return (
@@ -127,20 +112,13 @@ export function Examples() {
         label="Dropdown windows style"
         options={['Foo', 'Bar', 'Foe', 'Fee']}
         blank="Please choose…"
-        platform="win"
+        platform="windows"
       />
       <DropDownField
         label="Dropdown more Maccy"
         options={['Foo', 'Bar', 'Foe', 'Fee']}
         blank="Please choose…"
         platform="mac"
-      />
-      <DropDownField
-        label="Dropdown wrapped"
-        options={['Foo', 'Bar', 'Foe', 'Fee']}
-        blank="Please choose…"
-        // eslint-disable-next-line react/button-has-type, jsx-a11y/role-has-required-aria-props
-        ButtonComponent={WrappedButton}
       />
       <DropDownField
         label="Dropdown grouped"
@@ -202,35 +180,6 @@ export function Examples() {
           Menu
         </MenuButton>
       </div>
-      <div>
-        <NavigationMenuButton
-          options={[
-            {
-              label: 'example.com',
-              href: 'http://example.com',
-              tabIndex: null,
-            },
-            {
-              label: 'bbc.co.uk',
-              href: 'http://bbc.co.uk',
-              tabIndex: null,
-            },
-            {
-              label: 'bbc.co.uk',
-              href: 'http://bbc.co.uk',
-              tabIndex: null,
-            },
-            {
-              label: 'wikipedia.org',
-              href: 'http://wikipedia.org',
-              tabIndex: null,
-            },
-          ]}
-          id="menu_navigation"
-        >
-          Navigation menu
-        </NavigationMenuButton>
-      </div>
       {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
       <label htmlFor="native-combobox">
         Native combobox
@@ -245,11 +194,6 @@ export function Examples() {
       <ComboBoxField
         label="ComboBox"
         options={['Foo', 'Bar', 'Foe', 'Fee']}
-      />
-      <ComboBoxField
-        label="ComboBox wrapped"
-        options={['Foo', 'Bar', 'Foe', 'Fee']}
-        ListBoxComponent={WrappedListBox}
       />
       <ComboBoxField
         label="ComboBox grouped"

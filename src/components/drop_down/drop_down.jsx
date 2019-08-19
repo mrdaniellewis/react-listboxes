@@ -23,8 +23,8 @@ export function DropDown({
 }) {
   const optionisedProps = useNormalisedOptions(rawProps);
   const {
-    options, value, setValue, blank, id,
-    children, managedFocus, labelId, platform, ...componentProps
+    options, value, setValue, blank, id, className,
+    children, managedFocus, platform, ...componentProps
   } = optionisedProps;
   const buttonRef = useRef();
   const listRef = useRef();
@@ -53,7 +53,7 @@ export function DropDown({
     return () => clearTimeout(timeout);
   }, [options, search, setValue]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (expanded && options[selectedIndex] && managedFocus) {
       selectedRef.current.focus();
     } else if (expanded) {
@@ -71,27 +71,28 @@ export function DropDown({
   return (
     <Context.Provider value={{ dispatch, ...optionisedProps, listRef, buttonRef, ...state }}>
       <customDropDownComponent.type
+        {...(customDropDownComponent.type === Fragment ? undefined : { className })}
         {...customDropDownComponent.props}
         {...componentProps}
       >
         <customButtonComponent.type
           type="button"
-          role={platform === 'win' ? 'combobox' : null}
+          role={platform === 'windows' ? 'combobox' : null}
           id={id}
-          aria-controls={`${id}_list_box`}
-          aria-labelledby={labelId ? `${labelId} ${id}` : null}
+          aria-controls={`${id}_listbox`}
           aria-expanded={expanded ? 'true' : { mac: null, windows: 'false' }[platform]}
           aria-haspopup={platform === 'mac' ? 'menu' : 'listbox'}
           ref={buttonRef}
           onClick={() => dispatch(onToggleOpen())}
           onKeyDown={e => dispatch(onButtonKeyDown(e))}
+          className={className ? `${className}__button` : null}
           {...customButtonComponent.props}
         >
           {children || (value && value.label) || blank}
         </customButtonComponent.type>
         <customListBoxComponent.type
           ref={listRef}
-          id={`${id}_list_box`}
+          id={`${id}_listbox`}
           role={platform === 'mac' ? 'menu' : 'listbox'}
           tabIndex={-1}
           hidden={!expanded}
@@ -99,6 +100,7 @@ export function DropDown({
           onFocus={e => dispatch(onFocus(e))}
           onBlur={onBlurHandler}
           onKeyDown={e => dispatch(onKeyDown(e))}
+          className={className ? `${className}__listbox` : null}
           {...customListBoxComponent.props}
         >
           {renderGroupedOptions({
@@ -113,6 +115,7 @@ export function DropDown({
                   <customGroupComponent.type
                     id={key}
                     aria-hidden="true" // Hidden otherwise VoiceOver counts the wrong number of options
+                    className={className ? `${className}__listbox__group` : null}
                     {...customGroupComponent.props}
                     {...html}
                   >
@@ -139,6 +142,7 @@ export function DropDown({
                     aria-labelledby={group ? `${group.key} ${key}` : null}
                     data-focused={index === selectedIndex ? 'true' : null}
                     ref={index === selectedIndex ? selectedRef : null}
+                    className={className ? `${className}__listbox__option` : null}
                     {...customOptionComponent.props}
                     {...html}
                     onClick={disabled ? null : e => onClick(e, option)}
@@ -163,12 +167,12 @@ DropDown.propTypes = {
   blank: PropTypes.string,
   children: PropTypes.node,
   id: PropTypes.string.isRequired,
-  labelId: PropTypes.string,
   options: validateOptions.isRequired,
   setValue: PropTypes.func.isRequired,
   value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
   managedFocus: PropTypes.bool,
   platform: PropTypes.oneOf(['mac', 'windows']),
+  className: PropTypes.string,
   ListBoxComponent: componentCustomiser,
   ButtonComponent: componentCustomiser,
   GroupComponent: componentCustomiser,
@@ -181,7 +185,7 @@ DropDown.defaultProps = {
   blank: '',
   children: null,
   value: null,
-  labelId: null,
+  className: 'drop-down',
   managedFocus: true,
   platform: getPlatform(),
   ListBoxComponent: 'ul',

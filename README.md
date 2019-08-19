@@ -131,28 +131,20 @@ It is often desired to highlight the search results.
 
 ## TODO
 
+- MenuBar
 - Menu
   - Add grouping
   - Only move to valid roles
   - Remove navigation menu
   - Remove autoopen
-- Drop down
-  - windows - don't reset on escape
-- Positioning
+- MenuBar
+  - Work with menu button
 - auto-id
 - fix validators
   - id validator
-- tab trapped in ie11 on button
-- do not label button (ie11)
-- ie11 only reading "clear" on clear button
-- labelledby passthrough
-- describedby passthough
-- do we still need data-focused?
-- class name generation
+- Positioning
 - Styling
 - Positioning
-- Menu button
-  - dividers
 - Combo box
   - Aria 1.1 sample
   - Click / hover styling
