@@ -39,7 +39,6 @@ export function DropDown({
   const { expanded, search, selectedValue } = state;
   const selectedIndex = useSelectedIndex({ options, selectedValue, required: true });
   const onBlurHandler = useOnBlur(() => dispatch(onBlur()), listRef);
-  const ariaExpanded = expanded ? 'true' : { mac: null, windows: false }[platform];
 
   useEffect(() => {
     if (!search) {
@@ -54,7 +53,7 @@ export function DropDown({
     return () => clearTimeout(timeout);
   }, [options, search, setValue]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (expanded && options[selectedIndex] && managedFocus) {
       selectedRef.current.focus();
     } else if (expanded) {
@@ -70,7 +69,7 @@ export function DropDown({
   const customValueComponent = dismemberComponent(ValueComponent);
 
   return (
-    <Context.Provider value={{ dispatch, ...optionisedProps, ...state }}>
+    <Context.Provider value={{ dispatch, ...optionisedProps, listRef, buttonRef, ...state }}>
       <customDropDownComponent.type
         {...customDropDownComponent.props}
         {...componentProps}
@@ -169,7 +168,7 @@ DropDown.propTypes = {
   setValue: PropTypes.func.isRequired,
   value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
   managedFocus: PropTypes.bool,
-  platform: PropTypes.oneOf('mac', 'windows'),
+  platform: PropTypes.oneOf(['mac', 'windows']),
   ListBoxComponent: componentCustomiser,
   ButtonComponent: componentCustomiser,
   GroupComponent: componentCustomiser,

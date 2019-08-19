@@ -78,7 +78,9 @@ export function onKeyDown(event) {
         if (altKey) {
           dispatch(setExpanded(false));
         } else {
-          dispatch(setSelectedValue(previousInList(options, selectedIndex, expanded)));
+          dispatch(setSelectedValue(previousInList(
+            options, selectedIndex, { allowEmpty: expanded },
+          )));
         }
         break;
       case 'ArrowDown':
@@ -88,7 +90,7 @@ export function onKeyDown(event) {
           return;
         }
         if (!altKey) {
-          dispatch(setSelectedValue(nextInList(options, selectedIndex, expanded)));
+          dispatch(setSelectedValue(nextInList(options, selectedIndex, { allowEmpty: expanded })));
         } else {
           dispatch(setExpanded(true));
         }

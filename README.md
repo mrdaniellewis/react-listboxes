@@ -131,11 +131,14 @@ It is often desired to highlight the search results.
 
 ## TODO
 
-- hide delete button
-- abandon navigation menu
-- ? should escape reset the current selection ?
-- menu
-  - auto open don't close on click
+- Menu
+  - Add grouping
+  - Only move to valid roles
+  - Remove navigation menu
+  - Remove autoopen
+- Drop down
+  - windows - don't reset on escape
+- Positioning
 - auto-id
 - fix validators
   - id validator
