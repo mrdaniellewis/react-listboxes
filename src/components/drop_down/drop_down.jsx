@@ -61,7 +61,7 @@ export function DropDown({
     }
   }, [expanded, managedFocus, options, selectedIndex]);
 
-  const customDropDownComponent = dismemberComponent(DropDownComponent);
+  const customDropDownComponent = dismemberComponent(DropDownComponent, 'div');
   const customButtonComponent = dismemberComponent(ButtonComponent, 'button');
   const customListBoxComponent = dismemberComponent(ListBoxComponent, 'ul');
   const customGroupComponent = dismemberComponent(GroupComponent, 'li');
@@ -193,5 +193,5 @@ DropDown.defaultProps = {
   GroupComponent: 'li',
   OptionComponent: 'li',
   ValueComponent: Fragment,
-  DropDownComponent: Fragment,
+  DropDownComponent: 'div',
 };
