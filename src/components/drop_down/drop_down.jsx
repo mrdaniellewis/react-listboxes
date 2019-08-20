@@ -145,7 +145,7 @@ export function DropDown({
                     className={className ? `${className}__listbox__option` : null}
                     {...customOptionComponent.props}
                     {...html}
-                    onClick={disabled ? null : e => onClick(e, option)}
+                    onClick={disabled ? null : e => dispatch(onClick(e, option))}
                   >
                     <customValueComponent.type
                       {...customValueComponent.props}
@@ -185,7 +185,7 @@ DropDown.defaultProps = {
   blank: '',
   children: null,
   value: null,
-  className: 'drop-down',
+  className: 'dropdown',
   managedFocus: true,
   platform: getPlatform(),
   ListBoxComponent: 'ul',

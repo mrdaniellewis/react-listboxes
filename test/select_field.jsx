@@ -10,12 +10,14 @@ export function SelectField({ label, ...props }) {
       <label htmlFor={id}>
         {label}
       </label>
-      <Select
-        id={id}
-        value={value}
-        setValue={setValue}
-        {...props}
-      />
+      <div className="select">
+        <Select
+          id={id}
+          value={value}
+          setValue={setValue}
+          {...props}
+        />
+      </div>
     </>
   );
 }
