@@ -3,8 +3,6 @@
     "posthtml-include": {
       "root": "./"
     },
-    "posthtml-md": {
-      "root": "./"
-    }
+    "posthtml-markdown": {}
   }
 }

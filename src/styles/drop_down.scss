@@ -1,0 +1,17 @@
+@import "./variables.scss";
+
+.dropdown {
+  width: max-content;
+  position: relative;
+  max-width: 100%;
+}
+
+.dropdown__button {
+  padding-right: 2em;
+  background: #eee;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-overflow: "";
+}

@@ -6,7 +6,7 @@
   "main": "src/index.jsx",
   "scripts": {
     "prebuild": "rm -rf dist",
-    "build": "parcel build ./test/*.html --public-url .",
+    "build": "parcel build ./test/index.html --public-url .",
     "start": "parcel ./test/*.html",
     "lint": "eslint . --ext .js --ext .jsx",
     "test": "jest",
@@ -41,7 +41,7 @@
     "parcel-plugin-bundle-visualiser": "^1.2.0",
     "postcss-modules": "^1.4.1",
     "posthtml-include": "^1.2.0",
-    "posthtml-md": "^1.1.0",
+    "posthtml-markdown": "^0.1.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",

@@ -1,0 +1,26 @@
+@import "./variables.scss";
+
+button,
+[type=button],
+[type=reset],
+[type=submit] {
+  outline: none;
+  align-items: center;
+  border: none;
+  padding: .4em;
+  box-shadow: inset 0 0 0 1px $color-button-border;
+  cursor: pointer;
+  background-color: $color-button-background;
+  border-radius: 1px;
+
+  &:focus {
+    outline: none;
+    border: 0;
+    box-shadow: inset 0 0 0 2px $color-focus;
+  }
+
+  &:-moz-focusring {
+    // Override normalize
+    outline: none;
+  }
+}
