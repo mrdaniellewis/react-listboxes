@@ -65,13 +65,15 @@ function Example() {
             <Select
               value={value}
               setValue={setValue}
+              blank="Please choose…"
               options={['Apple', 'Banana', 'Cherry', 'Mango', 'Ugli fruit']}
             />
           `}
         </code>
       </pre>
       <SelectField
-        label="Grouped select"
+        label="Select with blank"
+        blank="Please choose…"
         options={['Apple', 'Banana', 'Cherry', 'Mango', 'Ugli fruit']}
       />
     </>
