@@ -131,6 +131,9 @@ It is often desired to highlight the search results.
 
 ## TODO
 
+- get docs working - one page per component
+- get unit tests working
+
 - MenuBar
 - Menu
   - Add grouping

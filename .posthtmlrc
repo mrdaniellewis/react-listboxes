@@ -3,6 +3,10 @@
     "posthtml-include": {
       "root": "./"
     },
-    "posthtml-markdown": {}
+    "posthtml-markdown": {
+      "root": "./"
+    },
+    "posthtml-escape-code": {
+    },
   }
 }

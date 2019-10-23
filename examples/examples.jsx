@@ -5,7 +5,6 @@ import { SelectField } from './select_field.jsx';
 import { DropDownField } from './drop_down_field.jsx';
 import { ComboBoxField } from './combo_box_field.jsx';
 import { AsyncComboBoxField } from './async_combo_box_field.jsx';
-import { MenuButton } from '../src/components/menu_button/index.jsx';
 
 export function Examples() {
   return (
@@ -167,39 +166,6 @@ export function Examples() {
           'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
         ]}
       />
-      <div>
-        <MenuButton
-          options={[
-            {
-              label: 'Foo',
-              onClick: () => console.log(1),
-            },
-            {
-              label: 'Boo',
-              disabled: true,
-              onClick: () => console.log(2),
-            },
-            <div role="separator" />,
-            {
-              label: 'Foe',
-              onClick: () => console.log(3),
-            },
-            {
-              label: 'Thumb',
-              onClick: () => console.log(4),
-            },
-            (
-              <a href="http://www.citizensadvice.org.uk" tabIndex={null} role={null}>
-                 www.citizensadvice.org.uk
-              </a>
-            ),
-          ]}
-          id="menu"
-          openOnHover
-        >
-          Menu
-        </MenuButton>
-      </div>
       {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
       <label htmlFor="native-combobox">
         Native combobox
