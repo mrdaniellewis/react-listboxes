@@ -44,7 +44,7 @@ export function DropDown({
     if (!search) {
       return undefined;
     }
-    const found = options.find(o => o.label.toLowerCase().startsWith(search));
+    const found = options.find((o) => o.label.toLowerCase().startsWith(search));
     if (found) {
       dispatch(setSelectedValue(found));
     }
@@ -84,7 +84,7 @@ export function DropDown({
           aria-haspopup={platform === 'mac' ? 'menu' : 'listbox'}
           ref={buttonRef}
           onClick={() => dispatch(onToggleOpen())}
-          onKeyDown={e => dispatch(onButtonKeyDown(e))}
+          onKeyDown={(e) => dispatch(onButtonKeyDown(e))}
           className={className ? `${className}__button` : null}
           {...customButtonComponent.props}
         >
@@ -97,9 +97,9 @@ export function DropDown({
           tabIndex={-1}
           hidden={!expanded}
           aria-activedescendant={options[selectedIndex]?.id || null}
-          onFocus={e => dispatch(onFocus(e))}
+          onFocus={(e) => dispatch(onFocus(e))}
           onBlur={onBlurHandler}
-          onKeyDown={e => dispatch(onKeyDown(e))}
+          onKeyDown={(e) => dispatch(onKeyDown(e))}
           className={className ? `${className}__listbox` : null}
           {...customListBoxComponent.props}
         >
@@ -145,7 +145,7 @@ export function DropDown({
                     className={className ? `${className}__listbox__option` : null}
                     {...customOptionComponent.props}
                     {...html}
-                    onClick={disabled ? null : e => dispatch(onClick(e, option))}
+                    onClick={disabled ? null : (e) => dispatch(onClick(e, option))}
                   >
                     <customValueComponent.type
                       {...customValueComponent.props}

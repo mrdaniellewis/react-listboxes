@@ -13,7 +13,7 @@ export function normaliseHighlight(highlight) {
 
   if (String.prototype.normalize) {
     // Renormalise as Open Sans can't cope with canonical composition
-    normalised = normalised.map(item => (typeof item === 'string' ? item.normalize('NFC') : [item[0].normalize('NFC')]));
+    normalised = normalised.map((item) => (typeof item === 'string' ? item.normalize('NFC') : [item[0].normalize('NFC')]));
   }
 
   return normalised.length ? normalised : [''];

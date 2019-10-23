@@ -10,7 +10,7 @@ export const useOptionisedProps = ({
       let newOptions = blank
         ? [{ value: null, label: blank, id: `${id}_blank` }, ...rawOptions]
         : rawOptions;
-      newOptions = newOptions.map(o => optionise(o));
+      newOptions = newOptions.map((o) => optionise(o));
       newOptions = groupOptions(newOptions);
       newOptions = newOptions.map((o, i) => ({ id: `${id}_${i}`, ...o }));
       return newOptions;
@@ -24,13 +24,13 @@ export const useOptionisedProps = ({
   );
 
   const valueIndex = useMemo(
-    () => options.findIndex(o => o.value === (value && value.value)),
+    () => options.findIndex((o) => o.value === (value && value.value)),
     [value, options],
   );
 
   const setValue = useCallback(
     (option) => {
-      let index = option !== null ? options.findIndex(o => o.value === option.value) : -1;
+      let index = option !== null ? options.findIndex((o) => o.value === option.value) : -1;
       if (blank && index > -1) {
         index -= 1;
       }

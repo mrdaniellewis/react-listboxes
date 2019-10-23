@@ -10,6 +10,6 @@ export const makePrefixSearch = (options) => {
     }
 
     const clean = toSearchableString(query);
-    return indexed.filter(text => text.startsWith(clean));
+    return indexed.filter((text) => text.startsWith(clean));
   };
 };

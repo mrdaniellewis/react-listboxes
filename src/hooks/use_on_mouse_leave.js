@@ -8,7 +8,7 @@ export function useOnMouseLeave(fn, ...refs) {
       left = false;
     };
 
-    els.forEach(el => (
+    els.forEach((el) => (
       el.addEventListener('mouseenter', onMouseEnter, { passive: true })
     ));
 
@@ -16,7 +16,7 @@ export function useOnMouseLeave(fn, ...refs) {
       if (left) {
         fn();
       }
-      els.forEach(el => (
+      els.forEach((el) => (
         el.removeEventListener('mouseenter', onMouseEnter, { passive: true })
       ));
     }, 500);

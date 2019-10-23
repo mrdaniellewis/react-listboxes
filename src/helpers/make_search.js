@@ -12,7 +12,7 @@ export const makeSearch = (options) => {
     const tokenised = tokenise(query);
     return indexed
       .map((tokens, i) => (
-        tokenised.every(token => tokens.some(part => part.indexOf(token) === 0))
+        tokenised.every((token) => tokens.some((part) => part.indexOf(token) === 0))
           ? options[i]
           : null
       ))

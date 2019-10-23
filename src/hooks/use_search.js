@@ -7,7 +7,7 @@ export const useSearch = (rawOptions) => {
   const [filteredOptions, setFilteredOptions] = useState(rawOptions);
   const onSearch = useMemo(() => {
     const search = makeSearch(options);
-    return query => setFilteredOptions(search(query));
+    return (query) => setFilteredOptions(search(query));
   }, [options]);
 
   return [filteredOptions, onSearch];

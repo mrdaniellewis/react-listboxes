@@ -51,7 +51,7 @@ export function tokenHighlighter(term, query) {
       }
       currentTerm += char.toLowerCase();
       // eslint-disable-next-line no-loop-func
-      match = tokenised.find(token => currentTerm.indexOf(token) === 0);
+      match = tokenised.find((token) => currentTerm.indexOf(token) === 0);
       if (match) {
         if (currentTerm.length <= match.length) {
           highlightEnds = buffer.length + 1;

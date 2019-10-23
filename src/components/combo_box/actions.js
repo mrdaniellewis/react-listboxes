@@ -65,7 +65,7 @@ export function onKeyDown(event) {
     }
 
     const selectedIndex = selectedValue
-      ? options.findIndex(o => o.value === selectedValue.value)
+      ? options.findIndex((o) => o.value === selectedValue.value)
       : -1;
 
     switch (key) {

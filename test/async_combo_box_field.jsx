@@ -16,7 +16,7 @@ export function AsyncComboBoxField({ label, ...props }) {
       if (query === 'fail') {
         throw new Error('failure');
       }
-      await new Promise(resolve => setTimeout(resolve, Math.random() * 3000));
+      await new Promise((resolve) => setTimeout(resolve, Math.random() * 3000));
       return search(query);
     },
     initialOptions,

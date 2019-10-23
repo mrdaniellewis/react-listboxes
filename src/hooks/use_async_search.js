@@ -22,7 +22,7 @@ export const useAsyncSearch = (
   const lastSearch = useRef(null);
   const [cacheMap] = useState(new Map());
   const [debouncer] = useState(() => debouncerFactory({ delay: debounce }));
-  const onSearch = useCallback(query => debouncer(async () => {
+  const onSearch = useCallback((query) => debouncer(async () => {
     lastSearch.current = query;
     const timeout = setTimeout(() => {
       if (lastSearch.current === query) {

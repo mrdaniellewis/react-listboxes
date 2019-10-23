@@ -51,7 +51,7 @@ export function useNormalisedOptions({ id, options, blank, value, ...props }) {
       if (Array.isArray(option?.options)) {
         // Option is a group
         let group = optioniseGroup(option);
-        const groupOptions = group.options.map(o => ({ ...normaliseOption(o), group }));
+        const groupOptions = group.options.map((o) => ({ ...normaliseOption(o), group }));
         if (!groups.has(group.identity)) {
           groups.set(group.identity, group);
           normalised.push(group);
@@ -76,7 +76,7 @@ export function useNormalisedOptions({ id, options, blank, value, ...props }) {
     });
 
     // Flatten the options
-    normalised = [].concat(...normalised.map(option => option.options || option));
+    normalised = [].concat(...normalised.map((option) => option.options || option));
 
     // Add keys to options
     normalised.forEach((option, index) => {

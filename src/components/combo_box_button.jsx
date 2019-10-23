@@ -2,7 +2,7 @@ import React, { setState, useLayoutEffect } from 'react';
 
 export function ComboBoxButton() {
   const [expanded, setExpanded] = useState(false);
-  const outerRef = useRef(); 
+  const outerRef = useRef();
   const buttonRef = useRef();
   const comboBoxRef = useRef();
 

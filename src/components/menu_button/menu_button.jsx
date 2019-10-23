@@ -49,7 +49,7 @@ export function MenuButton({
 
   useEffect(() => {
     if (selectedIndex > -1 && prevOptions[selectedIndex]?.id !== options[selectedIndex]?.id) {
-      dispatch.setSelectedIndex(options.findIndex(o => o.id === prevOptions[selectedIndex]?.id));
+      dispatch.setSelectedIndex(options.findIndex((o) => o.id === prevOptions[selectedIndex]?.id));
     }
   }, [options, selectedIndex, prevOptions]);
 
@@ -79,7 +79,7 @@ export function MenuButton({
           aria-controls={`${id}_menu`}
           ref={buttonRef}
           onClick={() => dispatch(setExpanded(true))}
-          onKeyDown={e => dispatch(onButtonKeyDown(e))}
+          onKeyDown={(e) => dispatch(onButtonKeyDown(e))}
           onMouseEnter={openOnHover ? onMouseEnterHandler : null}
           onMouseLeave={openOnHover ? onMouseLeaveHandler : null}
           {...customButton.props}
@@ -93,7 +93,7 @@ export function MenuButton({
           tabIndex={-1}
           hidden={!expanded}
           onBlur={onBlurHandler}
-          onKeyDown={e => dispatch(onKeyDown(e))}
+          onKeyDown={(e) => dispatch(onKeyDown(e))}
           aria-activedescendant={selectedId}
           onMouseLeave={openOnHover ? onMouseLeaveHandler : null}
           {...customMenu.props}

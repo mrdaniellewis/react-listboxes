@@ -11,7 +11,7 @@ export function Select(rawProps) {
 
   return (
     <select
-      value={options.findIndex(o => o.selected)}
+      value={options.findIndex((o) => o.selected)}
       onChange={({ target: { value: index } }) => setValue(options[+index]?.value ?? null)}
       {...props}
     >

@@ -89,9 +89,9 @@ export function ComboBox({
           aria-activedescendant={activeId}
           data-focused={focused ? 'true' : null}
           value={inputLabel}
-          onKeyDown={e => dispatch(onKeyDown(e))}
-          onChange={e => dispatch(onChange(e))}
-          onFocus={e => dispatch(onFocus(e))}
+          onKeyDown={(e) => dispatch(onKeyDown(e))}
+          onChange={(e) => dispatch(onChange(e))}
+          onFocus={(e) => dispatch(onFocus(e))}
           aria-describedby={joinTokens(showNotFound && `${id}_not_found`, ariaDescribedby)}
           autoComplete="off"
           ref={inputRef}
@@ -99,7 +99,7 @@ export function ComboBox({
           {...customInputComponent.props}
         />
         <customClearButtonComponent.type
-          onMouseDown={e => e.preventDefault()}
+          onMouseDown={(e) => e.preventDefault()}
           onClick={(e) => {
             if (e.button > 0) {
               return;
@@ -117,7 +117,7 @@ export function ComboBox({
           ×
         </customClearButtonComponent.type>
         <customOpenButtonComponent.type
-          onMouseDown={e => e.preventDefault()}
+          onMouseDown={(e) => e.preventDefault()}
           onClick={(e) => {
             if (e.button > 0) {
               return;
@@ -137,8 +137,8 @@ export function ComboBox({
           tabIndex={-1}
           hidden={!showListBox}
           aria-activedescendant={options[selectedIndex]?.id ?? null}
-          onKeyDown={e => dispatch(onKeyDown(e))}
-          onMouseDown={e => e.preventDefault()}
+          onKeyDown={(e) => dispatch(onKeyDown(e))}
+          onMouseDown={(e) => e.preventDefault()}
           className={className ? `${className}__listbox` : null}
           {...customListBoxComponent.props}
         >
