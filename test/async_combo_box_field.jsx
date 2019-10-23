@@ -5,7 +5,7 @@ import { useAsyncSearch } from '../src/hooks/use_async_search.js';
 import { options as validateOptions } from '../src/validators/options.js';
 import { makeSearch } from '../src/helpers/make_search.js';
 import fruits from './fruits.json';
-import { TokenHighlight } from '../src/components/highlight/token_highlight.jsx';
+import { TokenHighlight } from '../src/components/highlighters/token_highlight.jsx';
 
 export function AsyncComboBoxField({ label, ...props }) {
   const { value: initialValue, options: initialOptions } = props;

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { ComboBox } from '../src/components/combo_box/index.jsx';
 import { useSearch } from '../src/hooks/use_search.js';
 import { options as validateOptions } from '../src/validators/options.js';
-import { TokenHighlight } from '../src/components/highlight/token_highlight.jsx';
+import { TokenHighlight } from '../src/components/highlighters/token_highlight.jsx';
 
 export function ComboBoxField({ label, ...props }) {
   const { value: initialValue, options: initialOptions } = props;
