@@ -131,8 +131,28 @@ It is often desired to highlight the search results.
 
 ## TODO
 
-- get docs working - one page per component
-- get unit tests working
+- select
+  - add working samples
+  - add unit tests
+- datalist
+  - create
+  - add doc
+  - add samples
+  - add unit tests
+- drop down
+  - add doc
+  - add samples
+  - add unit tests
+- combo box
+  - add doc
+  - add samples
+  - add unit tests
+- combo box button
+  - create
+  - add doc
+  - add samples
+  - add unit tests
+
 
 - MenuBar
 - Menu
