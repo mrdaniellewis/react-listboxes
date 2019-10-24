@@ -2,16 +2,7 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { Select } from '../src/components/select.jsx';
-
-function trim(strings) {
-  let spaces;
-  return strings[0].replace(/^( +)(.*$)/mg, (m, s) => {
-    if (spaces === undefined && m.trim()) {
-      spaces = s.length;
-    }
-    return m.slice(spaces || 0);
-  }).trim();
-}
+import { unindent } from './lib/unindent.js';
 
 function SelectField({ label, ...props }) {
   const [value, setValue] = useState(null);
@@ -42,7 +33,7 @@ function Example() {
     <>
       <pre>
         <code className="language-js">
-          {trim`
+          {unindent`
             const [value, setValue] = useState();
 
             <Select
@@ -59,7 +50,7 @@ function Example() {
       />
       <pre>
         <code className="language-js">
-          {trim`
+          {unindent`
             const [value, setValue] = useState();
 
             <Select
