@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`options as array of numbers renders an select 1`] = `
+<div>
+  <select>
+    <option
+      value="0"
+    >
+      1
+    </option>
+    <option
+      value="1"
+    >
+      2
+    </option>
+    <option
+      value="2"
+    >
+      3
+    </option>
+  </select>
+</div>
+`;
+
+exports[`options as array of strings renders an select 1`] = `
+<div>
+  <select
+    data-foo="bar"
+  >
+    <option
+      value="0"
+    >
+      Apple
+    </option>
+    <option
+      value="1"
+    >
+      Banana
+    </option>
+    <option
+      value="2"
+    >
+      Orange
+    </option>
+  </select>
+</div>
+`;

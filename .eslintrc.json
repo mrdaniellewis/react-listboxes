@@ -34,7 +34,10 @@
       },
       "plugins": [
         "jest"
-      ]
+      ],
+      "rules": {
+        "react/prop-types": "off"
+      }
     }
   ]
 }

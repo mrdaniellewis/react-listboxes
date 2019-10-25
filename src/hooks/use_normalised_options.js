@@ -6,7 +6,14 @@ import { blankKey } from '../constants/blank_key.js';
 import { uniqueIdGenerator } from '../helpers/unique_id_generator.js';
 
 /**
- * Turn options into a regular structure
+ * Turn options and value into a regular structure
+ *
+ * This will convert the options into a flat array of options and group objects:
+ *   - value - the original value
+ *   - identity - identity value for the option calculated from value ?? id ?? label
+ *   - label - the original value if a primitive
+ *   - group - reference to the group if grouped
+ *   - options - reference to the child options if a group
  *
  * Options can be supplied as:
  *
@@ -80,13 +87,13 @@ export function useNormalisedOptions({ id, options, blank, value, ...props }) {
 
     // Add keys to options
     normalised.forEach((option, index) => {
-      option.key = uniqueId(option.html?.id || `${id}_${index}`);
+      option.key = uniqueId(option.html?.id || `${id || ''}_${index}`);
       option.index = index;
     });
 
     // Add keys to groups
     [...groups.values()].forEach((group, index) => {
-      group.key = uniqueId(group.html?.id || `${id}_group_${index}`);
+      group.key = uniqueId(group.html?.id || `${id || ''}_group_${index}`);
     });
 
     return normalised;

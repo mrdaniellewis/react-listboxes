@@ -2,16 +2,19 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { options as validateOptions } from '../validators/options.js';
 import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
+import { useSelectedIndex } from '../hooks/use_selected_index.js';
 import { renderGroupedOptions } from '../helpers/render_grouped_options.js';
 
 export function Select(rawProps) {
   const {
-    options, setValue, blank: _1, value: _2, ...props
+    options, setValue, value, blank: _1, ...props
   } = useNormalisedOptions(rawProps);
+
+  const selectedIndex = useSelectedIndex({ options, selectedValue: value });
 
   return (
     <select
-      value={options.findIndex((o) => o.selected)}
+      value={selectedIndex}
       onChange={({ target: { value: index } }) => setValue(options[+index]?.value ?? null)}
       {...props}
     >
@@ -29,7 +32,6 @@ export function Select(rawProps) {
           return (
             <option
               value={index}
-              id={key}
               key={key}
               disabled={disabled}
               {...html}
