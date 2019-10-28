@@ -45,3 +45,42 @@ exports[`options as array of strings renders an select 1`] = `
   </select>
 </div>
 `;
+
+exports[`options as objects identity uses id to set the identity 1`] = `
+<div>
+  <select>
+    <option
+      value="0"
+    >
+      foo
+    </option>
+    <option
+      value="1"
+    >
+      foo
+    </option>
+  </select>
+</div>
+`;
+
+exports[`options as objects with a label key renders an select 1`] = `
+<div>
+  <select>
+    <option
+      value="0"
+    >
+      Apple
+    </option>
+    <option
+      value="1"
+    >
+      Banana
+    </option>
+    <option
+      value="2"
+    >
+      Orange
+    </option>
+  </select>
+</div>
+`;

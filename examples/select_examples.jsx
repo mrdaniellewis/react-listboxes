@@ -67,6 +67,11 @@ function Example() {
         blank="Please choose…"
         options={['Apple', 'Banana', 'Cherry', 'Mango', 'Ugli fruit']}
       />
+      <SelectField
+        label="Should error"
+        blank="Please choose…"
+        options={['Foo', 'Foo']}
+      />
     </>
   );
 }

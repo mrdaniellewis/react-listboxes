@@ -1,22 +1,18 @@
-export const optionise = (item) => {
-  if (item === null || item === undefined) {
-    return { label: '', identity: '', value: item };
-  }
-
-  if (typeof item === 'object') {
-    const { label, group, value, options: _, disabled, node, ...html } = item;
+export const optionise = (rawOption, mapOption) => {
+  const option = mapOption ? mapOption(rawOption) : rawOption;
+  if (option !== null && typeof option === 'object') {
+    const { label, group, value, disabled, node, html } = option;
     return {
       label,
       group,
       disabled,
-      identity: value ?? item.id ?? item.label,
-      value: item,
-      options: undefined,
+      identity: value ?? option.id ?? option.label,
+      value: option,
       node,
-      html,
+      html: { ...html },
     };
   }
 
   // A primitive
-  return { label: item, identity: item, value: item };
+  return { label: option ?? '', identity: option, value: option };
 };

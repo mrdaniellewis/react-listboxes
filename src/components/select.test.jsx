@@ -89,15 +89,58 @@ describe('options as array of numbers', () => {
 });
 
 describe('options as objects', () => {
-  it.todo('renders an select');
-  it.todo('allows an option to be selected');
-  it.todo('allows an option to be pre-selected');
+  describe('with a label key', () => {
+    const options = [{ label: 'Apple' }, { label: 'Banana' }, { label: 'Orange' }];
 
-  describe('blank', () => {
-    it.todo('renders a blank option');
-    it.todo('allows the blank option to be selected');
-    it.todo('allows an option to be selected');
-    it.todo('allows an option to be pre-selected');
+    it('renders an select', () => {
+      const { container } = render(
+        <SelectWrapper options={options} />,
+      );
+      expect(container).toMatchSnapshot();
+    });
+
+    it('triggers the setValue callback with the selected value', () => {
+      const spy = jest.fn();
+      const { container } = render(<SelectWrapper options={options} setValue={spy} />);
+      const select = container.querySelector('select');
+      fireEvent.change(select, { target: { value: '1' } });
+      expect(spy).toHaveBeenCalledWith({ label: 'Banana' });
+    });
+
+    it('updates when the value changes', () => {
+      const { container } = render(<SelectWrapper options={options} />);
+      const select = container.querySelector('select');
+      fireEvent.change(select, { target: { value: '1' } });
+      expect(select).toHaveValue('1');
+      expect(select.querySelector('option:nth-child(2)')).toHaveTextContent('Banana');
+    });
+  });
+
+  describe('identity', () => {
+    it('selects with first option with identical labels', () => {
+      const options = [{ label: 'foo' }, { label: 'foo' }];
+      const { container } = render(<SelectWrapper options={options} />);
+      const select = container.querySelector('select');
+      fireEvent.change(select, { target: { value: '1' } });
+      expect(select).toHaveValue('0');
+    });
+
+    it('uses id to set the identity', () => {
+      const options = [{ label: 'foo', id: 1 }, { label: 'foo', id: 2 }];
+      const { container } = render(<SelectWrapper options={options} />);
+      expect(container).toMatchSnapshot();
+      const select = container.querySelector('select');
+      fireEvent.change(select, { target: { value: '1' } });
+      expect(select).toHaveValue('1');
+    });
+
+    it('uses value to set the identity', () => {
+      const options = [{ label: 'foo', value: 1 }, { label: 'foo', value: 2 }];
+      const { container } = render(<SelectWrapper options={options} />);
+      const select = container.querySelector('select');
+      fireEvent.change(select, { target: { value: '1' } });
+      expect(select).toHaveValue('1');
+    });
   });
 
   describe('grouped options', () => {

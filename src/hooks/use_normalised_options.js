@@ -1,106 +1,74 @@
 /* eslint-disable no-param-reassign */
 import { useMemo } from 'react';
 import { optionise } from '../helpers/optionise.js';
-import { optioniseGroup } from '../helpers/optionise_group.js';
-import { blankKey } from '../constants/blank_key.js';
-import { uniqueIdGenerator } from '../helpers/unique_id_generator.js';
+import { UniqueIdGenerator } from '../helpers/unique_id_generator.js';
 
 /**
- * Turn options and value into a regular structure
+ * Turn value and options into objects
  *
- * This will convert the options into a flat array of options and group objects:
- *   - value - the original value
- *   - identity - identity value for the option calculated from value ?? id ?? label
- *   - label - the original value if a primitive
- *   - group - reference to the group if grouped
- *   - options - reference to the child options if a group
- *
- * Options can be supplied as:
- *
- *  - String[]
- *  - Number[]
- *  - [*, String|Number][]
- *  - {
- *      label: String|Number,
- *      value: *,
- *      id: String,
- *      group: String|Object,
- *      disabled: Boolean,
- *      options: [],
- *    }
- *
- *  If the option has a group property, it will be grouped into that group
- *  If the option has a options property it is a group
+ * Each option will have the following values:
+ *   - label - label to display
+ *   - node - al
+ *   - key
+ *   - identity
+ *   - group - optional
+ *   - selected
+ *   - html
  */
-export function useNormalisedOptions({ id, options, blank, value, ...props }) {
-  const normalisedValue = useMemo(() => (
-    value != null || blank ? optionise(value) : null
-  ), [value, blank]);
+export function useNormalisedOptions({
+  options, blank, value, mapOption, ...props
+}) {
+  const normalisedValue = useMemo(
+    () => optionise(value, mapOption),
+    [value, mapOption],
+  );
 
   const normalisedOptions = useMemo(() => {
-    const uniqueId = uniqueIdGenerator();
+    const idGenerator = new UniqueIdGenerator();
     const groups = new Map();
-    let normalised = [];
+    const normalised = [];
 
     // Add a blank option
     if (blank) {
-      normalised.push({ label: blank, identity: blankKey, value: null });
+      normalised.push({
+        label: blank,
+        identity: null,
+        value: null,
+        key: idGenerator.uniqueId(blank),
+      });
     }
 
-    const normaliseOption = (rawOption) => {
-      const option = optionise(rawOption);
-      option.selected = option.identity === normalisedValue?.identity;
-      return option;
-    };
-
-    // Group options
-    options.forEach((option) => {
-      if (Array.isArray(option?.options)) {
-        // Option is a group
-        let group = optioniseGroup(option);
-        const groupOptions = group.options.map((o) => ({ ...normaliseOption(o), group }));
-        if (!groups.has(group.identity)) {
-          groups.set(group.identity, group);
-          normalised.push(group);
-          group.options = groupOptions;
-        } else {
-          group = groups.get(group.identity);
-          group.options.push(...groupOptions);
+    options
+      .map((option) => optionise(option, mapOption))
+      .forEach((option) => {
+        option.selected = option.identity === normalisedValue?.identity;
+        if (option.group) {
+          let group = groups.get(option.group);
+          if (!group) {
+            group = {
+              label: group,
+              identity: group,
+              options: [option],
+              key: idGenerator.uniqueId(`group_${group}`),
+            };
+            groups.set(option.group, { label: group, options: [option] });
+          } else {
+            group.options.push(option);
+          }
+          option.group = group;
         }
-      } else if (option?.group) {
-        // Options should be sorted into a group
-        let group = optioniseGroup(option.group);
-        if (!groups.has(group.identity)) {
-          groups.set(group.identity, group);
-          normalised.push(group);
-        } else {
-          group = groups.get(group.identity);
-        }
-        groups.get(group.identity).options.push({ ...normaliseOption(option), group });
-      } else {
-        normalised.push(normaliseOption(option));
-      }
-    });
+        option.key = idGenerator.uniqueId(option.html?.id || option.label);
+        normalised.push(option);
+      });
 
-    // Flatten the options
-    normalised = [].concat(...normalised.map((option) => option.options || option));
-
-    // Add keys to options
     normalised.forEach((option, index) => {
-      option.key = uniqueId(option.html?.id || `${id || ''}_${index}`);
       option.index = index;
     });
 
-    // Add keys to groups
-    [...groups.values()].forEach((group, index) => {
-      group.key = uniqueId(group.html?.id || `${id || ''}_group_${index}`);
-    });
-
     return normalised;
-  }, [id, options, blank, normalisedValue]);
+  }, [options, blank, normalisedValue, mapOption]);
 
   return {
-    id,
     blank,
     options: normalisedOptions,
     value: normalisedValue,
