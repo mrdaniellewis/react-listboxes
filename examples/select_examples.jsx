@@ -67,10 +67,37 @@ function Example() {
         blank="Please choose…"
         options={['Apple', 'Banana', 'Cherry', 'Mango', 'Ugli fruit']}
       />
+      <pre>
+        <code className="language-js">
+          {unindent`
+            const [value, setValue] = useState();
+            const options = [
+              { label: 'Apple' },
+              { label: 'Orange', group: 'Citrus' },
+              { label: 'Lemon', group: 'Citrus' },
+              { label: 'Raspberry', group: 'Berry' },
+              { label: 'Strawberry', group: 'Berry' },
+            ]
+
+            <Select
+              value={value}
+              setValue={setValue}
+              blank="Please choose…"
+              options={options}
+            />
+          `}
+        </code>
+      </pre>
       <SelectField
-        label="Should error"
+        label="Grouped options"
         blank="Please choose…"
-        options={['Foo', 'Foo']}
+        options={[
+          { label: 'Apple' },
+          { label: 'Orange', group: 'Citrus' },
+          { label: 'Lemon', group: 'Citrus' },
+          { label: 'Raspberry', group: 'Berry' },
+          { label: 'Strawberry', group: 'Berry' },
+        ]}
       />
     </>
   );

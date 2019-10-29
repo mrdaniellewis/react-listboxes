@@ -4,7 +4,7 @@ export class UniqueIdGenerator {
   }
 
   uniqueId(value) {
-    let unique = String(value).replace(/\s+/g, '_');
+    let unique = String(value).toLowerCase().replace(/\s+/g, '_');
     while (this.set.has(unique)) {
       unique = unique.replace(/(?:_(\d*))?$/, (m, n = 0) => `_${+n + 1}`);
     }

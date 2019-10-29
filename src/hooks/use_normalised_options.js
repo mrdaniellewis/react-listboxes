@@ -8,15 +8,16 @@ import { UniqueIdGenerator } from '../helpers/unique_id_generator.js';
  *
  * Each option will have the following values:
  *   - label - label to display
- *   - node - al
- *   - key
+ *   - value - the original value
  *   - identity
- *   - group - optional
+ *   - key
+ *   - group - reference to a group is grouped
+ *   - options - reference to the options if a group
  *   - selected
  *   - html
  */
 export function useNormalisedOptions({
-  options, blank, value, mapOption, ...props
+  id, options, blank, value, mapOption, ...props
 }) {
   const normalisedValue = useMemo(
     () => optionise(value, mapOption),
@@ -46,30 +47,27 @@ export function useNormalisedOptions({
           let group = groups.get(option.group);
           if (!group) {
             group = {
-              label: group,
-              identity: group,
+              label: option.group,
+              identity: option.group,
               options: [option],
-              key: idGenerator.uniqueId(`group_${group}`),
+              key: idGenerator.uniqueId(`group_${option.group}`),
             };
-            groups.set(option.group, { label: group, options: [option] });
+            groups.set(option.group, group);
+            normalised.push(group);
           } else {
             group.options.push(option);
           }
           option.group = group;
         }
-        option.key = idGenerator.uniqueId(option.html?.id || option.label);
+        option.key = idGenerator.uniqueId(option.html?.id || `${id}_${option.label}`);
         normalised.push(option);
       });
 
-    normalised.forEach((option, index) => {
-      option.index = index;
-    });
-
     return normalised;
-  }, [options, blank, normalisedValue, mapOption]);
+  }, [id, options, blank, normalisedValue, mapOption]);
 
   return {
-    blank,
+    id,
     options: normalisedOptions,
     value: normalisedValue,
     ...props,

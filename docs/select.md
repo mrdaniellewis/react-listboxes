@@ -40,6 +40,5 @@ Options is an array of either:
 | group    | String        | Label to group options under                                              |
 | value    | Object        | Object value used to compare options.  Defaults to `value ?? id ?? label` |
 | id       | Object        | Fallback value used to compare options                                    | 
-| node     | Node          | Displayed instead of the label in a list of options                       |
 | html     | Object        | Additional html attributes to add                                         |
 

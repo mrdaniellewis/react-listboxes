@@ -1,5 +1,5 @@
 export const optionise = (rawOption, mapOption) => {
-  const option = mapOption ? mapOption(rawOption) : rawOption;
+  const option = mapOption && rawOption != null ? mapOption(rawOption) : rawOption;
   if (option !== null && typeof option === 'object') {
     const { label, group, value, disabled, node, html } = option;
     return {
@@ -7,7 +7,7 @@ export const optionise = (rawOption, mapOption) => {
       group,
       disabled,
       identity: value ?? option.id ?? option.label,
-      value: option,
+      value: rawOption,
       node,
       html: { ...html },
     };
