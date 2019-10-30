@@ -1,9 +1,9 @@
-export function findSelectedIndex({ options, selectedValue, required }) {
+export function findSelectedIndex({ options, value, mustHaveSelection }) {
   let selectedIndex = -1;
-  if (selectedValue) {
-    selectedIndex = options.findIndex((o) => o.identity === selectedValue.identity);
+  if (value) {
+    selectedIndex = options.findIndex((o) => o.identity === value.identity);
   }
-  if (selectedIndex === -1 && required) {
+  if (selectedIndex === -1 && mustHaveSelection) {
     selectedIndex = 0;
   }
   return selectedIndex;

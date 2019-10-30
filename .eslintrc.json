@@ -38,6 +38,12 @@
       "rules": {
         "react/prop-types": "off"
       }
+    },
+    {
+      "files": ["examples/**/*"],
+      "rules": {
+        "import/no-extraneous-dependencies": "off"
+      }
     }
   ]
 }

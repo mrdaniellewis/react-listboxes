@@ -1,15 +1,12 @@
 import { nextInList } from '../../helpers/next_in_list.js';
 import { previousInList } from '../../helpers/previous_in_list.js';
-import { equalValues } from '../../helpers/equal_values.js';
 import { rNonPrintableKey } from '../../constants/r_non_printable_key.js';
-import { findSelectedIndex } from '../../helpers/find_selected_index.js';
 
 export const SET_EXPANDED = 'SET_EXPANDED';
 export const CLEAR_SEARCH = 'CLEAR_SEARCH';
 export const SET_SEARCH_KEY = 'SET_SEARCH_KEY';
 export const SET_SELECTED = 'SET_SELECTED';
-export const SET_SELECTED_VALUE = 'SET_SELECTED_VALUE';
-export const SET_BUTTON_MOUSE_DOWN = 'SET_BUTTON_MOUSE_DOWN';
+export const SET_FOCUSED_INDEX = 'SET_FOCUSED_INDEX';
 
 export function setExpanded(expanded) {
   return { type: SET_EXPANDED, expanded };
@@ -23,32 +20,30 @@ export function setSearchKey(key) {
   return { type: SET_SEARCH_KEY, key };
 }
 
-export function setSelectedValue(selectedValue) {
-  return { type: SET_SELECTED_VALUE, selectedValue };
+export function setFocusedIndex(focusedIndex) {
+  return { type: SET_FOCUSED_INDEX, focusedIndex };
 }
 
-export function setSelected(selectedValue) {
-  return {
-    type: SET_SELECTED,
-    selectedValue,
-  };
+export function setSelected() {
+  return { type: SET_SELECTED };
 }
 
-export function setButtonMouseDown(mouseDown) {
-  return { type: SET_BUTTON_MOUSE_DOWN, mouseDown };
-}
-
-export function onSelectValue(value) {
+export function onSelectValue(newValue) {
   return (dispatch, getState, getProps) => {
-    const { setValue } = getProps();
-    dispatch(setSelected(value));
-    setValue(value?.value);
+    const { setValue, value } = getProps();
+    if (newValue.unselectable) {
+      return;
+    }
+    dispatch(setSelected());
+    if (newValue.identity !== value.identity) {
+      setValue(newValue?.value);
+    }
   };
 }
 
 export function onButtonKeyDown(event) {
   return (dispatch, getState, getProps) => {
-    const { value } = getProps();
+    const { selectedIndex } = getProps();
     const { metaKey, ctrlKey, key } = event;
 
     if (metaKey || ctrlKey) {
@@ -57,15 +52,15 @@ export function onButtonKeyDown(event) {
 
     if (key === 'ArrowUp' || key === 'ArrowDown') {
       event.preventDefault();
-      dispatch(setSelectedValue(value));
+      dispatch(setFocusedIndex(selectedIndex));
     }
   };
 }
 
 export function onKeyDown(event) {
   return (dispatch, getState, getProps) => {
-    const { expanded, selectedValue } = getState();
-    const { options, buttonRef, value, platform } = getProps();
+    const { expanded, focusedIndex } = getState();
+    const { options, buttonRef, platform } = getProps();
     const { altKey, metaKey, ctrlKey, key } = event;
 
     if (metaKey || ctrlKey) {
@@ -74,15 +69,14 @@ export function onKeyDown(event) {
 
     if (key === 'Escape') {
       event.preventDefault();
-      if (platform === 'mac') {
-        dispatch(setSelectedValue(value));
+      if (platform !== 'mac') {
+        dispatch(onSelectValue(options[focusedIndex]));
+      } else {
+        dispatch(setExpanded(false));
       }
-      dispatch(setExpanded(false));
       buttonRef.current.focus();
       return;
     }
-
-    const selectedIndex = findSelectedIndex({ options, selectedValue, required: true });
 
     switch (key) {
       case 'ArrowUp':
@@ -91,14 +85,14 @@ export function onKeyDown(event) {
         if (altKey) {
           dispatch(setExpanded(false));
         } else if (expanded) {
-          dispatch(setSelectedValue(previousInList(options, selectedIndex)));
+          dispatch(setFocusedIndex(previousInList(options, focusedIndex)));
         }
         break;
       case 'ArrowDown':
         // Show, and next item unless altKey
         event.preventDefault();
         if (expanded && !altKey) {
-          dispatch(setSelectedValue(nextInList(options, selectedIndex)));
+          dispatch(setFocusedIndex(nextInList(options, focusedIndex)));
         } else {
           dispatch(setExpanded(true));
         }
@@ -107,25 +101,21 @@ export function onKeyDown(event) {
         // First item
         if (expanded) {
           event.preventDefault();
-          dispatch(setSelectedValue(nextInList(options, options.length - 1)));
+          dispatch(setFocusedIndex(nextInList(options, options.length - 1)));
         }
         break;
       case 'End':
         // Last item
         if (expanded) {
           event.preventDefault();
-          dispatch(setSelectedValue(previousInList(options, 0)));
+          dispatch(setFocusedIndex(previousInList(options, 0)));
         }
         break;
       case 'Enter':
         // Select current item if one is selected
-        if (expanded && selectedIndex !== -1 && options[selectedIndex]) {
+        if (expanded && focusedIndex !== -1 && options[focusedIndex]) {
           event.preventDefault();
-          const option = options[selectedIndex];
-          if (option.disabled) {
-            return;
-          }
-          dispatch(onSelectValue(option));
+          dispatch(onSelectValue(options[focusedIndex]));
           buttonRef.current.focus();
         }
         break;
@@ -139,14 +129,12 @@ export function onKeyDown(event) {
 
 export function onToggleOpen() {
   return (dispatch, getState, getProps) => {
-    const { expanded, mouseDown } = getState();
-    const { value } = getProps();
+    const { expanded } = getState();
+    const { selectedIndex } = getProps();
     if (expanded) {
       dispatch(setExpanded(false));
-    } else if (mouseDown) {
-      dispatch(setButtonMouseDown(false));
     } else {
-      dispatch(setSelectedValue(value));
+      dispatch(setFocusedIndex(selectedIndex));
     }
   };
 }
@@ -157,23 +145,17 @@ export function onFocus() {
     if (expanded) {
       return;
     }
-    const { value } = getProps();
-    dispatch(setSelectedValue(value));
+    const { selectedIndex } = getProps();
+    dispatch(setFocusedIndex(selectedIndex));
   };
 }
 
 export function onBlur() {
   return (dispatch, getState, getProps) => {
-    const { value } = getProps();
-    const { selectedValue, mouseDown } = getState();
-    if (mouseDown) {
-      dispatch(setButtonMouseDown(false));
-      return;
-    }
-    if (!equalValues(value, selectedValue)) {
-      dispatch(onSelectValue(selectedValue));
-    } else {
-      dispatch(setExpanded(false));
+    const { options } = getProps();
+    const { focusedIndex, expanded } = getState();
+    if (expanded) {
+      dispatch(onSelectValue(options[focusedIndex]));
     }
   };
 }

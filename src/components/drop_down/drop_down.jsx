@@ -4,31 +4,30 @@ import { useThunkReducer as useReducer } from '../../hooks/use_thunk_reducer.js'
 import { reducer } from './reducer.js';
 import { initialState } from './initial_state.js';
 import {
-  clearSearch, onKeyDown, setSelectedValue, onBlur,
+  clearSearch, onKeyDown, setFocusedIndex, onBlur,
   onToggleOpen, onFocus, onButtonKeyDown, onClick,
 } from './actions.js';
 import { Context } from '../../context.js';
 import { options as validateOptions } from '../../validators/options.js';
 import { useNormalisedOptions } from '../../hooks/use_normalised_options.js';
-import { useSelectedIndex } from '../../hooks/use_selected_index.js';
 import { useOnBlur } from '../../hooks/use_on_blur.js';
 import { componentCustomiser } from '../../validators/component_customiser.js';
 import { renderGroupedOptions } from '../../helpers/render_grouped_options.js';
 import { dismemberComponent } from '../../helpers/dismember_component.js';
 import { getPlatform } from '../../helpers/get_platform.js';
 
-export function DropDown({
-  ButtonComponent, ListBoxComponent, OptionComponent,
-  GroupComponent, ValueComponent, DropDownComponent, ...rawProps
-}) {
-  const optionisedProps = useNormalisedOptions(rawProps);
+export function DropDown(rawProps) {
+  const optionisedProps = useNormalisedOptions(rawProps, { mustHaveSelection: true });
   const {
-    options, value, setValue, blank, id, className,
-    children, managedFocus, platform, ...componentProps
+    options, value: _, setValue, id, className,
+    children, platform, selectedIndex, managedFocus,
+    ButtonComponent, ListBoxComponent, OptionComponent,
+    GroupComponent, ValueComponent, DropDownComponent,
+    ...componentProps
   } = optionisedProps;
   const buttonRef = useRef();
   const listRef = useRef();
-  const selectedRef = useRef();
+  const focusedRef = useRef();
 
   const [state, dispatch] = useReducer(
     reducer,
@@ -36,17 +35,18 @@ export function DropDown({
     initialState,
     id,
   );
-  const { expanded, search, selectedValue } = state;
-  const selectedIndex = useSelectedIndex({ options, selectedValue, required: true });
+  const { expanded, search, focusedIndex } = state;
   const onBlurHandler = useOnBlur(() => dispatch(onBlur()), listRef);
 
   useEffect(() => {
     if (!search) {
       return undefined;
     }
-    const found = options.find((o) => o.label.toLowerCase().startsWith(search));
-    if (found) {
-      dispatch(setSelectedValue(found));
+    const found = options.findIndex((o) => (
+      !o.unselectable && o.label.toLowerCase().startsWith(search)
+    ));
+    if (found > -1) {
+      dispatch(setFocusedIndex(found));
     }
     const timeout = setTimeout(() => dispatch(clearSearch()), 1000);
 
@@ -54,12 +54,12 @@ export function DropDown({
   }, [options, search, setValue]);
 
   useLayoutEffect(() => {
-    if (expanded && options[selectedIndex] && managedFocus) {
-      selectedRef.current.focus();
+    if (expanded && options[focusedIndex] && managedFocus) {
+      focusedRef.current.focus();
     } else if (expanded) {
       listRef.current.focus();
     }
-  }, [expanded, managedFocus, options, selectedIndex]);
+  }, [expanded, managedFocus, options, focusedIndex]);
 
   const customDropDownComponent = dismemberComponent(DropDownComponent, 'div');
   const customButtonComponent = dismemberComponent(ButtonComponent, 'button');
@@ -88,15 +88,15 @@ export function DropDown({
           className={className ? `${className}__button` : null}
           {...customButtonComponent.props}
         >
-          {children || (value && value.label) || blank}
+          {children ?? options[selectedIndex].label}
         </customButtonComponent.type>
         <customListBoxComponent.type
           ref={listRef}
           id={`${id}_listbox`}
-          role={platform === 'mac' ? 'menu' : 'listbox'}
+          role={platform === 'mac' ? 'listbox' : 'listbox'}
           tabIndex={-1}
           hidden={!expanded}
-          aria-activedescendant={options[selectedIndex]?.id || null}
+          aria-activedescendant={options[focusedIndex]?.key || null}
           onFocus={(e) => dispatch(onFocus(e))}
           onBlur={onBlurHandler}
           onKeyDown={(e) => dispatch(onKeyDown(e))}
@@ -106,7 +106,7 @@ export function DropDown({
           {renderGroupedOptions({
             options,
             renderGroup(group) {
-              const { key, html, label, node, children: groupChildren } = group;
+              const { key, html, label, node, index, children: groupChildren } = group;
               return (
                 <Context.Provider
                   key={key}
@@ -114,7 +114,12 @@ export function DropDown({
                 >
                   <customGroupComponent.type
                     id={key}
-                    aria-hidden="true" // Hidden otherwise VoiceOver counts the wrong number of options
+                    ref={index === focusedIndex ? focusedRef : null}
+                    data-focused={index === focusedIndex ? 'true' : null}
+                    role="group"
+                    aria-label={label}
+                    tabIndex={-1}
+                    aria-disabled="true"
                     className={className ? `${className}__listbox__group` : null}
                     {...customGroupComponent.props}
                     {...html}
@@ -127,7 +132,7 @@ export function DropDown({
             },
             // eslint-disable-next-line react/prop-types
             renderOption(option) {
-              const { label, key, node, html, disabled, index, selected, group } = option;
+              const { label, key, html, disabled, index, selected, group } = option;
               return (
                 <Context.Provider
                   key={key}
@@ -139,9 +144,9 @@ export function DropDown({
                     tabIndex={-1}
                     aria-selected={selected ? 'true' : null}
                     aria-disabled={disabled ? 'true' : null}
-                    aria-labelledby={group ? `${group.key} ${key}` : null}
-                    data-focused={index === selectedIndex ? 'true' : null}
-                    ref={index === selectedIndex ? selectedRef : null}
+                    data-focused={index === focusedIndex ? 'true' : null}
+                    data-grouped={group ? 'true' : null}
+                    ref={index === focusedIndex ? focusedRef : null}
                     className={className ? `${className}__listbox__option` : null}
                     {...customOptionComponent.props}
                     {...html}
@@ -150,7 +155,7 @@ export function DropDown({
                     <customValueComponent.type
                       {...customValueComponent.props}
                     >
-                      {node ?? label}
+                      {label}
                     </customValueComponent.type>
                   </customOptionComponent.type>
                 </Context.Provider>

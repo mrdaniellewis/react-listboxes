@@ -1,23 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
-import { useSelectedIndex } from '../hooks/use_selected_index.js';
 import { renderGroupedOptions } from '../helpers/render_grouped_options.js';
 import { dismemberComponent } from '../helpers/dismember_component.js';
 import { componentCustomiser } from '../validators/component_customiser.js';
 
 export function Select(rawProps) {
   const {
-    options, setValue, value,
+    options, setValue, selectedIndex, value: _,
     OptGroupComponent, OptionComponent, SelectComponent,
     ...props
-  } = useNormalisedOptions(rawProps);
+  } = useNormalisedOptions(rawProps, { mustHaveSelection: true });
 
   const customOptGroupComponent = dismemberComponent(OptGroupComponent, 'optgroup');
   const customOptionComponent = dismemberComponent(OptionComponent, 'option');
   const customSelectComponent = dismemberComponent(SelectComponent, 'select');
-
-  const selectedIndex = useSelectedIndex({ options, selectedValue: value });
 
   return (
     <customSelectComponent.type

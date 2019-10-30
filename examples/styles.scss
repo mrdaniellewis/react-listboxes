@@ -133,6 +133,7 @@ select {
 
 .dropdown__listbox {
   margin-top: -2em;
+  list-style: none;
 }
 
 .dropdown__listbox__option,
@@ -157,6 +158,10 @@ select {
   &[aria-disabled="true"] {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  &[data-grouped="true"] {
+    padding-left: 1em;
   }
 
   &:hover {
@@ -184,6 +189,12 @@ select {
   color: white;
   border-bottom: 1px solid $colour-heritage-blue;
   font-weight: bold;
+  cursor: not-allowed;
+
+  &[data-focused] {
+    outline: none;
+    box-shadow: inset 0 0 0 2px $colour-heritage-yellow;
+  }
 }
 
 .combobox__spinner {

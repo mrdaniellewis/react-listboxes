@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { useMemo } from 'react';
 import { optionise } from '../helpers/optionise.js';
+import { useSelectedIndex } from './use_selected_index.js';
 import { UniqueIdGenerator } from '../helpers/unique_id_generator.js';
 
 /**
@@ -18,7 +19,7 @@ import { UniqueIdGenerator } from '../helpers/unique_id_generator.js';
  */
 export function useNormalisedOptions({
   id, options, blank, value, mapOption, ...props
-}) {
+}, { mustHaveSelection = false } = {}) {
   const normalisedValue = useMemo(
     () => optionise(value, mapOption),
     [value, mapOption],
@@ -51,6 +52,7 @@ export function useNormalisedOptions({
               identity: option.group,
               options: [option],
               key: idGenerator.uniqueId(`group_${option.group}`),
+              unselectable: true,
             };
             groups.set(option.group, group);
             normalised.push(group);
@@ -66,10 +68,17 @@ export function useNormalisedOptions({
     return normalised;
   }, [id, options, blank, normalisedValue, mapOption]);
 
+  const selectedIndex = useSelectedIndex({
+    options: normalisedOptions,
+    value: normalisedValue,
+    mustHaveSelection,
+  });
+
   return {
     id,
     options: normalisedOptions,
     value: normalisedValue,
+    selectedIndex,
     ...props,
   };
 }

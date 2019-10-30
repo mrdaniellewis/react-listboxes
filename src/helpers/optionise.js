@@ -6,6 +6,7 @@ export const optionise = (rawOption, mapOption) => {
       label,
       group,
       disabled,
+      unselectable: !!disabled,
       identity: value ?? option.id ?? option.label,
       value: rawOption,
       node,
@@ -14,5 +15,5 @@ export const optionise = (rawOption, mapOption) => {
   }
 
   // A primitive
-  return { label: option ?? '', identity: option, value: option };
+  return { label: option ?? '', identity: option, value: option, selectable: true };
 };

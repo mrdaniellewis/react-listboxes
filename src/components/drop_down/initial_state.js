@@ -1,8 +1,7 @@
-export function initialState({ value }) {
+export function initialState() {
   return {
     expanded: false,
     search: '',
-    selectedValue: value,
-    mouseDown: false,
+    focusedIndex: null,
   };
 }
