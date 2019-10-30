@@ -6,11 +6,13 @@ import { initialState } from './initial_state.js';
 import {
   clearSearch, onKeyDown, setFocusedIndex, onBlur,
   onToggleOpen, onFocus, onButtonKeyDown, onClick,
+  onOptionsChanged,
 } from './actions.js';
 import { Context } from '../../context.js';
 import { options as validateOptions } from '../../validators/options.js';
 import { useNormalisedOptions } from '../../hooks/use_normalised_options.js';
 import { useOnBlur } from '../../hooks/use_on_blur.js';
+import { usePrevious } from '../../hooks/use_previous.js';
 import { componentCustomiser } from '../../validators/component_customiser.js';
 import { renderGroupedOptions } from '../../helpers/render_grouped_options.js';
 import { dismemberComponent } from '../../helpers/dismember_component.js';
@@ -37,6 +39,11 @@ export function DropDown(rawProps) {
   );
   const { expanded, search, focusedIndex } = state;
   const onBlurHandler = useOnBlur(() => dispatch(onBlur()), listRef);
+
+  const prevOptions = usePrevious(options);
+  useEffect(() => (
+    dispatch(onOptionsChanged(prevOptions))
+  ), [prevOptions]);
 
   useEffect(() => {
     if (!search) {
@@ -106,7 +113,7 @@ export function DropDown(rawProps) {
           {renderGroupedOptions({
             options,
             renderGroup(group) {
-              const { key, html, label, node, index, children: groupChildren } = group;
+              const { key, html, label, index, children: groupChildren } = group;
               return (
                 <Context.Provider
                   key={key}
@@ -124,7 +131,7 @@ export function DropDown(rawProps) {
                     {...customGroupComponent.props}
                     {...html}
                   >
-                    {node ?? label}
+                    {label}
                   </customGroupComponent.type>
                   {groupChildren}
                 </Context.Provider>
@@ -193,10 +200,10 @@ DropDown.defaultProps = {
   className: 'dropdown',
   managedFocus: true,
   platform: getPlatform(),
-  ListBoxComponent: 'ul',
-  ButtonComponent: 'button',
-  GroupComponent: 'li',
-  OptionComponent: 'li',
-  ValueComponent: Fragment,
-  DropDownComponent: 'div',
+  ListBoxComponent: null,
+  ButtonComponent: null,
+  GroupComponent: null,
+  OptionComponent: null,
+  ValueComponent: null,
+  DropDownComponent: null,
 };

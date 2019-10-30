@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { DropDown } from '../src/components/drop_down/index.jsx';
+import { useId } from '../src/hooks/use_id.js';
 
 export function DropDownField({ label, ...props }) {
   const { value: initialValue } = props;
   const [value, setValue] = useState(initialValue);
-  const id = label.trim().toLowerCase().replace(/[^a-z]+/ig, '_').toLowerCase();
+  const id = useId();
   return (
     <>
       {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}

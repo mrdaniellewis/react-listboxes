@@ -3,10 +3,12 @@ import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { DropDown } from '../src/components/drop_down/index.jsx';
 import { unindent } from './lib/unindent.js';
+import { useId } from '../src/hooks/use_id.js';
+import countries from './lib/countries.json';
 
 function DropDownField({ label, ...props }) {
   const [value, setValue] = useState(null);
-  const id = label.trim().toLowerCase().replace(/[^a-z]+/ig, '_').toLowerCase();
+  const id = useId();
   return (
     <>
       <span
@@ -100,6 +102,11 @@ function Example() {
           { label: 'Raspberry', group: 'Berry' },
           { label: 'Strawberry', group: 'Berry' },
         ]}
+      />
+      <DropDownField
+        label="Large number of options"
+        blank="Please choose…"
+        options={countries}
       />
     </>
   );

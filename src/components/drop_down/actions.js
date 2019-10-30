@@ -32,6 +32,7 @@ export function onSelectValue(newValue) {
   return (dispatch, getState, getProps) => {
     const { setValue, value } = getProps();
     if (newValue.unselectable) {
+      dispatch(setExpanded(false));
       return;
     }
     dispatch(setSelected());
@@ -169,5 +170,21 @@ export function onClick(e, value) {
     const { buttonRef } = getProps();
     dispatch(onSelectValue(value));
     buttonRef.current.focus();
+  };
+}
+
+export function onOptionsChanged(prevOptions) {
+  return (dispatch, getState, getProps) => {
+    const { focusedIndex } = getState();
+    const { options } = getProps();
+
+    if (focusedIndex === null) {
+      return;
+    }
+
+    const { identity } = prevOptions[focusedIndex];
+    const index = options.findIndex((o) => o.identity === identity);
+
+    dispatch(setFocusedIndex(index));
   };
 }
