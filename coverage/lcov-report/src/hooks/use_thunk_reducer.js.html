@@ -20,31 +20,31 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">0% </span>
+        <span class="strong">100% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>0/10</span>
+        <span class='fraction'>10/10</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">0% </span>
+        <span class="strong">100% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>0/2</span>
+        <span class='fraction'>2/2</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">0% </span>
+        <span class="strong">100% </span>
         <span class="quiet">Functions</span>
-        <span class='fraction'>0/4</span>
+        <span class='fraction'>4/4</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">0% </span>
+        <span class="strong">100% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>0/8</span>
+        <span class='fraction'>8/8</span>
       </div>
     </div>
     <p class="quiet">
       Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
     </p>
   </div>
-  <div class='status-line low'></div>
+  <div class='status-line high'></div>
 <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -66,33 +66,33 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">102x</span>
+<span class="cline-any cline-yes">102x</span>
+<span class="cline-any cline-yes">102x</span>
+<span class="cline-any cline-yes">102x</span>
+<span class="cline-any cline-yes">102x</span>
+<span class="cline-any cline-yes">102x</span>
+<span class="cline-any cline-yes">241x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">102x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { useRef, useCallback } from 'react';
 import { useReducer } from '../reinspect.js';
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >useThunkReducer(</span>reducer, props, initialState, name) {
-  const [state, dispatch] = <span class="cstat-no" title="statement not covered" >useReducer(reducer, props, initialState, name);</span>
-  const stateRef = <span class="cstat-no" title="statement not covered" >useRef(state);</span>
-  const propsRef = <span class="cstat-no" title="statement not covered" >useRef(props);</span>
-<span class="cstat-no" title="statement not covered" >  stateRef.current = state;</span>
-<span class="cstat-no" title="statement not covered" >  propsRef.current = props;</span>
-  const thunkDispatch = <span class="cstat-no" title="statement not covered" >useCallback(</span>
-<span class="fstat-no" title="function not covered" >    (d</span>ata) =&gt; (<span class="cstat-no" title="statement not covered" >typeof data === 'function' ? data(thunkDispatch, <span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >stateRef.current,</span> <span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >propsRef.current)</span> : dispatch(data))</span>,
+export function useThunkReducer(reducer, props, initialState, name) {
+  const [state, dispatch] = useReducer(reducer, props, initialState, name);
+  const stateRef = useRef(state);
+  const propsRef = useRef(props);
+  stateRef.current = state;
+  propsRef.current = props;
+  const thunkDispatch = useCallback(
+    (data) =&gt; (typeof data === 'function' ? data(thunkDispatch, () =&gt; stateRef.current, () =&gt; propsRef.current) : dispatch(data)),
     [],
   );
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return [state, thunkDispatch];</span>
+  return [state, thunkDispatch];
 }
 &nbsp;</pre></td></tr>
 </table></pre>
@@ -100,7 +100,7 @@ export function <span class="fstat-no" title="function not covered" >useThunkRed
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Oct 24 2019 15:56:18 GMT+0100 (British Summer Time)
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Oct 31 2019 23:28:25 GMT+0000 (Greenwich Mean Time)
 </div>
 </div>
 <script src="../../prettify.js"></script>

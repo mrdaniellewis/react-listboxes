@@ -35,10 +35,10 @@ export function onSelectValue(newValue) {
       dispatch(setExpanded(false));
       return;
     }
+    dispatch(setSelected());
     if (newValue.identity !== value.identity) {
       setValue(newValue?.value);
     }
-    dispatch(setSelected());
   };
 }
 
@@ -61,7 +61,7 @@ export function onButtonKeyDown(event) {
 export function onKeyDown(event) {
   return (dispatch, getState, getProps) => {
     const { expanded, focusedIndex } = getState();
-    const { options, buttonRef, platform } = getProps();
+    const { options, buttonRef } = getProps();
     const { altKey, metaKey, ctrlKey, key } = event;
 
     if (metaKey || ctrlKey) {
@@ -70,11 +70,7 @@ export function onKeyDown(event) {
 
     if (key === 'Escape') {
       event.preventDefault();
-      if (platform !== 'mac') {
-        dispatch(onSelectValue(options[focusedIndex]));
-      } else {
-        dispatch(setExpanded(false));
-      }
+      dispatch(setExpanded(false));
       buttonRef.current.focus();
       return;
     }

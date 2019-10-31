@@ -7,11 +7,9 @@ exports[`options as array of strings renders a closed drop down 1`] = `
   >
     <button
       aria-controls="id_listbox"
-      aria-expanded="false"
       aria-haspopup="listbox"
       class="dropdown__button"
       id="id"
-      role="combobox"
       type="button"
     >
       Apple
@@ -46,6 +44,56 @@ exports[`options as array of strings renders a closed drop down 1`] = `
         tabindex="-1"
       >
         Orange
+      </li>
+    </ul>
+  </div>
+</div>
+`;
+
+exports[`options options as array of numbers renders a closed drop down 1`] = `
+<div>
+  <div
+    class="dropdown"
+  >
+    <button
+      aria-controls="id_listbox"
+      aria-haspopup="listbox"
+      class="dropdown__button"
+      id="id"
+      type="button"
+    >
+      1
+    </button>
+    <ul
+      class="dropdown__listbox"
+      hidden=""
+      id="id_listbox"
+      role="listbox"
+      tabindex="-1"
+    >
+      <li
+        class="dropdown__listbox__option"
+        id="id_1"
+        role="option"
+        tabindex="-1"
+      >
+        1
+      </li>
+      <li
+        class="dropdown__listbox__option"
+        id="id_2"
+        role="option"
+        tabindex="-1"
+      >
+        2
+      </li>
+      <li
+        class="dropdown__listbox__option"
+        id="id_3"
+        role="option"
+        tabindex="-1"
+      >
+        3
       </li>
     </ul>
   </div>

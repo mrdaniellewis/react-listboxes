@@ -20,24 +20,24 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">0% </span>
+        <span class="strong">42.86% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>0/8</span>
+        <span class='fraction'>3/7</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">0% </span>
+        <span class="strong">25% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>0/9</span>
+        <span class='fraction'>2/8</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">0% </span>
+        <span class="strong">100% </span>
         <span class="quiet">Functions</span>
-        <span class='fraction'>0/1</span>
+        <span class='fraction'>1/1</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">0% </span>
+        <span class="strong">42.86% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>0/8</span>
+        <span class='fraction'>3/7</span>
       </div>
     </div>
     <p class="quiet">
@@ -64,12 +64,10 @@
 <a name='L16'></a><a href='#L16'>16</a>
 <a name='L17'></a><a href='#L17'>17</a>
 <a name='L18'></a><a href='#L18'>18</a>
-<a name='L19'></a><a href='#L19'>19</a>
-<a name='L20'></a><a href='#L20'>20</a>
-<a name='L21'></a><a href='#L21'>21</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L19'></a><a href='#L19'>19</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">74x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -77,32 +75,28 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">61x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { SET_EXPANDED, SET_SEARCH_KEY, CLEAR_SEARCH, SET_SELECTED_VALUE, SET_SELECTED, SET_BUTTON_MOUSE_DOWN } from './actions.js';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { SET_EXPANDED, SET_SEARCH_KEY, CLEAR_SEARCH, SET_FOCUSED_INDEX, SET_SELECTED } from './actions.js';
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >reducer(</span>state, { type, expanded, key, selectedValue }) {
-<span class="cstat-no" title="statement not covered" >  switch (type) {</span>
-    case SET_EXPANDED:
+export function reducer(state, { type, expanded, key, focusedIndex }) {
+  switch (type) {
+<span class="branch-0 cbranch-no" title="branch not covered" >    case SET_EXPANDED:</span>
 <span class="cstat-no" title="statement not covered" >      return { ...state, expanded };</span>
-    case CLEAR_SEARCH:
+<span class="branch-1 cbranch-no" title="branch not covered" >    case CLEAR_SEARCH:</span>
 <span class="cstat-no" title="statement not covered" >      return { ...state, search: '' };</span>
-    case SET_SEARCH_KEY:
+<span class="branch-2 cbranch-no" title="branch not covered" >    case SET_SEARCH_KEY:</span>
 <span class="cstat-no" title="statement not covered" >      return { ...state, search: (state.search || '') + key.toLowerCase() };</span>
     case SET_SELECTED:
-<span class="cstat-no" title="statement not covered" >      return { ...state, expanded: false, selectedValue };</span>
-    case SET_SELECTED_VALUE:
-<span class="cstat-no" title="statement not covered" >      return { ...state, selectedValue, expanded: true };</span>
-    case SET_BUTTON_MOUSE_DOWN:
-<span class="cstat-no" title="statement not covered" >      return { ...state, mouseDown: true };</span>
-    default:
+      return { ...state, expanded: false, focusedIndex: null };
+    case SET_FOCUSED_INDEX:
+      return { ...state, focusedIndex, expanded: true };
+<span class="branch-5 cbranch-no" title="branch not covered" >    default:</span>
 <span class="cstat-no" title="statement not covered" >      throw new Error(`${type} unknown`);</span>
   }
 }
@@ -112,7 +106,7 @@ export function <span class="fstat-no" title="function not covered" >reducer(</s
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Oct 24 2019 15:56:18 GMT+0100 (British Summer Time)
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Oct 31 2019 23:28:25 GMT+0000 (Greenwich Mean Time)
 </div>
 </div>
 <script src="../../../prettify.js"></script>
