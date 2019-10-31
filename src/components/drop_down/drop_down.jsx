@@ -16,13 +16,13 @@ import { usePrevious } from '../../hooks/use_previous.js';
 import { componentCustomiser } from '../../validators/component_customiser.js';
 import { renderGroupedOptions } from '../../helpers/render_grouped_options.js';
 import { dismemberComponent } from '../../helpers/dismember_component.js';
-import { getPlatform } from '../../helpers/get_platform.js';
+import { classGenerator } from '../../helpers/class_generator.js';
 
 export function DropDown(rawProps) {
   const optionisedProps = useNormalisedOptions(rawProps, { mustHaveSelection: true });
   const {
     options, value: _, setValue, id, className,
-    children, platform, selectedIndex, managedFocus,
+    children, selectedIndex, managedFocus,
     ButtonComponent, ListBoxComponent, OptionComponent,
     GroupComponent, ValueComponent, DropDownComponent,
     ...componentProps
@@ -46,7 +46,7 @@ export function DropDown(rawProps) {
   ), [prevOptions]);
 
   useEffect(() => {
-    if (!search) {
+    if (!search || !expanded) {
       return undefined;
     }
     const found = options.findIndex((o) => (
@@ -58,7 +58,7 @@ export function DropDown(rawProps) {
     const timeout = setTimeout(() => dispatch(clearSearch()), 1000);
 
     return () => clearTimeout(timeout);
-  }, [options, search, setValue]);
+  }, [options, search, expanded, setValue]);
 
   useLayoutEffect(() => {
     if (expanded && options[focusedIndex] && managedFocus) {
@@ -75,6 +75,8 @@ export function DropDown(rawProps) {
   const customOptionComponent = dismemberComponent(OptionComponent, 'li');
   const customValueComponent = dismemberComponent(ValueComponent);
 
+  const classes = classGenerator(className);
+
   return (
     <Context.Provider value={{ dispatch, ...optionisedProps, listRef, buttonRef, ...state }}>
       <customDropDownComponent.type
@@ -84,15 +86,14 @@ export function DropDown(rawProps) {
       >
         <customButtonComponent.type
           type="button"
-          role={platform === 'windows' ? 'combobox' : null}
           id={id}
           aria-controls={`${id}_listbox`}
-          aria-expanded={expanded ? 'true' : { mac: null, windows: 'false' }[platform]}
-          aria-haspopup={platform === 'mac' ? 'menu' : 'listbox'}
+          aria-expanded={expanded ? 'true' : null}
+          aria-haspopup="listbox"
           ref={buttonRef}
           onClick={() => dispatch(onToggleOpen())}
           onKeyDown={(e) => dispatch(onButtonKeyDown(e))}
-          className={className ? `${className}__button` : null}
+          className={classes('button')}
           {...customButtonComponent.props}
         >
           {children ?? options[selectedIndex].label}
@@ -100,14 +101,14 @@ export function DropDown(rawProps) {
         <customListBoxComponent.type
           ref={listRef}
           id={`${id}_listbox`}
-          role={platform === 'mac' ? 'listbox' : 'listbox'}
-          tabIndex={-1}
+          role="listbox"
           hidden={!expanded}
+          tabIndex={-1}
           aria-activedescendant={options[focusedIndex]?.key || null}
           onFocus={(e) => dispatch(onFocus(e))}
           onBlur={onBlurHandler}
           onKeyDown={(e) => dispatch(onKeyDown(e))}
-          className={className ? `${className}__listbox` : null}
+          className={classes('listbox')}
           {...customListBoxComponent.props}
         >
           {renderGroupedOptions({
@@ -127,7 +128,7 @@ export function DropDown(rawProps) {
                     aria-label={label}
                     tabIndex={-1}
                     aria-disabled="true"
-                    className={className ? `${className}__listbox__group` : null}
+                    className={classes('listbox__group', index === focusedIndex && '--focused')}
                     {...customGroupComponent.props}
                     {...html}
                   >
@@ -151,10 +152,8 @@ export function DropDown(rawProps) {
                     tabIndex={-1}
                     aria-selected={selected ? 'true' : null}
                     aria-disabled={disabled ? 'true' : null}
-                    data-focused={index === focusedIndex ? 'true' : null}
-                    data-grouped={group ? 'true' : null}
                     ref={index === focusedIndex ? focusedRef : null}
-                    className={className ? `${className}__listbox__option` : null}
+                    className={classes('listbox__option', index === focusedIndex && '--focused', group && '--grouped')}
                     {...customOptionComponent.props}
                     {...html}
                     onClick={disabled ? null : (e) => dispatch(onClick(e, option))}
@@ -183,7 +182,6 @@ DropDown.propTypes = {
   setValue: PropTypes.func.isRequired,
   value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
   managedFocus: PropTypes.bool,
-  platform: PropTypes.oneOf(['mac', 'windows']),
   className: PropTypes.string,
   ListBoxComponent: componentCustomiser,
   ButtonComponent: componentCustomiser,
@@ -199,7 +197,6 @@ DropDown.defaultProps = {
   value: null,
   className: 'dropdown',
   managedFocus: true,
-  platform: getPlatform(),
   ListBoxComponent: null,
   ButtonComponent: null,
   GroupComponent: null,

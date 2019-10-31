@@ -3,7 +3,7 @@ import { useCallback, useEffect } from 'react';
 export function useOnBlur(fn, ref) {
   const callback = useCallback(() => {
     setTimeout(() => {
-      if (!ref.current.contains(document.activeElement)) {
+      if (ref.current && !ref.current.contains(document.activeElement)) {
         fn();
       }
     }, 0);

@@ -57,7 +57,7 @@ select {
   box-shadow: inset 0 0 0 1px #ccc;
 
   &:focus,
-  &[data-focused=true] {
+  &--focused {
     box-shadow: inset 0 0 0 2px $colour-heritage-yellow;
   }
 
@@ -160,7 +160,7 @@ select {
     cursor: not-allowed;
   }
 
-  &[data-grouped="true"] {
+  &--grouped {
     padding-left: 1em;
   }
 
@@ -168,7 +168,7 @@ select {
     background-color: $colour-heritage-blue-l40;
   }
 
-  &[data-focused] {
+  &--focused {
     color: white;
     background-color: $colour-heritage-blue;
   }
@@ -190,11 +190,6 @@ select {
   border-bottom: 1px solid $colour-heritage-blue;
   font-weight: bold;
   cursor: not-allowed;
-
-  &[data-focused] {
-    outline: none;
-    box-shadow: inset 0 0 0 2px $colour-heritage-yellow;
-  }
 }
 
 .combobox__spinner {

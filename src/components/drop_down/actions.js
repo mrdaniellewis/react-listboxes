@@ -35,10 +35,10 @@ export function onSelectValue(newValue) {
       dispatch(setExpanded(false));
       return;
     }
-    dispatch(setSelected());
     if (newValue.identity !== value.identity) {
       setValue(newValue?.value);
     }
+    dispatch(setSelected());
   };
 }
 

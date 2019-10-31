@@ -1,0 +1,53 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`options as array of strings renders a closed drop down 1`] = `
+<div>
+  <div
+    class="dropdown"
+  >
+    <button
+      aria-controls="id_listbox"
+      aria-expanded="false"
+      aria-haspopup="listbox"
+      class="dropdown__button"
+      id="id"
+      role="combobox"
+      type="button"
+    >
+      Apple
+    </button>
+    <ul
+      class="dropdown__listbox"
+      hidden=""
+      id="id_listbox"
+      role="listbox"
+      tabindex="-1"
+    >
+      <li
+        class="dropdown__listbox__option"
+        id="id_apple"
+        role="option"
+        tabindex="-1"
+      >
+        Apple
+      </li>
+      <li
+        class="dropdown__listbox__option"
+        id="id_banana"
+        role="option"
+        tabindex="-1"
+      >
+        Banana
+      </li>
+      <li
+        class="dropdown__listbox__option"
+        id="id_orange"
+        role="option"
+        tabindex="-1"
+      >
+        Orange
+      </li>
+    </ul>
+  </div>
+</div>
+`;
