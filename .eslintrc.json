@@ -29,7 +29,7 @@
   },
   "overrides": [
     {
-      "files": ["**/*.test.{js,jsx}"],
+      "files": ["**/*.test.{js,jsx}", "src/__jest_setup.js"],
       "env": {
         "jest": true
       },
@@ -37,6 +37,7 @@
         "jest"
       ],
       "rules": {
+        "import/no-extraneous-dependencies": "off",
         "react/prop-types": "off"
       }
     },

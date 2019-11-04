@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { render, fireEvent, wait } from '@testing-library/react';
+import { render, fireEvent, wait, act } from '@testing-library/react';
 import { DropDown } from './drop_down.jsx';
 
 function DropDownWrapper({ value: initialValue, ...props }) {
@@ -10,204 +10,365 @@ function DropDownWrapper({ value: initialValue, ...props }) {
 }
 
 describe('options', () => {
-  describe('as array of strings', () => {
-    const options = ['Apple', 'Banana', 'Orange'];
+  describe('as array of objects', () => {
+    describe('label', () => {
+      const options = [{ label: 'Apple' }, { label: 'Banana' }, { label: 'Orange' }];
 
-    it('renders a closed drop down', () => {
-      const { container } = render(<DropDownWrapper options={options} />);
-      expect(container).toMatchSnapshot();
-      expect(container.querySelector('[role=listbox]')).toHaveAttribute('hidden', '');
-    });
-
-    it('renders a drop down with a selected value', () => {
-      const { container } = render(<DropDownWrapper options={options} value="Orange" />);
-      const button = container.querySelector('button');
-      expect(button).toHaveTextContent('Orange');
-    });
-
-    describe('expanding the list box', () => {
-      it('opens the drop down on click with the first option selected', () => {
+      it('renders a closed drop down', () => {
         const { container } = render(<DropDownWrapper options={options} />);
-        const button = container.querySelector('button');
-        fireEvent.click(button);
-        expect(container.querySelector('[role=listbox]')).not.toHaveAttribute('hidden');
-        expect(document.activeElement).toEqual(container.querySelector('[role=option]'));
+        expect(container).toMatchSnapshot();
+        expect(container.querySelector('[role=listbox]')).toHaveAttribute('hidden', '');
       });
 
-      it('opens the drop down on click with the value selected', () => {
+      it('renders a drop down with a selected value', () => {
         const { container } = render(<DropDownWrapper options={options} value="Orange" />);
         const button = container.querySelector('button');
-        fireEvent.click(button);
-        expect(container.querySelector('[role=listbox]')).not.toHaveAttribute('hidden');
-        expect(document.activeElement).toEqual(container.querySelector('[role=option]:nth-child(3)'));
+        expect(button).toHaveTextContent('Orange');
       });
 
-      it('opens the drop down with the down arrow', () => {
-        const { container } = render(<DropDownWrapper options={options} />);
-        const button = container.querySelector('button');
-        fireEvent.keyDown(button, { key: 'ArrowDown' });
-        expect(container.querySelector('[role=listbox]')).not.toHaveAttribute('hidden');
-        expect(document.activeElement).toEqual(container.querySelector('[role=option]'));
+      describe('expanding the list box', () => {
+        it('opens the drop down on click with the first option selected', () => {
+          const { container } = render(<DropDownWrapper options={options} />);
+          const button = container.querySelector('button');
+          fireEvent.click(button);
+          expect(container.querySelector('[role=listbox]')).not.toHaveAttribute('hidden');
+          expect(document.activeElement).toEqual(container.querySelector('[role=option]'));
+        });
+
+        it('opens the drop down on click with the value selected', () => {
+          const { container } = render(<DropDownWrapper options={options} value="Orange" />);
+          const button = container.querySelector('button');
+          fireEvent.click(button);
+          expect(container.querySelector('[role=listbox]')).not.toHaveAttribute('hidden');
+          expect(document.activeElement).toEqual(container.querySelector('[role=option]:nth-child(3)'));
+        });
+
+        it('opens the drop down with the down arrow', () => {
+          const { container } = render(<DropDownWrapper options={options} />);
+          const button = container.querySelector('button');
+          fireEvent.keyDown(button, { key: 'ArrowDown' });
+          expect(container.querySelector('[role=listbox]')).not.toHaveAttribute('hidden');
+          expect(document.activeElement).toEqual(container.querySelector('[role=option]'));
+        });
+
+        it('opens the drop down with the up arrow', () => {
+          const { container } = render(<DropDownWrapper options={options} />);
+          const button = container.querySelector('button');
+          fireEvent.keyDown(button, { key: 'ArrowUp' });
+          expect(container.querySelector('[role=listbox]')).not.toHaveAttribute('hidden');
+          expect(document.activeElement).toEqual(container.querySelector('[role=option]'));
+        });
       });
 
-      it('opens the drop down with the up arrow', () => {
-        const { container } = render(<DropDownWrapper options={options} />);
-        const button = container.querySelector('button');
-        fireEvent.keyDown(button, { key: 'ArrowUp' });
-        expect(container.querySelector('[role=listbox]')).not.toHaveAttribute('hidden');
-        expect(document.activeElement).toEqual(container.querySelector('[role=option]'));
+      describe('navigating options', () => {
+        it.todo('sets aria-activedescendant');
+
+        it('moves to the next option with the down arrow', () => {
+          const { container } = render(<DropDownWrapper options={options} />);
+          const button = container.querySelector('button');
+          fireEvent.click(button);
+          fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+          expect(document.activeElement).toEqual(container.querySelector('[role=option]:nth-child(2)'));
+        });
+
+        it('moves to the first option from the last option with the down arrow', () => {
+          const { container } = render(<DropDownWrapper options={options} />);
+          const button = container.querySelector('button');
+          fireEvent.click(button);
+          fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+          fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+          fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+          expect(document.activeElement).toEqual(container.querySelector('[role=option]'));
+        });
+
+        it('moves to the previous option with the up arrow', () => {
+          const { container } = render(<DropDownWrapper options={options} value="Banana" />);
+          const button = container.querySelector('button');
+          fireEvent.click(button);
+          fireEvent.keyDown(document.activeElement, { key: 'ArrowUp' });
+          expect(document.activeElement).toEqual(container.querySelector('[role=option]'));
+        });
+
+        it('moves to the last option from the first option with the up arrow', () => {
+          const { container } = render(<DropDownWrapper options={options} />);
+          const button = container.querySelector('button');
+          fireEvent.click(button);
+          fireEvent.keyDown(document.activeElement, { key: 'ArrowUp' });
+          expect(document.activeElement).toEqual(container.querySelector('[role=option]:nth-child(3)'));
+        });
+
+        it('moves to the first option with the home key', () => {
+          const { container } = render(<DropDownWrapper options={options} value="Banana" />);
+          const button = container.querySelector('button');
+          fireEvent.click(button);
+          fireEvent.keyDown(document.activeElement, { key: 'Home' });
+          expect(document.activeElement).toEqual(container.querySelector('[role=option]'));
+        });
+
+        it('moves to the last option with the end key', () => {
+          const { container } = render(<DropDownWrapper options={options} value="Banana" />);
+          const button = container.querySelector('button');
+          fireEvent.click(button);
+          fireEvent.keyDown(document.activeElement, { key: 'End' });
+          expect(document.activeElement).toEqual(container.querySelector('[role=option]:nth-child(3)'));
+        });
+
+        describe('typing', () => {
+          it('moves the option when typing', () => {
+            const { container } = render(<DropDownWrapper options={options} />);
+            const button = container.querySelector('button');
+            fireEvent.click(button);
+            fireEvent.keyDown(document.activeElement, { key: 'b' });
+            expect(document.activeElement).toEqual(container.querySelector('[role=option]:nth-child(2)'));
+          });
+
+          it('moves the option when typing case-insensitively', () => {
+            const { container } = render(<DropDownWrapper options={options} />);
+            const button = container.querySelector('button');
+            fireEvent.click(button);
+            fireEvent.keyDown(document.activeElement, { key: 'B' });
+            expect(document.activeElement).toEqual(container.querySelector('[role=option]:nth-child(2)'));
+          });
+
+          it('does not moves the option if there is no match', () => {
+            const { container } = render(<DropDownWrapper options={options} />);
+            const button = container.querySelector('button');
+            fireEvent.click(button);
+            fireEvent.keyDown(document.activeElement, { key: 'b' });
+            fireEvent.keyDown(document.activeElement, { key: 'z' });
+            expect(document.activeElement).toEqual(container.querySelector('[role=option]:nth-child(2)'));
+          });
+
+          it('moves the option when typing multiple letters', () => {
+            const similarOptions = [{ label: 'Banana' }, { label: 'Blackberry' }];
+            const { container } = render(<DropDownWrapper options={similarOptions} />);
+            const button = container.querySelector('button');
+            fireEvent.click(button);
+            fireEvent.keyDown(document.activeElement, { key: 'b' });
+            fireEvent.keyDown(document.activeElement, { key: 'l' });
+            expect(document.activeElement).toEqual(container.querySelector('[role=option]:nth-child(2)'));
+          });
+
+          it('resets typing after a short delay', () => {
+            jest.useFakeTimers();
+            const { container } = render(<DropDownWrapper options={options} />);
+            const button = container.querySelector('button');
+            fireEvent.click(button);
+            fireEvent.keyDown(document.activeElement, { key: 'b' });
+            act(() => jest.advanceTimersByTime(1000));
+            fireEvent.keyDown(document.activeElement, { key: 'o' });
+            expect(document.activeElement).toEqual(container.querySelector('[role=option]:nth-child(3)'));
+          });
+        });
+      });
+
+      describe('selecting an option', () => {
+        describe('when clicking on an option', () => {
+          describe('when the value is not the current value', () => {
+            it('calls setValue', () => {
+              const spy = jest.fn();
+              const { container } = render(<DropDownWrapper options={options} setValue={spy} />);
+              const button = container.querySelector('button');
+              fireEvent.click(button);
+              fireEvent.click(container.querySelector('[role=option]:nth-child(2)'));
+              expect(spy).toHaveBeenCalledWith({ label: 'Banana' });
+            });
+
+            it('closes the list box and selects the button', () => {
+              const { container } = render(<DropDownWrapper options={options} />);
+              const button = container.querySelector('button');
+              fireEvent.click(button);
+              fireEvent.click(container.querySelector('[role=option]:nth-child(2)'));
+              expect(container.querySelector('[role=listbox]')).toHaveAttribute('hidden', '');
+              expect(document.activeElement).toEqual(button);
+            });
+
+            it('updates the displayed value', () => {
+              const { container } = render(<DropDownWrapper options={options} />);
+              const button = container.querySelector('button');
+              fireEvent.click(button);
+              fireEvent.click(container.querySelector('[role=option]:nth-child(2)'));
+              expect(button).toHaveTextContent('Banana');
+            });
+          });
+
+          describe('when the value is the current value', () => {
+            it('closes the listbox without calling setValue', () => {
+              const spy = jest.fn();
+              const { container } = render(<DropDownWrapper options={options} value="Banana" setValue={spy} />);
+              const button = container.querySelector('button');
+              fireEvent.click(button);
+              fireEvent.click(container.querySelector('[role=option]:nth-child(2)'));
+              expect(spy).not.toHaveBeenCalled();
+              expect(container.querySelector('[role=listbox]')).toHaveAttribute('hidden', '');
+              expect(document.activeElement).toEqual(button);
+            });
+          });
+        });
+
+        describe('when pressing enter on an option', () => {
+          describe('when the value is not the current value', () => {
+            it('calls setValue', () => {
+              const spy = jest.fn();
+              const { container } = render(<DropDownWrapper options={options} setValue={spy} />);
+              const button = container.querySelector('button');
+              fireEvent.click(button);
+              fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+              fireEvent.keyDown(document.activeElement, { key: 'Enter' });
+              expect(spy).toHaveBeenCalledWith({ label: 'Banana' });
+            });
+
+            it('closes the list box and selects the button', () => {
+              const { container } = render(<DropDownWrapper options={options} />);
+              const button = container.querySelector('button');
+              fireEvent.click(button);
+              fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+              fireEvent.keyDown(document.activeElement, { key: 'Enter' });
+              expect(container.querySelector('[role=listbox]')).toHaveAttribute('hidden', '');
+              expect(document.activeElement).toEqual(button);
+            });
+
+            it('updates the displayed value', () => {
+              const { container } = render(<DropDownWrapper options={options} />);
+              const button = container.querySelector('button');
+              fireEvent.click(button);
+              fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+              fireEvent.keyDown(document.activeElement, { key: 'Enter' });
+              expect(button).toHaveTextContent('Banana');
+            });
+          });
+
+          describe('when the value is the current value', () => {
+            it('closes the listbox without calling setValue', () => {
+              const spy = jest.fn();
+              const { container } = render(<DropDownWrapper options={options} value="Banana" setValue={spy} />);
+              const button = container.querySelector('button');
+              fireEvent.click(button);
+              fireEvent.keyDown(document.activeElement, { key: 'Enter' });
+              expect(spy).not.toHaveBeenCalled();
+              expect(container.querySelector('[role=listbox]')).toHaveAttribute('hidden', '');
+              expect(document.activeElement).toEqual(button);
+            });
+          });
+        });
+
+        describe('when blurring the listbox', () => {
+          describe('when the value has changed', () => {
+            it('calls setValue', async () => {
+              const spy = jest.fn();
+              const { container } = render((
+                <>
+                  <DropDownWrapper options={options} setValue={spy} />
+                  <input />
+                </>
+              ));
+              const button = container.querySelector('button');
+              fireEvent.click(button);
+              fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+              container.querySelector('input').focus();
+              await wait(() => {
+                expect(spy).toHaveBeenCalledWith({ label: 'Banana' });
+              });
+            });
+
+            it('closes the list box without removing the focus', async () => {
+              const { container } = render((
+                <>
+                  <DropDownWrapper options={options} />
+                  <input />
+                </>
+              ));
+              const button = container.querySelector('button');
+              fireEvent.click(button);
+              fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+              const input = container.querySelector('input');
+              input.focus();
+              await wait(() => {
+                expect(container.querySelector('[role=listbox]')).toHaveAttribute('hidden', '');
+              });
+              expect(document.activeElement).toEqual(input);
+            });
+
+            it('updates the displayed value', async () => {
+              const { container } = render((
+                <>
+                  <DropDownWrapper options={options} />
+                  <input />
+                </>
+              ));
+              const button = container.querySelector('button');
+              fireEvent.click(button);
+              fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+              const input = container.querySelector('input');
+              input.focus();
+              await wait(() => {
+                expect(button).toHaveTextContent('Banana');
+              });
+            });
+          });
+
+          describe('when the value has not changed', () => {
+            it('closes the listbox without calling setValue', async () => {
+              const spy = jest.fn();
+              const { container } = render((
+                <>
+                  <DropDownWrapper options={options} value="Banana" setValue={spy} />
+                  <input />
+                </>
+              ));
+              const button = container.querySelector('button');
+              fireEvent.click(button);
+              const input = container.querySelector('input');
+              input.focus();
+              await wait(() => {
+                expect(container.querySelector('[role=listbox]')).toHaveAttribute('hidden', '');
+              });
+              expect(spy).not.toHaveBeenCalled();
+              expect(document.activeElement).toEqual(input);
+            });
+          });
+        });
       });
     });
 
-    describe('navigating options', () => {
-      it('moves to the next option with the down arrow', () => {
+    describe('disabled', () => {
+      const options = [{ label: 'Apple' }, { label: 'Banana', disabled: true }];
+
+      it('sets the aria-disabled attribute', () => {
         const { container } = render(<DropDownWrapper options={options} />);
-        const button = container.querySelector('button');
-        fireEvent.click(button);
-        fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
-        expect(document.activeElement).toEqual(container.querySelector('[role=option]:nth-child(2)'));
+        expect(container).toMatchSnapshot();
+        const option = container.querySelector('[role=option]:nth-child(2)');
+        expect(option).toHaveAttribute('aria-disabled', 'true');
       });
 
-      it('moves to the first option from the last option with the down arrow', () => {
-        const { container } = render(<DropDownWrapper options={options} />);
-        const button = container.querySelector('button');
-        fireEvent.click(button);
-        fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
-        fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
-        fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
-        expect(document.activeElement).toEqual(container.querySelector('[role=option]'));
-      });
-
-      it('moves to the previous option with the up arrow', () => {
-        const { container } = render(<DropDownWrapper options={options} value="Banana" />);
-        const button = container.querySelector('button');
-        fireEvent.click(button);
-        fireEvent.keyDown(document.activeElement, { key: 'ArrowUp' });
-        expect(document.activeElement).toEqual(container.querySelector('[role=option]'));
-      });
-
-      it('moves to the last option from the first option with the up arrow', () => {
-        const { container } = render(<DropDownWrapper options={options} />);
-        const button = container.querySelector('button');
-        fireEvent.click(button);
-        fireEvent.keyDown(document.activeElement, { key: 'ArrowUp' });
-        expect(document.activeElement).toEqual(container.querySelector('[role=option]:nth-child(3)'));
-      });
-
-      it('moves to the first option with the home key', () => {
-        const { container } = render(<DropDownWrapper options={options} value="Banana" />);
-        const button = container.querySelector('button');
-        fireEvent.click(button);
-        fireEvent.keyDown(document.activeElement, { key: 'Home' });
-        expect(document.activeElement).toEqual(container.querySelector('[role=option]'));
-      });
-
-      it('moves to the last option with the end key', () => {
-        const { container } = render(<DropDownWrapper options={options} value="Banana" />);
-        const button = container.querySelector('button');
-        fireEvent.click(button);
-        fireEvent.keyDown(document.activeElement, { key: 'End' });
-        expect(document.activeElement).toEqual(container.querySelector('[role=option]:nth-child(3)'));
-      });
-
-      it.todo('moves the option when typing');
-      it.todo('moves the option when typing multiple letters');
-      it.todo('clears typing after a short delay');
-    });
-
-    describe('selecting an option', () => {
-      describe('when clicking on an option', () => {
-        describe('when the value is not the current value', () => {
-          it('calls setValue', () => {
+      describe('selecting a disabled option', () => {
+        describe('when clicking on an option', () => {
+          it('does not close the listbox or select the item', () => {
             const spy = jest.fn();
             const { container } = render(<DropDownWrapper options={options} setValue={spy} />);
             const button = container.querySelector('button');
             fireEvent.click(button);
             fireEvent.click(container.querySelector('[role=option]:nth-child(2)'));
-            expect(spy).toHaveBeenCalledWith('Banana');
-          });
-
-          it('closes the list box and selects the button', () => {
-            const { container } = render(<DropDownWrapper options={options} />);
-            const button = container.querySelector('button');
-            fireEvent.click(button);
-            fireEvent.click(container.querySelector('[role=option]:nth-child(2)'));
-            expect(container.querySelector('[role=listbox]')).toHaveAttribute('hidden', '');
-            expect(document.activeElement).toEqual(button);
-          });
-
-          it('updates the displayed value', () => {
-            const { container } = render(<DropDownWrapper options={options} />);
-            const button = container.querySelector('button');
-            fireEvent.click(button);
-            fireEvent.click(container.querySelector('[role=option]:nth-child(2)'));
-            expect(button).toHaveTextContent('Banana');
-          });
-        });
-
-        describe('when the value is the current value', () => {
-          it('closes the listbox without calling setValue', () => {
-            const spy = jest.fn();
-            const { container } = render(<DropDownWrapper options={options} value="Banana" setValue={spy} />);
-            const button = container.querySelector('button');
-            fireEvent.click(button);
-            fireEvent.click(container.querySelector('[role=option]:nth-child(2)'));
             expect(spy).not.toHaveBeenCalled();
-            expect(container.querySelector('[role=listbox]')).toHaveAttribute('hidden', '');
-            expect(document.activeElement).toEqual(button);
+            expect(container.querySelector('[role=listbox]')).not.toHaveAttribute('hidden');
           });
         });
-      });
 
-      describe('when pressing enter on an option', () => {
-        describe('when the value is not the current value', () => {
-          it('calls setValue', () => {
+        describe('when pressing enter on an option', () => {
+          it('does not close the listbox or select the item', () => {
             const spy = jest.fn();
             const { container } = render(<DropDownWrapper options={options} setValue={spy} />);
             const button = container.querySelector('button');
             fireEvent.click(button);
             fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
             fireEvent.keyDown(document.activeElement, { key: 'Enter' });
-            expect(spy).toHaveBeenCalledWith('Banana');
-          });
-
-          it('closes the list box and selects the button', () => {
-            const { container } = render(<DropDownWrapper options={options} />);
-            const button = container.querySelector('button');
-            fireEvent.click(button);
-            fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
-            fireEvent.keyDown(document.activeElement, { key: 'Enter' });
-            expect(container.querySelector('[role=listbox]')).toHaveAttribute('hidden', '');
-            expect(document.activeElement).toEqual(button);
-          });
-
-          it('updates the displayed value', () => {
-            const { container } = render(<DropDownWrapper options={options} />);
-            const button = container.querySelector('button');
-            fireEvent.click(button);
-            fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
-            fireEvent.keyDown(document.activeElement, { key: 'Enter' });
-            expect(button).toHaveTextContent('Banana');
-          });
-        });
-
-        describe('when the value is the current value', () => {
-          it('closes the listbox without calling setValue', () => {
-            const spy = jest.fn();
-            const { container } = render(<DropDownWrapper options={options} value="Banana" setValue={spy} />);
-            const button = container.querySelector('button');
-            fireEvent.click(button);
-            fireEvent.keyDown(document.activeElement, { key: 'Enter' });
             expect(spy).not.toHaveBeenCalled();
-            expect(container.querySelector('[role=listbox]')).toHaveAttribute('hidden', '');
-            expect(document.activeElement).toEqual(button);
+            expect(container.querySelector('[role=listbox]')).not.toHaveAttribute('hidden');
           });
         });
-      });
 
-      describe('when blurring the listbox', () => {
-        describe('when the value has changed', () => {
-          it('calls setValue', async () => {
+        describe('when bluring the listbox', () => {
+          it('closes the listbox without selecting the item', async () => {
             const spy = jest.fn();
             const { container } = render((
               <>
@@ -218,59 +379,6 @@ describe('options', () => {
             const button = container.querySelector('button');
             fireEvent.click(button);
             fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
-            container.querySelector('input').focus();
-            await wait(() => {
-              expect(spy).toHaveBeenCalledWith('Banana');
-            });
-          });
-
-          it('closes the list box without removing the focus', async () => {
-            const { container } = render((
-              <>
-                <DropDownWrapper options={options} />
-                <input />
-              </>
-            ));
-            const button = container.querySelector('button');
-            fireEvent.click(button);
-            fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
-            const input = container.querySelector('input');
-            input.focus();
-            await wait(() => {
-              expect(container.querySelector('[role=listbox]')).toHaveAttribute('hidden', '');
-            });
-            expect(document.activeElement).toEqual(input);
-          });
-
-          it('updates the displayed value', async () => {
-            const { container } = render((
-              <>
-                <DropDownWrapper options={options} />
-                <input />
-              </>
-            ));
-            const button = container.querySelector('button');
-            fireEvent.click(button);
-            fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
-            const input = container.querySelector('input');
-            input.focus();
-            await wait(() => {
-              expect(button).toHaveTextContent('Banana');
-            });
-          });
-        });
-
-        describe('when the value has not changed', () => {
-          it('closes the listbox without calling setValue', async () => {
-            const spy = jest.fn();
-            const { container } = render((
-              <>
-                <DropDownWrapper options={options} value="Banana" setValue={spy} />
-                <input />
-              </>
-            ));
-            const button = container.querySelector('button');
-            fireEvent.click(button);
             const input = container.querySelector('input');
             input.focus();
             await wait(() => {
@@ -281,6 +389,96 @@ describe('options', () => {
           });
         });
       });
+    });
+
+    describe('value', () => {
+      it('is used as a options identity', () => {
+        const options = [{ label: 'foo', value: 1 }, { label: 'foo', value: 2 }, { label: 'foo', value: 3 }];
+        const spy = jest.fn();
+        const { container } = render(
+          <DropDownWrapper options={options} value={2} setValue={spy} />,
+        );
+        const button = container.querySelector('button');
+        fireEvent.click(button);
+        expect(document.activeElement).toEqual(container.querySelector('[role=option]:nth-child(2)'));
+        fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+        fireEvent.keyDown(document.activeElement, { key: 'Enter' });
+        expect(spy).toHaveBeenCalledWith({ label: 'foo', value: 3 });
+      });
+    });
+
+    describe('id', () => {
+      it('is used as a options identity', () => {
+        const options = [{ label: 'foo', id: 1 }, { label: 'foo', id: 2 }, { label: 'foo', id: 3 }];
+        const spy = jest.fn();
+        const { container } = render(
+          <DropDownWrapper options={options} value={2} setValue={spy} />,
+        );
+        const button = container.querySelector('button');
+        fireEvent.click(button);
+        expect(document.activeElement).toEqual(container.querySelector('[role=option]:nth-child(2)'));
+        fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+        fireEvent.keyDown(document.activeElement, { key: 'Enter' });
+        expect(spy).toHaveBeenCalledWith({ label: 'foo', id: 3 });
+      });
+    });
+
+    describe('html', () => {
+      it('sets attributes on the option', () => {
+        const options = [{ label: 'foo', html: { 'data-foo': 'bar', className: 'class' } }];
+        const { container } = render(
+          <DropDownWrapper options={options} />,
+        );
+        const option = container.querySelector('[role=option]');
+        expect(option).toHaveAttribute('data-foo', 'bar');
+        expect(option).toHaveAttribute('class', 'class');
+      });
+    });
+
+    describe('group', () => {
+      const options = [
+        { label: 'Apple' },
+        { label: 'Orange', group: 'Citrus' },
+        { label: 'Lemon', group: 'Citrus' },
+        { label: 'Raspberry', group: 'Berry' },
+        { label: 'Strawberry', group: 'Berry' },
+      ];
+
+      it('renders grouped options', () => {
+        const { container } = render(<DropDownWrapper options={options} />);
+        expect(container).toMatchSnapshot();
+      });
+    });
+
+    describe('other attributes', () => {
+      it('does not render them', () => {
+        const options = [{ label: 'foo', 'data-foo': 'bar' }];
+        const { container } = render(<DropDownWrapper options={options} />);
+        const option = container.querySelector('[role=option]');
+        expect(option).not.toHaveAttribute('data-foo', 'bar');
+      });
+    });
+  });
+
+  describe('options as array of strings', () => {
+    const options = ['Apple', 'Banana', 'Orange'];
+
+    it('renders a closed drop down', () => {
+      const { container } = render(<DropDownWrapper options={options} />);
+      expect(container).toMatchSnapshot();
+      expect(container.querySelector('[role=listbox]')).toHaveAttribute('hidden', '');
+    });
+
+    it('triggers the setValue callback with the selected value', () => {
+      const spy = jest.fn();
+      const { container } = render(<DropDownWrapper options={options} setValue={spy} />);
+      const button = container.querySelector('button');
+      fireEvent.click(button);
+      fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+      fireEvent.keyDown(document.activeElement, { key: 'Enter' });
+      expect(spy).toHaveBeenCalledWith('Banana');
+      expect(container.querySelector('[role=listbox]')).toHaveAttribute('hidden', '');
+      expect(document.activeElement).toEqual(button);
     });
   });
 
@@ -307,76 +505,6 @@ describe('options', () => {
   });
 
   describe.skip('options as array of objects', () => {
-    describe('label', () => {
-      const options = [{ label: 'Apple' }, { label: 'Banana' }, { label: 'Orange' }];
-
-      it('renders an select', () => {
-        const { container } = render(
-          <SelectWrapper options={options} />,
-        );
-        expect(container).toMatchSnapshot();
-      });
-
-      it('triggers the setValue callback with the selected value', () => {
-        const spy = jest.fn();
-        const { container } = render(<SelectWrapper options={options} setValue={spy} />);
-        const select = container.querySelector('select');
-        fireEvent.change(select, { target: { value: '1' } });
-        expect(spy).toHaveBeenCalledWith({ label: 'Banana' });
-      });
-
-      it('updates when the value changes', () => {
-        const { container } = render(<SelectWrapper options={options} />);
-        const select = container.querySelector('select');
-        fireEvent.change(select, { target: { value: '1' } });
-        expect(select).toHaveValue('1');
-        expect(select.querySelector('option:nth-child(2)')).toHaveTextContent('Banana');
-      });
-    });
-
-    describe('value', () => {
-      it('is used as a options identity', () => {
-        const options = [{ label: 'foo', value: 1 }, { label: 'foo', value: 2 }, { label: 'foo', value: 3 }];
-        const spy = jest.fn();
-        const { container } = render(<SelectWrapper options={options} value={2} setValue={spy} />);
-        const select = container.querySelector('select');
-        expect(select).toHaveValue('1');
-        fireEvent.change(select, { target: { value: '2' } });
-        expect(spy).toHaveBeenCalledWith({ label: 'foo', value: 3 });
-      });
-    });
-
-    describe('id', () => {
-      it('is used as a options identity', () => {
-        const options = [{ label: 'foo', id: 1 }, { label: 'foo', id: 2 }, { label: 'foo', id: 3 }];
-        const spy = jest.fn();
-        const { container } = render(<SelectWrapper options={options} value={2} setValue={spy} />);
-        const select = container.querySelector('select');
-        expect(select).toHaveValue('1');
-        fireEvent.change(select, { target: { value: '2' } });
-        expect(spy).toHaveBeenCalledWith({ label: 'foo', id: 3 });
-      });
-    });
-
-    describe('disabled', () => {
-      it('sets the disabled attribute', () => {
-        const options = [{ label: 'foo', disabled: true }];
-        const { container } = render(<SelectWrapper options={options} />);
-        const option = container.querySelector('option');
-        expect(option).toHaveAttribute('disabled', '');
-      });
-    });
-
-    describe('html', () => {
-      it('sets attributes on the element', () => {
-        const options = [{ label: 'foo', html: { 'data-foo': 'bar', className: 'class' } }];
-        const { container } = render(<SelectWrapper options={options} />);
-        const option = container.querySelector('option');
-        expect(option).toHaveAttribute('data-foo', 'bar');
-        expect(option).toHaveAttribute('class', 'class');
-      });
-    });
-
     describe('group', () => {
       const options = [
         { label: 'Apple' },
@@ -405,15 +533,6 @@ describe('options', () => {
         fireEvent.change(select, { target: { value: '3' } });
         expect(select).toHaveValue('3');
         expect(select.querySelector('optgroup:first-of-type > option:nth-child(2)')).toHaveTextContent('Lemon');
-      });
-    });
-
-    describe('other attributes', () => {
-      it('does not render them', () => {
-        const options = [{ label: 'foo', 'data-foo': 'bar' }];
-        const { container } = render(<SelectWrapper options={options} />);
-        const option = container.querySelector('option');
-        expect(option).not.toHaveAttribute('data-foo', 'bar');
       });
     });
   });
@@ -463,6 +582,28 @@ describe.skip('blank', () => {
     expect(select).toHaveValue('3');
     expect(select.querySelector('option:nth-child(4)')).toHaveTextContent('Orange');
   });
+});
+
+describe('children', () => {
+  it.todo('renders children in the button');
+});
+
+describe('managedFocus', () => {
+  it.todo('uses active-descendant only');
+});
+
+describe('className', () => {
+  describe('when null', () => {
+    it.todo('does not insert classes');
+  });
+
+  describe('when set', () => {
+    it.todo('it prefixes classes');
+  });
+});
+
+describe('id', () => {
+  it.todo('it prefixes all ids');
 });
 
 describe.skip('OptionComponent', () => {

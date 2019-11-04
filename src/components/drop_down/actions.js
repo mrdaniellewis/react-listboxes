@@ -112,6 +112,9 @@ export function onKeyDown(event) {
         // Select current item if one is selected
         if (expanded && focusedIndex !== -1 && options[focusedIndex]) {
           event.preventDefault();
+          if (options[focusedIndex].unselectable) {
+            return;
+          }
           dispatch(onSelectValue(options[focusedIndex]));
           buttonRef.current.focus();
         }

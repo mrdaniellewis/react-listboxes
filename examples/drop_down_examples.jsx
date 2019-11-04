@@ -77,6 +77,34 @@ function Example() {
             const [value, setValue] = useState();
             const options = [
               { label: 'Apple' },
+              { label: 'Banana' },
+              { label: 'Orange', disabled: true },
+            ]
+
+            <DropDown
+              value={value}
+              setValue={setValue}
+              blank="Please choose…"
+              options={options}
+            />
+          `}
+        </code>
+      </pre>
+      <DropDownField
+        label="With a disabled option"
+        blank="Please choose…"
+        options={[
+          { label: 'Apple' },
+          { label: 'Banana' },
+          { label: 'Orange', disabled: true },
+        ]}
+      />
+      <pre>
+        <code className="language-js">
+          {unindent`
+            const [value, setValue] = useState();
+            const options = [
+              { label: 'Apple' },
               { label: 'Orange', group: 'Citrus' },
               { label: 'Lemon', group: 'Citrus' },
               { label: 'Raspberry', group: 'Berry' },
