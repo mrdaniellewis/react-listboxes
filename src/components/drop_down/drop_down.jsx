@@ -9,7 +9,6 @@ import {
   onOptionsChanged,
 } from './actions.js';
 import { Context } from '../../context.js';
-import { options as validateOptions } from '../../validators/options.js';
 import { useNormalisedOptions } from '../../hooks/use_normalised_options.js';
 import { useOnBlur } from '../../hooks/use_on_blur.js';
 import { usePrevious } from '../../hooks/use_previous.js';
@@ -49,9 +48,7 @@ export function DropDown(rawProps) {
     if (!search || !expanded) {
       return undefined;
     }
-    const found = options.findIndex((o) => (
-      !o.unselectable && o.label.toLowerCase().startsWith(search)
-    ));
+    const found = options.findIndex((o) => o.label.toLowerCase().startsWith(search));
     if (found > -1) {
       dispatch(setFocusedIndex(found));
     }
@@ -128,7 +125,7 @@ export function DropDown(rawProps) {
                     aria-label={label}
                     tabIndex={-1}
                     aria-disabled="true"
-                    className={classes('listbox__group', index === focusedIndex && '--focused')}
+                    className={classes('group', index === focusedIndex && '--focused')}
                     {...customGroupComponent.props}
                     {...html}
                   >
@@ -153,7 +150,7 @@ export function DropDown(rawProps) {
                     aria-selected={selected ? 'true' : null}
                     aria-disabled={disabled ? 'true' : null}
                     ref={index === focusedIndex ? focusedRef : null}
-                    className={classes('listbox__option', index === focusedIndex && '--focused', group && '--grouped')}
+                    className={classes('option', index === focusedIndex && '--focused', group && '--grouped')}
                     {...customOptionComponent.props}
                     {...html}
                     onClick={disabled ? null : (e) => dispatch(onClick(e, option))}
@@ -178,7 +175,7 @@ DropDown.propTypes = {
   blank: PropTypes.string,
   children: PropTypes.node,
   id: PropTypes.string.isRequired,
-  options: validateOptions.isRequired,
+  options: PropTypes.arrayOf(PropTypes.any).isRequired,
   setValue: PropTypes.func.isRequired,
   value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
   managedFocus: PropTypes.bool,
