@@ -708,42 +708,86 @@ describe('managedFocus', () => {
 
 describe('className', () => {
   const options = [
+    { label: 'Apple' },
+    { label: 'Pear' },
     { label: 'Orange', group: 'Citrus' },
   ];
 
   it('adds default BEM classes', () => {
-    const { container, getByRole } = render(
+    const { container, getByRole, getAllByRole } = render(
       <DropDownWrapper options={options} />,
     );
     fireEvent.click(getByRole('button'));
+    const listBox = getByRole('listbox');
     expect(container.querySelector('div')).toHaveClass('dropdown');
     expect(getByRole('button')).toHaveClass('dropdown__button');
     expect(getByRole('listbox')).toHaveClass('dropdown__listbox');
-    expect(getByRole('group')).toHaveClass('dropdown__group', 'dropdown__group--focused');
-    expect(getByRole('option')).toHaveClass('dropdown__option', 'dropdown__option--selected');
+    expect(getAllByRole('option')[0]).toHaveClass('dropdown__option dropdown__option--focused');
+    expect(getAllByRole('option')[1]).toHaveClass('dropdown__option');
+    expect(getAllByRole('option')[2]).toHaveClass('dropdown__option dropdown__option--grouped');
+    expect(getByRole('group')).toHaveClass('dropdown__group');
+
+    fireEvent.keyDown(listBox, { key: 'ArrowDown' });
+    fireEvent.keyDown(listBox, { key: 'ArrowDown' });
+    expect(getByRole('group')).toHaveClass('dropdown__group dropdown__group--focused');
   });
 
   describe('when null', () => {
     it('does not insert classes', () => {
-      const { container, getByRole } = render(
+      const { container, getByRole, getAllByRole } = render(
         <DropDownWrapper options={options} className={null} />,
       );
       fireEvent.click(getByRole('button'));
       expect(container.querySelector('div')).not.toHaveClass();
       expect(getByRole('button')).not.toHaveClass();
       expect(getByRole('listbox')).not.toHaveClass();
-      expect(getByRole('option')).not.toHaveClass();
+      expect(getAllByRole('option')[0]).not.toHaveClass();
       expect(getByRole('group')).not.toHaveClass();
     });
   });
 
   describe('when set', () => {
-    it.todo('it prefixes classes');
+    it('it prefixes classes', () => {
+      const { container, getByRole, getAllByRole } = render(
+        <DropDownWrapper options={options} className="foo" />,
+      );
+      fireEvent.click(getByRole('button'));
+      const listBox = getByRole('listbox');
+      expect(container.querySelector('div')).toHaveClass('foo');
+      expect(getByRole('button')).toHaveClass('foo__button');
+      expect(getByRole('listbox')).toHaveClass('foo__listbox');
+      expect(getAllByRole('option')[0]).toHaveClass('foo__option foo__option--focused');
+      expect(getAllByRole('option')[1]).toHaveClass('foo__option');
+      expect(getAllByRole('option')[2]).toHaveClass('foo__option foo__option--grouped');
+      expect(getByRole('group')).toHaveClass('foo__group');
+
+      fireEvent.keyDown(listBox, { key: 'ArrowDown' });
+      fireEvent.keyDown(listBox, { key: 'ArrowDown' });
+      expect(getByRole('group')).toHaveClass('foo__group foo__group--focused');
+    });
   });
 });
 
 describe('id', () => {
-  it.todo('it prefixes all ids');
+  const options = [
+    { label: 'Apple' },
+    { label: 'Pear' },
+    { label: 'Orange', group: 'Citrus' },
+  ];
+
+  it('it prefixes all ids', () => {
+    const { container, getByRole, getAllByRole } = render(
+      <DropDownWrapper options={options} id="foo" />,
+    );
+    fireEvent.click(getByRole('button'));
+    expect(container.querySelector('div')).not.toHaveAttribute('id');
+    expect(getByRole('button')).toHaveAttribute('id', 'foo');
+    expect(getByRole('listbox')).toHaveAttribute('id', 'foo_listbox');
+    expect(getAllByRole('option')[0]).toHaveAttribute('id', 'foo_option_apple');
+    expect(getAllByRole('option')[1]).toHaveAttribute('id', 'foo_option_pear');
+    expect(getAllByRole('option')[2]).toHaveAttribute('id', 'foo_option_orange');
+    expect(getByRole('group')).toHaveAttribute('id', 'foo_group_citrus');
+  });
 });
 
 describe('ListBoxComponent', () => {
