@@ -6,7 +6,7 @@ import { initialState } from './initial_state.js';
 import {
   clearSearch, onKeyDown, setFocusedIndex, onBlur,
   onToggleOpen, onFocus, onButtonKeyDown, onClick,
-  onOptionsChanged,
+  onOptionsChanged, setListProps,
 } from './actions.js';
 import { Context } from '../../context.js';
 import { useNormalisedOptions } from '../../hooks/use_normalised_options.js';
@@ -16,12 +16,14 @@ import { componentCustomiser } from '../../validators/component_customiser.js';
 import { renderGroupedOptions } from '../../helpers/render_grouped_options.js';
 import { dismemberComponent } from '../../helpers/dismember_component.js';
 import { classGenerator } from '../../helpers/class_generator.js';
+import { joinTokens } from '../../helpers/join_tokens.js';
 
 export function DropDown(rawProps) {
   const optionisedProps = useNormalisedOptions(rawProps, { mustHaveSelection: true });
   const {
     options, value: _, setValue, id, className,
     children, selectedIndex, managedFocus,
+    positionListBox,
     ButtonComponent, ListBoxComponent, OptionComponent,
     GroupComponent, ValueComponent, DropDownComponent,
     ...componentProps
@@ -36,7 +38,7 @@ export function DropDown(rawProps) {
     initialState,
     id,
   );
-  const { expanded, search, focusedIndex } = state;
+  const { expanded, search, focusedIndex, listClassName, listStyle } = state;
   const onBlurHandler = useOnBlur(() => dispatch(onBlur()), listRef);
 
   const prevOptions = usePrevious(options);
@@ -64,6 +66,15 @@ export function DropDown(rawProps) {
       listRef.current.focus();
     }
   }, [expanded, managedFocus, options, focusedIndex]);
+
+  useLayoutEffect(() => {
+    if (positionListBox && expanded) {
+      const listProps = positionListBox(listRef.current);
+      if (listProps) {
+        dispatch(setListProps(listProps));
+      }
+    }
+  }, [positionListBox, expanded, options]);
 
   const customDropDownComponent = dismemberComponent(DropDownComponent, 'div');
   const customButtonComponent = dismemberComponent(ButtonComponent, 'button');
@@ -105,8 +116,9 @@ export function DropDown(rawProps) {
           onFocus={(e) => dispatch(onFocus(e))}
           onBlur={onBlurHandler}
           onKeyDown={(e) => dispatch(onKeyDown(e))}
-          className={classes('listbox')}
+          className={joinTokens(classes('listbox'), listClassName)}
           {...customListBoxComponent.props}
+          style={listStyle}
         >
           {renderGroupedOptions({
             options,
@@ -180,6 +192,7 @@ DropDown.propTypes = {
   value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
   managedFocus: PropTypes.bool,
   className: PropTypes.string,
+  positionListBox: PropTypes.func,
   ListBoxComponent: componentCustomiser,
   ButtonComponent: componentCustomiser,
   GroupComponent: componentCustomiser,
@@ -194,6 +207,7 @@ DropDown.defaultProps = {
   value: null,
   className: 'dropdown',
   managedFocus: true,
+  positionListBox: null,
   ListBoxComponent: null,
   ButtonComponent: null,
   GroupComponent: null,

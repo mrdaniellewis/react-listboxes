@@ -7,6 +7,7 @@ exports[`options as array of objects disabled sets the aria-disabled attribute 1
   >
     <button
       aria-controls="id_listbox"
+      aria-expanded="true"
       aria-haspopup="listbox"
       class="dropdown__button"
       id="id"
@@ -15,15 +16,15 @@ exports[`options as array of objects disabled sets the aria-disabled attribute 1
       Apple
     </button>
     <ul
+      aria-activedescendant="id_option_apple"
       class="dropdown__listbox"
-      hidden=""
       id="id_listbox"
       role="listbox"
       tabindex="-1"
     >
       <li
-        class="dropdown__option"
-        id="id_apple"
+        class="dropdown__option dropdown__option--focused"
+        id="id_option_apple"
         role="option"
         tabindex="-1"
       >
@@ -32,7 +33,7 @@ exports[`options as array of objects disabled sets the aria-disabled attribute 1
       <li
         aria-disabled="true"
         class="dropdown__option"
-        id="id_banana"
+        id="id_option_banana"
         role="option"
         tabindex="-1"
       >
@@ -66,7 +67,7 @@ exports[`options as array of objects group renders grouped options 1`] = `
     >
       <li
         class="dropdown__option"
-        id="id_apple"
+        id="id_option_apple"
         role="option"
         tabindex="-1"
       >
@@ -76,7 +77,7 @@ exports[`options as array of objects group renders grouped options 1`] = `
         aria-disabled="true"
         aria-label="Citrus"
         class="dropdown__group"
-        id="group_citrus"
+        id="id_group_citrus"
         role="group"
         tabindex="-1"
       >
@@ -84,7 +85,7 @@ exports[`options as array of objects group renders grouped options 1`] = `
       </li>
       <li
         class="dropdown__option dropdown__option--grouped"
-        id="id_orange"
+        id="id_option_orange"
         role="option"
         tabindex="-1"
       >
@@ -92,7 +93,7 @@ exports[`options as array of objects group renders grouped options 1`] = `
       </li>
       <li
         class="dropdown__option dropdown__option--grouped"
-        id="id_lemon"
+        id="id_option_lemon"
         role="option"
         tabindex="-1"
       >
@@ -102,7 +103,7 @@ exports[`options as array of objects group renders grouped options 1`] = `
         aria-disabled="true"
         aria-label="Berry"
         class="dropdown__group"
-        id="group_berry"
+        id="id_group_berry"
         role="group"
         tabindex="-1"
       >
@@ -110,7 +111,7 @@ exports[`options as array of objects group renders grouped options 1`] = `
       </li>
       <li
         class="dropdown__option dropdown__option--grouped"
-        id="id_raspberry"
+        id="id_option_raspberry"
         role="option"
         tabindex="-1"
       >
@@ -118,7 +119,7 @@ exports[`options as array of objects group renders grouped options 1`] = `
       </li>
       <li
         class="dropdown__option dropdown__option--grouped"
-        id="id_strawberry"
+        id="id_option_strawberry"
         role="option"
         tabindex="-1"
       >
@@ -152,7 +153,7 @@ exports[`options as array of objects label renders a closed drop down 1`] = `
     >
       <li
         class="dropdown__option"
-        id="id_apple"
+        id="id_option_apple"
         role="option"
         tabindex="-1"
       >
@@ -160,7 +161,7 @@ exports[`options as array of objects label renders a closed drop down 1`] = `
       </li>
       <li
         class="dropdown__option"
-        id="id_banana"
+        id="id_option_banana"
         role="option"
         tabindex="-1"
       >
@@ -168,7 +169,7 @@ exports[`options as array of objects label renders a closed drop down 1`] = `
       </li>
       <li
         class="dropdown__option"
-        id="id_orange"
+        id="id_option_orange"
         role="option"
         tabindex="-1"
       >
@@ -202,7 +203,7 @@ exports[`options options as array of numbers renders a closed drop down 1`] = `
     >
       <li
         class="dropdown__option"
-        id="id_1"
+        id="id_option_1"
         role="option"
         tabindex="-1"
       >
@@ -210,7 +211,7 @@ exports[`options options as array of numbers renders a closed drop down 1`] = `
       </li>
       <li
         class="dropdown__option"
-        id="id_2"
+        id="id_option_2"
         role="option"
         tabindex="-1"
       >
@@ -218,7 +219,7 @@ exports[`options options as array of numbers renders a closed drop down 1`] = `
       </li>
       <li
         class="dropdown__option"
-        id="id_3"
+        id="id_option_3"
         role="option"
         tabindex="-1"
       >
@@ -252,7 +253,7 @@ exports[`options options as array of strings renders a closed drop down 1`] = `
     >
       <li
         class="dropdown__option"
-        id="id_apple"
+        id="id_option_apple"
         role="option"
         tabindex="-1"
       >
@@ -260,7 +261,7 @@ exports[`options options as array of strings renders a closed drop down 1`] = `
       </li>
       <li
         class="dropdown__option"
-        id="id_banana"
+        id="id_option_banana"
         role="option"
         tabindex="-1"
       >
@@ -268,7 +269,7 @@ exports[`options options as array of strings renders a closed drop down 1`] = `
       </li>
       <li
         class="dropdown__option"
-        id="id_orange"
+        id="id_option_orange"
         role="option"
         tabindex="-1"
       >

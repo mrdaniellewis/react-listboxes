@@ -1,6 +1,6 @@
-import { SET_EXPANDED, SET_SEARCH_KEY, CLEAR_SEARCH, SET_FOCUSED_INDEX, SET_SELECTED } from './actions.js';
+import { SET_EXPANDED, SET_SEARCH_KEY, CLEAR_SEARCH, SET_FOCUSED_INDEX, SET_SELECTED, SET_LIST_PROPS } from './actions.js';
 
-export function reducer(state, { type, expanded, key, focusedIndex }) {
+export function reducer(state, { type, expanded, key, focusedIndex, listStyle, listClassName }) {
   switch (type) {
     case SET_EXPANDED:
       return { ...state, expanded };
@@ -12,6 +12,8 @@ export function reducer(state, { type, expanded, key, focusedIndex }) {
       return { ...state, expanded: false, focusedIndex: null };
     case SET_FOCUSED_INDEX:
       return { ...state, focusedIndex, expanded: true };
+    case SET_LIST_PROPS:
+      return { ...state, listStyle, listClassName };
     default:
       throw new Error(`${type} unknown`);
   }

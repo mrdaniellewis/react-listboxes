@@ -7,6 +7,7 @@ export const CLEAR_SEARCH = 'CLEAR_SEARCH';
 export const SET_SEARCH_KEY = 'SET_SEARCH_KEY';
 export const SET_SELECTED = 'SET_SELECTED';
 export const SET_FOCUSED_INDEX = 'SET_FOCUSED_INDEX';
+export const SET_LIST_PROPS = 'SET_LIST_PROPS';
 
 export function setExpanded(expanded) {
   return { type: SET_EXPANDED, expanded };
@@ -26,6 +27,10 @@ export function setFocusedIndex(focusedIndex) {
 
 export function setSelected() {
   return { type: SET_SELECTED };
+}
+
+export function setListProps({ className, style }) {
+  return { type: SET_LIST_PROPS, listClassName: className, listStyle: style };
 }
 
 export function onSelectValue(newValue) {

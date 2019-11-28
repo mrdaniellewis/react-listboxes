@@ -3,5 +3,7 @@ export function initialState() {
     expanded: false,
     search: '',
     focusedIndex: null,
+    listStyle: null,
+    listClassName: null,
   };
 }

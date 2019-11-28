@@ -51,7 +51,7 @@ export function useNormalisedOptions({
               label: option.group,
               identity: option.group,
               options: [option],
-              key: idGenerator.uniqueId(`group_${option.group}`),
+              key: idGenerator.uniqueId(`${id}_group_${option.group}`),
               unselectable: true,
             };
             groups.set(option.group, group);
@@ -61,7 +61,7 @@ export function useNormalisedOptions({
           }
           option.group = group;
         }
-        option.key = idGenerator.uniqueId(option.html?.id || `${id}_${option.label}`);
+        option.key = idGenerator.uniqueId(option.html?.id || `${id}_option_${option.label}`);
         normalised.push(option);
       });
 
