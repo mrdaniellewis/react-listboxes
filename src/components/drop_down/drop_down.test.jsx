@@ -2,10 +2,24 @@ import React, { useState } from 'react';
 import { render, fireEvent, wait, act } from '@testing-library/react';
 import { DropDown } from './drop_down.jsx';
 
-function DropDownWrapper({ value: initialValue, ...props }) {
+class PropUpdater {
+  setUpdater(fn) {
+    this.setter = fn;
+  }
+
+  update(value) {
+    act(() => this.setter(value));
+  }
+}
+
+function DropDownWrapper({ value: initialValue, propUpdater, ...props }) {
   const [value, setValue] = useState(initialValue);
+  const [newProps, setProps] = useState(props);
+  if (propUpdater) {
+    propUpdater.setUpdater(setProps);
+  }
   return (
-    <DropDown id="id" value={value} setValue={setValue} {...props} />
+    <DropDown id="id" value={value} setValue={setValue} {...newProps} />
   );
 }
 
@@ -32,7 +46,7 @@ expect.extend({
     if (document.activeElement !== node) {
       return {
         pass: false,
-        message: () => `expected ${document.activeElement.outerHTML} to eq ${node.outerHTML}`,
+        message: () => `expected active element (${document.activeElement.outerHTML}) to eq ${node.outerHTML}`,
       };
     }
     if (listbox.getAttribute('aria-activedescendant') !== node.id) {
@@ -626,11 +640,129 @@ describe('options', () => {
     });
   });
 
-  describe('property updates', () => {
-    it.todo('keeps the currently selected option');
-    it.todo('resets the option to the first item');
+  describe('updating options', () => {
+    const options = ['Apple', 'Banana', 'Orange'];
+    const newOptions = ['Strawberry', 'Raspberry', 'Banana'];
+
+    it('updates the options', () => {
+      const propUpdater = new PropUpdater();
+      const { container, getByRole } = render(<DropDownWrapper
+        options={options}
+        propUpdater={propUpdater}
+      />);
+      fireEvent.click(getByRole('button'));
+      propUpdater.update((props) => ({ ...props, options: newOptions }));
+      expect(container).toMatchSnapshot();
+    });
+
+    describe('update contains the selected option', () => {
+      it('keeps the currently selected option', () => {
+        const propUpdater = new PropUpdater();
+        const { getByRole, getAllByRole } = render(<DropDownWrapper
+          options={options}
+          propUpdater={propUpdater}
+        />);
+        fireEvent.click(getByRole('button'));
+        fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+        expect(getByRole('listbox')).toHaveActiveOption(getAllByRole('option')[1]);
+        propUpdater.update((props) => ({ ...props, options: newOptions }));
+        expect(getByRole('listbox')).toHaveActiveOption(getAllByRole('option')[2]);
+      });
+    });
+
+    describe('update does not contain the selected option', () => {
+      it('resets the currently selected option', () => {
+        const propUpdater = new PropUpdater();
+        const { getByRole, getAllByRole } = render(<DropDownWrapper
+          options={options}
+          propUpdater={propUpdater}
+          value="Orange"
+        />);
+        fireEvent.click(getByRole('button'));
+        fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+        propUpdater.update((props) => ({ ...props, options: newOptions }));
+        expect(getByRole('listbox')).toHaveActiveOption(getAllByRole('option')[0]);
+      });
+    });
   });
 });
+
+describe('value', () => {
+  const options = ['Apple', 'Banana', 'Orange'];
+
+  it('sets the initial focused option', () => {
+    const { getAllByRole, getByRole } = render((
+      <DropDownWrapper options={options} value="Banana" />
+    ));
+    fireEvent.click(getByRole('button'));
+    expect(getByRole('listbox')).toHaveActiveOption(getAllByRole('option')[1]);
+  });
+
+  it('sets the aria-selected attribute', () => {
+    const { container, getAllByRole, getByRole } = render((
+      <DropDownWrapper options={options} value="Banana" />
+    ));
+    fireEvent.click(getByRole('button'));
+    expect(container.querySelector('[aria-selected="true"]')).toEqual(getAllByRole('option')[1]);
+  });
+
+  describe('value is not in the list', () => {
+    it('sets the initial focused option to the first option', () => {
+      const { getAllByRole, getByRole } = render((
+        <DropDownWrapper options={options} value="Strawberry" />
+      ));
+      fireEvent.click(getByRole('button'));
+      expect(getByRole('listbox')).toHaveActiveOption(getAllByRole('option')[0]);
+    });
+
+    it('does not set the aria-selected attribute', () => {
+      const { container, getByRole } = render((
+        <DropDownWrapper options={options} value="Strawberry" />
+      ));
+      fireEvent.click(getByRole('button'));
+      expect(container.querySelector('[aria-selected="true"]')).toEqual(null);
+    });
+  });
+
+  describe('updating the value', () => {
+    it('updates the aria-selected value', () => {
+      const propUpdater = new PropUpdater();
+      const { container, getByRole, getAllByRole } = render(<DropDownWrapper
+        options={options}
+        propUpdater={propUpdater}
+        value="Orange"
+      />);
+      fireEvent.click(getByRole('button'));
+      propUpdater.update((props) => ({ ...props, value: 'Apple' }));
+      expect(container.querySelector('[aria-selected="true"]')).toEqual(getAllByRole('option')[0]);
+    });
+
+    it('does not close an open list box', () => {
+      const propUpdater = new PropUpdater();
+      const { getByRole } = render(<DropDownWrapper
+        options={options}
+        propUpdater={propUpdater}
+        value="Orange"
+      />);
+      fireEvent.click(getByRole('button'));
+      propUpdater.update((props) => ({ ...props, value: 'Apple' }));
+      expect(getByRole('listbox')).toBeVisible();
+    });
+
+    it('does not change the focused value', () => {
+      const propUpdater = new PropUpdater();
+      const { getByRole, getAllByRole } = render(<DropDownWrapper
+        options={options}
+        propUpdater={propUpdater}
+        value="Orange"
+      />);
+      fireEvent.click(getByRole('button'));
+      propUpdater.update((props) => ({ ...props, value: 'Apple' }));
+      expect(getByRole('listbox')).toHaveActiveOption(getAllByRole('option')[2]);
+    });
+  });
+});
+
 
 describe('blank', () => {
   const options = ['Apple', 'Banana', 'Orange'];
@@ -788,27 +920,45 @@ describe('id', () => {
 });
 
 describe('ListBoxComponent', () => {
-  it.todo('allows additional props to be added to the listbox');
-  it.todo('allows the listbox to be replaced');
+  it('allows the listbox to be replaced', () => {
+    const { getByRole } = render(
+      <DropDownWrapper options={['foo']} ListBoxComponent="dl" />,
+    );
+    expect(getByRole('listbox', { hidden: true }).tagName).toEqual('DL');
+  });
+
   it.todo('allows access to the context');
 });
 
+describe('ListBoxProps', () => {
+  it.todo('allows custom props to be added to the listbox');
+});
+
 describe('ButtonComponent', () => {
-  it.todo('allows additional props to be added to the button');
   it.todo('allows the button to be replaced');
   it.todo('allows access to the context');
 });
 
+describe('ButtonProps', () => {
+  it.todo('allows custom props to be added to the button');
+});
+
 describe('GroupComponent', () => {
-  it.todo('allows additional props to be added to a group');
   it.todo('allows the group to be replaced');
   it.todo('allows access to the context with group properties');
 });
 
+describe('GroupProps', () => {
+  it.todo('allows custom props to be added to a group');
+});
+
 describe('OptionComponent', () => {
-  it.todo('allows additional props to be added to an option');
   it.todo('allows the option to be replaced');
   it.todo('allows access to the context with option properties');
+});
+
+describe('OptionProps', () => {
+  it.todo('allows custom props to be added to an option');
 });
 
 describe('ValueComponent', () => {
@@ -816,12 +966,20 @@ describe('ValueComponent', () => {
   it.todo('allows access to the context with option properties');
 });
 
-describe('DropDownComponent', () => {
-  it.todo('allows additional props to be added to the wrapper');
-  it.todo('allows the wrapper to be replaced');
-  it.todo('allows access to the context');
+describe('ValueProps', () => {
+  it.todo('allows custom props to be added to a value');
 });
 
+describe('DropDownComponent', () => {
+  it.todo('allows the wrapper to be replaced');
+  it.todo('adds the className if the wrapper is not a Fragment');
+  it.todo('allows access to the context');
+  it.todo('allows custom layouts');
+});
+
+describe('DropDownProps', () => {
+  it.todo('allows custom props to be added to the dropdown');
+});
 
 describe('additional props', () => {
   const options = ['Apple', 'Banana', 'Orange'];
@@ -835,9 +993,84 @@ describe('additional props', () => {
   });
 });
 
-describe('positionListBox', () => {
-  it.todo('is called when the listbox is displayed');
-  it.todo('is called when the listbox options change');
-  it.todo('is not called when a closed listbox options change');
-  it.todo('sets the list box style and classes');
+describe('layoutListBox', () => {
+  const options = ['Apple', 'Banana', 'Orange'];
+
+  it('is called when the listbox is displayed', () => {
+    const layoutListBox = jest.fn();
+    const { getByRole } = render(
+      <DropDownWrapper options={options} layoutListBox={layoutListBox} />,
+    );
+    expect(layoutListBox).not.toHaveBeenCalled();
+    fireEvent.click(getByRole('button'));
+    expect(layoutListBox).toHaveBeenCalledWith({
+      listbox: getByRole('listbox'),
+      button: getByRole('button'),
+      option: document.activeElement,
+    });
+  });
+
+  it('is called when the listbox options change', () => {
+    const propUpdater = new PropUpdater();
+    const layoutListBox = jest.fn();
+    const { getByRole } = render((
+      <DropDownWrapper
+        options={options}
+        layoutListBox={layoutListBox}
+        propUpdater={propUpdater}
+      />
+    ));
+    fireEvent.click(getByRole('button'));
+    propUpdater.update((props) => ({ ...props, options: ['strawberry'] }));
+    expect(layoutListBox).toHaveBeenCalledTimes(2);
+    expect(layoutListBox).toHaveBeenLastCalledWith({
+      listbox: getByRole('listbox'),
+      button: getByRole('button'),
+      option: document.activeElement,
+    });
+  });
+
+  it('is called when the selected option changes', () => {
+    const layoutListBox = jest.fn();
+    const { getByRole } = render((
+      <DropDownWrapper
+        options={options}
+        layoutListBox={layoutListBox}
+      />
+    ));
+    fireEvent.click(getByRole('button'));
+    fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+    expect(layoutListBox).toHaveBeenCalledTimes(2);
+    expect(layoutListBox).toHaveBeenLastCalledWith({
+      listbox: getByRole('listbox'),
+      button: getByRole('button'),
+      option: document.activeElement,
+    });
+  });
+
+  it('is not called when a listbox closed', () => {
+    const layoutListBox = jest.fn();
+    const { getByRole } = render((
+      <DropDownWrapper
+        options={options}
+        layoutListBox={layoutListBox}
+      />
+    ));
+    fireEvent.click(getByRole('button'));
+    fireEvent.keyDown(document.activeElement, { key: 'Escape' });
+    expect(layoutListBox).toHaveBeenCalledTimes(1);
+  });
+
+  it('sets the list box style and classes', () => {
+    const layoutListBox = jest.fn(() => ({ style: { color: 'red' }, className: 'foo' }));
+    const { getByRole } = render((
+      <DropDownWrapper
+        options={options}
+        layoutListBox={layoutListBox}
+      />
+    ));
+    fireEvent.click(getByRole('button'));
+    expect(getByRole('listbox')).toHaveStyle('color: red');
+    expect(getByRole('listbox')).toHaveAttribute('class', 'dropdown__listbox foo');
+  });
 });

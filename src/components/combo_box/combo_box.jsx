@@ -221,7 +221,7 @@ ComboBox.propTypes = {
   onSearch: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
   options: validateOptions.isRequired,
   setValue: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
-  value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
+  value: PropTypes.any,
 
   ClearButtonComponent: componentCustomiser,
   ComboBoxComponent: componentCustomiser,

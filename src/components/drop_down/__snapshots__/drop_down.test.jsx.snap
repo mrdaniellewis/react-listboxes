@@ -279,3 +279,54 @@ exports[`options options as array of strings renders a closed drop down 1`] = `
   </div>
 </div>
 `;
+
+exports[`options updating options updates the options 1`] = `
+<div>
+  <div
+    class="dropdown"
+  >
+    <button
+      aria-controls="id_listbox"
+      aria-expanded="true"
+      aria-haspopup="listbox"
+      class="dropdown__button"
+      id="id"
+      type="button"
+    >
+      Strawberry
+    </button>
+    <ul
+      aria-activedescendant="id_option_strawberry"
+      class="dropdown__listbox"
+      id="id_listbox"
+      role="listbox"
+      tabindex="-1"
+    >
+      <li
+        class="dropdown__option dropdown__option--focused"
+        id="id_option_strawberry"
+        role="option"
+        tabindex="-1"
+      >
+        Strawberry
+      </li>
+      <li
+        class="dropdown__option"
+        id="id_option_raspberry"
+        role="option"
+        tabindex="-1"
+      >
+        Raspberry
+      </li>
+      <li
+        class="dropdown__option"
+        id="id_option_banana"
+        role="option"
+        tabindex="-1"
+      >
+        Banana
+      </li>
+    </ul>
+  </div>
+</div>
+`;

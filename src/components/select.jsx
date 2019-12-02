@@ -60,7 +60,7 @@ Select.propTypes = {
   blank: PropTypes.node,
   setValue: PropTypes.func.isRequired,
   options: PropTypes.arrayOf(PropTypes.any).isRequired,
-  value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
+  value: PropTypes.any,
   OptionComponent: componentCustomiser,
   OptGroupComponent: componentCustomiser,
   SelectComponent: componentCustomiser,

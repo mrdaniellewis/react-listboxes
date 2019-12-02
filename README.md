@@ -131,6 +131,13 @@ It is often desired to highlight the search results.
 
 ## TODO
 
+- drop down
+  - update tests
+  - layoutListBox tests
+  - customisations
+    - change to simpler scheme
+  - customisation test
+
 - select
   - add working samples
   - add unit tests

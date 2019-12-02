@@ -25,7 +25,7 @@ export function DropDownField({ label, ...props }) {
 }
 
 DropDownField.propTypes = {
-  value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
+  value: PropTypes.any,
   label: PropTypes.string.isRequired,
 };
 

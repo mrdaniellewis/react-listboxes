@@ -189,6 +189,6 @@ export function onOptionsChanged(prevOptions) {
     const { identity } = prevOptions[focusedIndex];
     const index = options.findIndex((o) => o.identity === identity);
 
-    dispatch(setFocusedIndex(index));
+    dispatch(setFocusedIndex(index === -1 ? 0 : index));
   };
 }

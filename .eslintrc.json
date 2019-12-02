@@ -20,6 +20,7 @@
     "react-hooks/exhaustive-deps": "error",
     "react/jsx-props-no-spreading": "off",
     "react/no-unused-prop-types": "off",
+    "react/forbid-prop-types": "off",
     "jsx-a11y/aria-role": "off",
     "jsx-a11y/click-events-have-key-events": "off",
     "jsx-a11y/control-has-associated-label": "off",

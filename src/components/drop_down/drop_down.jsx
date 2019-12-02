@@ -12,9 +12,8 @@ import { Context } from '../../context.js';
 import { useNormalisedOptions } from '../../hooks/use_normalised_options.js';
 import { useOnBlur } from '../../hooks/use_on_blur.js';
 import { usePrevious } from '../../hooks/use_previous.js';
-import { componentCustomiser } from '../../validators/component_customiser.js';
+import { componentValidator } from '../../validators/component_validator.js';
 import { renderGroupedOptions } from '../../helpers/render_grouped_options.js';
-import { dismemberComponent } from '../../helpers/dismember_component.js';
 import { classGenerator } from '../../helpers/class_generator.js';
 import { joinTokens } from '../../helpers/join_tokens.js';
 
@@ -22,10 +21,13 @@ export function DropDown(rawProps) {
   const optionisedProps = useNormalisedOptions(rawProps, { mustHaveSelection: true });
   const {
     options, value: _, setValue, id, className,
-    children, selectedIndex, managedFocus,
-    positionListBox,
-    ButtonComponent, ListBoxComponent, OptionComponent,
-    GroupComponent, ValueComponent, DropDownComponent,
+    children, selectedIndex, managedFocus, layoutListBox,
+    DropDownComponent, DropDownProps,
+    ButtonComponent, ButtonProps,
+    ListBoxComponent, ListBoxProps,
+    OptionComponent, OptionProps,
+    GroupComponent, GroupProps,
+    ValueComponent, ValueProps,
     ...componentProps
   } = optionisedProps;
   const buttonRef = useRef();
@@ -42,9 +44,11 @@ export function DropDown(rawProps) {
   const onBlurHandler = useOnBlur(() => dispatch(onBlur()), listRef);
 
   const prevOptions = usePrevious(options);
-  useEffect(() => (
-    dispatch(onOptionsChanged(prevOptions))
-  ), [prevOptions]);
+  useLayoutEffect(() => {
+    if (prevOptions && prevOptions !== options) {
+      dispatch(onOptionsChanged(prevOptions));
+    }
+  }, [prevOptions, options]);
 
   useEffect(() => {
     if (!search || !expanded) {
@@ -68,31 +72,28 @@ export function DropDown(rawProps) {
   }, [expanded, managedFocus, options, focusedIndex]);
 
   useLayoutEffect(() => {
-    if (positionListBox && expanded) {
-      const listProps = positionListBox(listRef.current);
+    if (layoutListBox && expanded) {
+      const listProps = layoutListBox({
+        listbox: listRef.current,
+        button: buttonRef.current,
+        option: focusedRef.current,
+      });
       if (listProps) {
         dispatch(setListProps(listProps));
       }
     }
-  }, [positionListBox, expanded, options]);
-
-  const customDropDownComponent = dismemberComponent(DropDownComponent, 'div');
-  const customButtonComponent = dismemberComponent(ButtonComponent, 'button');
-  const customListBoxComponent = dismemberComponent(ListBoxComponent, 'ul');
-  const customGroupComponent = dismemberComponent(GroupComponent, 'li');
-  const customOptionComponent = dismemberComponent(OptionComponent, 'li');
-  const customValueComponent = dismemberComponent(ValueComponent);
+  }, [layoutListBox, expanded, focusedIndex, options]);
 
   const classes = classGenerator(className);
 
   return (
     <Context.Provider value={{ dispatch, ...optionisedProps, listRef, buttonRef, ...state }}>
-      <customDropDownComponent.type
-        {...(customDropDownComponent.type === Fragment ? undefined : { className })}
-        {...customDropDownComponent.props}
+      <DropDownComponent
+        {...(DropDownComponent === Fragment ? undefined : { className })}
+        {...DropDownProps}
         {...componentProps}
       >
-        <customButtonComponent.type
+        <ButtonComponent
           type="button"
           id={id}
           aria-controls={`${id}_listbox`}
@@ -102,11 +103,11 @@ export function DropDown(rawProps) {
           onClick={() => dispatch(onToggleOpen())}
           onKeyDown={(e) => dispatch(onButtonKeyDown(e))}
           className={classes('button')}
-          {...customButtonComponent.props}
+          {...ButtonProps}
         >
           {children ?? options[selectedIndex].label}
-        </customButtonComponent.type>
-        <customListBoxComponent.type
+        </ButtonComponent>
+        <ListBoxComponent
           ref={listRef}
           id={`${id}_listbox`}
           role="listbox"
@@ -117,7 +118,7 @@ export function DropDown(rawProps) {
           onBlur={onBlurHandler}
           onKeyDown={(e) => dispatch(onKeyDown(e))}
           className={joinTokens(classes('listbox'), listClassName)}
-          {...customListBoxComponent.props}
+          {...ListBoxProps}
           style={listStyle}
         >
           {renderGroupedOptions({
@@ -129,7 +130,7 @@ export function DropDown(rawProps) {
                   key={key}
                   value={{ dispatch, ...optionisedProps, ...state, group }}
                 >
-                  <customGroupComponent.type
+                  <GroupComponent
                     id={key}
                     ref={index === focusedIndex ? focusedRef : null}
                     data-focused={index === focusedIndex ? 'true' : null}
@@ -138,11 +139,11 @@ export function DropDown(rawProps) {
                     tabIndex={-1}
                     aria-disabled="true"
                     className={classes('group', index === focusedIndex && '--focused')}
-                    {...customGroupComponent.props}
+                    {...GroupProps}
                     {...html}
                   >
                     {label}
-                  </customGroupComponent.type>
+                  </GroupComponent>
                   {groupChildren}
                 </Context.Provider>
               );
@@ -155,7 +156,7 @@ export function DropDown(rawProps) {
                   key={key}
                   value={{ dispatch, ...optionisedProps, ...state, option }}
                 >
-                  <customOptionComponent.type
+                  <OptionComponent
                     id={key}
                     role="option"
                     tabIndex={-1}
@@ -163,22 +164,22 @@ export function DropDown(rawProps) {
                     aria-disabled={disabled ? 'true' : null}
                     ref={index === focusedIndex ? focusedRef : null}
                     className={classes('option', index === focusedIndex && '--focused', group && '--grouped')}
-                    {...customOptionComponent.props}
+                    {...OptionProps}
                     {...html}
                     onClick={disabled ? null : (e) => dispatch(onClick(e, option))}
                   >
-                    <customValueComponent.type
-                      {...customValueComponent.props}
+                    <ValueComponent
+                      {...ValueProps}
                     >
                       {label}
-                    </customValueComponent.type>
-                  </customOptionComponent.type>
+                    </ValueComponent>
+                  </OptionComponent>
                 </Context.Provider>
               );
             },
           })}
-        </customListBoxComponent.type>
-      </customDropDownComponent.type>
+        </ListBoxComponent>
+      </DropDownComponent>
     </Context.Provider>
   );
 }
@@ -187,31 +188,43 @@ DropDown.propTypes = {
   blank: PropTypes.string,
   children: PropTypes.node,
   id: PropTypes.string.isRequired,
+  layoutListBox: PropTypes.func,
   options: PropTypes.arrayOf(PropTypes.any).isRequired,
   setValue: PropTypes.func.isRequired,
   value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
   managedFocus: PropTypes.bool,
   className: PropTypes.string,
-  positionListBox: PropTypes.func,
-  ListBoxComponent: componentCustomiser,
-  ButtonComponent: componentCustomiser,
-  GroupComponent: componentCustomiser,
-  OptionComponent: componentCustomiser,
-  ValueComponent: componentCustomiser,
-  DropDownComponent: componentCustomiser,
+  ListBoxComponent: componentValidator,
+  ListBoxProps: PropTypes.object,
+  ButtonComponent: componentValidator,
+  ButtonProps: PropTypes.object,
+  GroupComponent: componentValidator,
+  GroupProps: PropTypes.object,
+  OptionComponent: componentValidator,
+  OptionProps: PropTypes.object,
+  ValueComponent: componentValidator,
+  ValueProps: PropTypes.object,
+  DropDownComponent: componentValidator,
+  DropDownProps: PropTypes.object,
 };
 
 DropDown.defaultProps = {
   blank: '',
   children: null,
+  layoutListBox: null,
   value: null,
   className: 'dropdown',
   managedFocus: true,
-  positionListBox: null,
-  ListBoxComponent: null,
-  ButtonComponent: null,
-  GroupComponent: null,
-  OptionComponent: null,
-  ValueComponent: null,
-  DropDownComponent: null,
+  ListBoxComponent: 'ul',
+  ListBoxProps: null,
+  ButtonComponent: 'button',
+  ButtonProps: null,
+  GroupComponent: 'li',
+  GroupProps: null,
+  OptionComponent: 'li',
+  OptionProps: null,
+  ValueComponent: Fragment,
+  ValueProps: null,
+  DropDownComponent: 'div',
+  DropDownProps: null,
 };

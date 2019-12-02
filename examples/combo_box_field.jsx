@@ -32,7 +32,7 @@ export function ComboBoxField({ label, ...props }) {
 
 ComboBoxField.propTypes = {
   options: validateOptions.isRequired,
-  value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
+  value: PropTypes.any,
   label: PropTypes.string.isRequired,
 };
 
