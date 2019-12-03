@@ -133,7 +133,6 @@ export function DropDown(rawProps) {
                   <GroupComponent
                     id={key}
                     ref={index === focusedIndex ? focusedRef : null}
-                    data-focused={index === focusedIndex ? 'true' : null}
                     role="group"
                     aria-label={label}
                     tabIndex={-1}
