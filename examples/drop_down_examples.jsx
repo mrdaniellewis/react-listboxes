@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
-import { DropDown } from '../src/components/drop_down/index.jsx';
+import { DropDown } from '../src/components/drop_down.jsx';
 import { unindent } from './lib/unindent.js';
 import { useId } from '../src/hooks/use_id.js';
 import countries from './lib/countries.json';

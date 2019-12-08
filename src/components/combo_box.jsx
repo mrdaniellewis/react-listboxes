@@ -1,25 +1,26 @@
 import React, { useRef, useLayoutEffect, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { useThunkReducer as useReducer } from '../../hooks/use_thunk_reducer.js';
-import { reducer } from './reducer.js';
-import { initialState } from './initial_state.js';
-import { onKeyDown, onChange, onFocus, onSelectValue, onBlur, setExpanded, setSelected } from './actions.js';
-import { Context } from '../../context.js';
-import { options as validateOptions } from '../../validators/options.js';
-import { useNormalisedOptions } from '../../hooks/use_normalised_options.js';
-import { useOnBlur } from '../../hooks/use_on_blur.js';
-import { joinTokens } from '../../helpers/join_tokens.js';
-import { componentValidator } from '../../validators/component_validator.js';
-import { renderGroupedOptions } from '../../helpers/render_grouped_options.js';
-import { usePrevious } from '../../hooks/use_previous.js';
-import { classGenerator } from '../../helpers/class_generator.js';
+import { Context } from '../context.js';
+import { useThunkReducer as useReducer } from '../hooks/use_thunk_reducer.js';
+import { reducer } from './combo_box/reducer.js';
+import { initialState } from './combo_box/initial_state.js';
+import { onKeyDown, onChange, onFocus, onSelectValue, onBlur, setExpanded, onOptionsChanged, setListProps } from './combo_box/actions.js';
+import { options as validateOptions } from '../validators/options.js';
+import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
+import { useOnBlur } from '../hooks/use_on_blur.js';
+import { joinTokens } from '../helpers/join_tokens.js';
+import { componentValidator } from '../validators/component_validator.js';
+import { renderGroupedOptions } from '../helpers/render_grouped_options.js';
+import { usePrevious } from '../hooks/use_previous.js';
+import { bemClassGenerator } from '../helpers/bem_class_generator.js';
 
 export function ComboBox(rawProps) {
   const optionisedProps = useNormalisedOptions(rawProps);
   const {
     'aria-describedby': ariaDescribedBy,
-    options, value, setValue, id, className,
+    options, value, id, className,
     notFoundMessage, layoutListBox, managedFocus, busy,
+    selectedIndex: _1, setValue: _2,
     ClearButtonComponent, ClearButtonProps,
     ComboBoxComponent, ComboBoxProps,
     GroupComponent, GroupProps,
@@ -42,7 +43,7 @@ export function ComboBox(rawProps) {
     reducer,
     { ...optionisedProps, inputRef, listRef },
     initialState,
-    id,
+    true,
   );
 
   const { expanded, focusedIndex, search, listClassName, listStyle } = state;
@@ -59,7 +60,7 @@ export function ComboBox(rawProps) {
     if (expanded && options[focusedIndex] && managedFocus) {
       focusedRef.current.focus();
     } else if (expanded) {
-      listRef.current.focus();
+      inputRef.current.focus();
     }
   }, [expanded, managedFocus, options, focusedIndex]);
 
@@ -76,7 +77,7 @@ export function ComboBox(rawProps) {
     }
   }, [layoutListBox, expanded, focusedIndex, options]);
 
-  const classes = classGenerator(className);
+  const classes = bemClassGenerator(className);
   const showListBox = expanded && options.length;
   const showNotFound = expanded && !options.length && search?.trim();
   const inputLabel = search !== null ? search : (value?.label) || '';
@@ -93,7 +94,7 @@ export function ComboBox(rawProps) {
         {...componentProps}
       >
         <SpinnerComponent
-          className={className ? `${className}__spinner` : null}
+          className={classes('spinner')}
           hidden={!showBusy}
           {...SpinnerProps}
         />
@@ -106,7 +107,6 @@ export function ComboBox(rawProps) {
           aria-owns={`${id}_listbox`}
           aria-expanded={showListBox ? 'true' : 'false'}
           aria-activedescendant={options[focusedIndex]?.key || null}
-          data-focused={focused ? 'true' : null}
           value={inputLabel}
           onKeyDown={(e) => dispatch(onKeyDown(e))}
           onChange={(e) => dispatch(onChange(e))}
@@ -114,7 +114,7 @@ export function ComboBox(rawProps) {
           aria-describedby={joinTokens(showNotFound && `${id}_not_found`, ariaDescribedBy)}
           autoComplete="off"
           ref={inputRef}
-          className={className ? `${className}__input` : null}
+          className={classes('input', expanded && 'focused')}
           {...InputProps}
         />
         <ClearButtonComponent
@@ -130,7 +130,7 @@ export function ComboBox(rawProps) {
           aria-label="Clear"
           id={`${id}_clear_button`}
           aria-labelledby={joinTokens(`${id}_clear_button`, id)}
-          className={className ? `${className}__clear-button` : null}
+          className={classes('clear-button')}
           {...ClearButtonProps}
         >
           ×
@@ -142,10 +142,10 @@ export function ComboBox(rawProps) {
               return;
             }
             inputRef.current.focus();
-            dispatch(setExpanded(true));
+            dispatch(setExpanded());
           }}
           aria-hidden="true"
-          className={className ? `${className}__open-button` : null}
+          className={classes('open-button')}
           {...OpenButtonProps}
         >
           ▼
@@ -159,7 +159,7 @@ export function ComboBox(rawProps) {
           aria-activedescendant={options[focusedIndex]?.id ?? null}
           onKeyDown={(e) => dispatch(onKeyDown(e))}
           onMouseDown={(e) => e.preventDefault()}
-          className={className ? `${className}__listbox` : null}
+          className={joinTokens(classes('listbox'), listClassName)}
           {...ListBoxProps}
           style={listStyle}
         >
@@ -179,7 +179,7 @@ export function ComboBox(rawProps) {
                     aria-label={label}
                     tabIndex={-1}
                     aria-disabled="true"
-                    className={className ? `${className}__listbox__group` : null}
+                    className={classes('group)', index === focusedIndex && 'focused', group && 'grouped')}
                     {...GroupProps}
                     {...html}
                   >
@@ -204,7 +204,7 @@ export function ComboBox(rawProps) {
                     aria-selected={selected ? 'true' : null}
                     aria-disabled={disabled ? 'true' : null}
                     ref={index === focusedIndex ? focusedRef : null}
-                    className={className ? `${className}__listbox__option` : null}
+                    className={classes('option', index === focusedIndex && 'focused')}
                     {...OptionProps}
                     {...html}
                     onClick={disabled ? null : () => dispatch(onSelectValue(option))}
@@ -225,7 +225,7 @@ export function ComboBox(rawProps) {
           hidden={!showNotFound}
           role="alert"
           aria-live="polite"
-          className={className ? `${className}__not-found` : null}
+          className={classes('not-found')}
           {...NotFoundProps}
         >
           {showNotFound ? notFoundMessage : null}

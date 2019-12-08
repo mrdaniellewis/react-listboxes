@@ -1,17 +1,17 @@
-import { SET_ACTIVE, SET_EXPANDED, SET_INACTIVE, SET_SELECTED, SET_SELECTED_VALUE } from './actions.js';
+import { SET_SEARCH, SET_EXPANDED, SET_CLOSED, SET_FOCUSED_INDEX, SET_LIST_PROPS } from './actions.js';
 
-export function reducer(state, { type, expanded, search, selectedValue }) {
+export function reducer(state, { type, search, focusedIndex, listStyle, listClassName }) {
   switch (type) {
-    case SET_ACTIVE:
-      return { ...state, search, expanded, listBoxFocused: false, selectedValue, focused: true };
-    case SET_INACTIVE:
-      return { ...state, expanded: false, focused: false, listBoxFocused: false };
+    case SET_SEARCH:
+      return { ...state, search, expanded: true };
     case SET_EXPANDED:
-      return { ...state, expanded, listBoxFocused: expanded ? state.listBoxFocused : false };
-    case SET_SELECTED:
-      return { ...state, expanded: false, selectedValue, search, listBoxFocused: false };
-    case SET_SELECTED_VALUE:
-      return { ...state, selectedValue, expanded: true, listBoxFocused: !!selectedValue };
+      return { ...state, expanded: true };
+    case SET_CLOSED:
+      return { ...state, expanded: false, focusedIndex: null, search: null };
+    case SET_FOCUSED_INDEX:
+      return { ...state, focusedIndex };
+    case SET_LIST_PROPS:
+      return { ...state, listStyle, listClassName };
     default:
       throw new Error(`${type} unknown`);
   }

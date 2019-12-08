@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { ComboBox } from '../src/components/combo_box/index.jsx';
+import { ComboBox } from '../src/components/combo_box.jsx';
 import { useAsyncSearch } from '../src/hooks/use_async_search.js';
 import { options as validateOptions } from '../src/validators/options.js';
 import { makeSearch } from '../src/helpers/make_search.js';

@@ -1,21 +1,21 @@
 import React, { useRef, useEffect, useLayoutEffect, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { useThunkReducer as useReducer } from '../../hooks/use_thunk_reducer.js';
-import { reducer } from './reducer.js';
-import { initialState } from './initial_state.js';
+import { Context } from '../context.js';
+import { useThunkReducer as useReducer } from '../hooks/use_thunk_reducer.js';
+import { reducer } from './drop_down/reducer.js';
+import { initialState } from './drop_down/initial_state.js';
 import {
   clearSearch, onKeyDown, setFocusedIndex, onBlur,
   onToggleOpen, onFocus, onButtonKeyDown, onClick,
   onOptionsChanged, setListProps,
-} from './actions.js';
-import { Context } from '../../context.js';
-import { useNormalisedOptions } from '../../hooks/use_normalised_options.js';
-import { useOnBlur } from '../../hooks/use_on_blur.js';
-import { usePrevious } from '../../hooks/use_previous.js';
-import { componentValidator } from '../../validators/component_validator.js';
-import { renderGroupedOptions } from '../../helpers/render_grouped_options.js';
-import { classGenerator } from '../../helpers/class_generator.js';
-import { joinTokens } from '../../helpers/join_tokens.js';
+} from './drop_down/actions.js';
+import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
+import { useOnBlur } from '../hooks/use_on_blur.js';
+import { usePrevious } from '../hooks/use_previous.js';
+import { componentValidator } from '../validators/component_validator.js';
+import { renderGroupedOptions } from '../helpers/render_grouped_options.js';
+import { bemClassGenerator } from '../helpers/bem_class_generator.js';
+import { joinTokens } from '../helpers/join_tokens.js';
 
 export function DropDown(rawProps) {
   const optionisedProps = useNormalisedOptions(rawProps, { mustHaveSelection: true });
@@ -84,7 +84,7 @@ export function DropDown(rawProps) {
     }
   }, [layoutListBox, expanded, focusedIndex, options]);
 
-  const classes = classGenerator(className);
+  const classes = bemClassGenerator(className);
 
   return (
     <Context.Provider value={{ dispatch, ...optionisedProps, listRef, buttonRef, ...state }}>
@@ -137,7 +137,7 @@ export function DropDown(rawProps) {
                     aria-label={label}
                     tabIndex={-1}
                     aria-disabled="true"
-                    className={classes('group', index === focusedIndex && '--focused')}
+                    className={classes('group', index === focusedIndex && 'focused')}
                     {...GroupProps}
                     {...html}
                   >
@@ -162,7 +162,7 @@ export function DropDown(rawProps) {
                     aria-selected={selected ? 'true' : null}
                     aria-disabled={disabled ? 'true' : null}
                     ref={index === focusedIndex ? focusedRef : null}
-                    className={classes('option', index === focusedIndex && '--focused', group && '--grouped')}
+                    className={classes('option', index === focusedIndex && 'focused', group && 'grouped')}
                     {...OptionProps}
                     {...html}
                     onClick={disabled ? null : (e) => dispatch(onClick(e, option))}

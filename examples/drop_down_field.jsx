@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { DropDown } from '../src/components/drop_down/index.jsx';
+import { DropDown } from '../src/components/drop_down.jsx';
 import { useId } from '../src/hooks/use_id.js';
 
 export function DropDownField({ label, ...props }) {
