@@ -3,8 +3,8 @@ export function findSelectedIndex({ options, value, mustHaveSelection }) {
   if (value) {
     selectedIndex = options.findIndex((o) => o.identity === value.identity);
   }
-  if (selectedIndex === -1 && mustHaveSelection) {
-    selectedIndex = 0;
+  if (selectedIndex === -1) {
+    selectedIndex = mustHaveSelection ? 0 : null;
   }
   return selectedIndex;
 }

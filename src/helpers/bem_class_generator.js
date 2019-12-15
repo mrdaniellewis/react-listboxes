@@ -4,7 +4,7 @@ export function bemClassGenerator(block) {
 
     return [
       base,
-      ...modifiers.filter(Boolean).map((m) => `${block}--${m}`),
+      ...modifiers.filter(Boolean).map((m) => `${base}--${m}`),
     ].join(' ');
   };
 }

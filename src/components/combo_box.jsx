@@ -1,10 +1,10 @@
-import React, { useRef, useLayoutEffect, Fragment } from 'react';
+import React, { useRef, useEffect, useLayoutEffect, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Context } from '../context.js';
 import { useThunkReducer as useReducer } from '../hooks/use_thunk_reducer.js';
 import { reducer } from './combo_box/reducer.js';
 import { initialState } from './combo_box/initial_state.js';
-import { onKeyDown, onChange, onFocus, onSelectValue, onBlur, setExpanded, onOptionsChanged, setListProps } from './combo_box/actions.js';
+import { onKeyDown, onChange, onFocus, onSelectValue, onBlur, onOptionsChanged, setListProps } from './combo_box/actions.js';
 import { options as validateOptions } from '../validators/options.js';
 import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
 import { useOnBlur } from '../hooks/use_on_blur.js';
@@ -18,18 +18,18 @@ export function ComboBox(rawProps) {
   const optionisedProps = useNormalisedOptions(rawProps);
   const {
     'aria-describedby': ariaDescribedBy,
+    autoSelect,
     options, value, id, className,
     notFoundMessage, layoutListBox, managedFocus, busy,
-    selectedIndex: _1, setValue: _2,
+    selectedIndex, setValue: _2,
+    onSearch,
     ClearButtonComponent, ClearButtonProps,
     ComboBoxComponent, ComboBoxProps,
     GroupComponent, GroupProps,
     InputComponent, InputProps,
     ListBoxComponent, ListBoxProps,
     NotFoundComponent, NotFoundProps,
-    OpenButtonComponent, OpenButtonProps,
     OptionComponent, OptionProps,
-    SpinnerComponent, SpinnerProps,
     ValueComponent, ValueProps,
     ...componentProps
   } = optionisedProps;
@@ -43,11 +43,10 @@ export function ComboBox(rawProps) {
     reducer,
     { ...optionisedProps, inputRef, listRef },
     initialState,
-    true,
   );
 
   const { expanded, focusedIndex, search, listClassName, listStyle } = state;
-  const blur = useOnBlur(() => dispatch(onBlur()), comboRef);
+  const [handleBlur, handleFocus] = useOnBlur(() => dispatch(onBlur()), comboRef);
 
   const prevOptions = usePrevious(options);
   useLayoutEffect(() => {
@@ -77,32 +76,36 @@ export function ComboBox(rawProps) {
     }
   }, [layoutListBox, expanded, focusedIndex, options]);
 
+  useEffect(() => {
+    if (onSearch) {
+      onSearch((search ?? value?.label) || '');
+    }
+  }, [onSearch, search, value]);
+
   const classes = bemClassGenerator(className);
-  const showListBox = expanded && options.length;
+  const showListBox = expanded && options.length
+    && !(!search && options.length === 1 && options[0].identity === value?.identity);
+  const inputLabel = (search ?? value?.label) || '';
   const showNotFound = expanded && !options.length && search?.trim();
-  const inputLabel = search !== null ? search : (value?.label) || '';
   const showBusy = busy && search !== (value?.label);
+  const highlightIndex = focusedIndex ?? (search && (autoSelect ? options.findIndex((o) => !o.unselectable) : selectedIndex))
 
   return (
     <Context.Provider value={{ dispatch, ...optionisedProps, ...state }}>
       <ComboBoxComponent
         aria-busy={showBusy ? 'true' : 'false'}
         className={className}
-        onBlur={blur}
+        onBlur={handleBlur}
+        onFocus={handleFocus}
         ref={comboRef}
         {...ComboBoxProps}
         {...componentProps}
       >
-        <SpinnerComponent
-          className={classes('spinner')}
-          hidden={!showBusy}
-          {...SpinnerProps}
-        />
         <InputComponent
           id={id}
           type="text"
           role="combobox"
-          aria-autocomplete="both"
+          aria-autocomplete={onSearch ? 'list' : null}
           aria-haspopup="true"
           aria-owns={`${id}_listbox`}
           aria-expanded={showListBox ? 'true' : 'false'}
@@ -115,6 +118,7 @@ export function ComboBox(rawProps) {
           autoComplete="off"
           ref={inputRef}
           className={classes('input', expanded && 'focused')}
+          tabIndex={managedFocus && focusedIndex !== null ? -1 : 0}
           {...InputProps}
         />
         <ClearButtonComponent
@@ -126,30 +130,13 @@ export function ComboBox(rawProps) {
             inputRef.current.focus();
             dispatch(onSelectValue(null));
           }}
-          hidden={!value}
+          hidden={!value || search === ''}
           aria-label="Clear"
           id={`${id}_clear_button`}
           aria-labelledby={joinTokens(`${id}_clear_button`, id)}
           className={classes('clear-button')}
           {...ClearButtonProps}
-        >
-          ×
-        </ClearButtonComponent>
-        <OpenButtonComponent
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={(e) => {
-            if (e.button > 0) {
-              return;
-            }
-            inputRef.current.focus();
-            dispatch(setExpanded());
-          }}
-          aria-hidden="true"
-          className={classes('open-button')}
-          {...OpenButtonProps}
-        >
-          ▼
-        </OpenButtonComponent>
+        />
         <ListBoxComponent
           ref={listRef}
           id={`${id}_listbox`}
@@ -179,7 +166,7 @@ export function ComboBox(rawProps) {
                     aria-label={label}
                     tabIndex={-1}
                     aria-disabled="true"
-                    className={classes('group)', index === focusedIndex && 'focused', group && 'grouped')}
+                    className={classes('group', index === highlightIndex && 'focused', group && 'grouped')}
                     {...GroupProps}
                     {...html}
                   >
@@ -191,7 +178,7 @@ export function ComboBox(rawProps) {
             },
             // eslint-disable-next-line react/prop-types
             renderOption(option) {
-              const { label, key, html, disabled, index, selected } = option;
+              const { label, key, html, disabled, index } = option;
               return (
                 <Context.Provider
                   key={key}
@@ -201,10 +188,10 @@ export function ComboBox(rawProps) {
                     id={key}
                     role="option"
                     tabIndex={-1}
-                    aria-selected={selected ? 'true' : null}
+                    aria-selected={highlightIndex === index ? 'true' : null}
                     aria-disabled={disabled ? 'true' : null}
                     ref={index === focusedIndex ? focusedRef : null}
-                    className={classes('option', index === focusedIndex && 'focused')}
+                    className={classes('option', index === highlightIndex && 'focused')}
                     {...OptionProps}
                     {...html}
                     onClick={disabled ? null : () => dispatch(onSelectValue(option))}
@@ -240,13 +227,14 @@ ComboBox.propTypes = {
     PropTypes.string,
     PropTypes.arrayOf(PropTypes.string),
   ]),
+  autoSelect: PropTypes.oneOf([true, false, 'inline']),
   busy: PropTypes.bool,
   className: PropTypes.string,
   id: PropTypes.string.isRequired,
   layoutListBox: PropTypes.func,
   managedFocus: PropTypes.bool,
   notFoundMessage: PropTypes.node,
-  onSearch: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
+  onSearch: PropTypes.func,
   options: validateOptions.isRequired,
   setValue: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
   value: PropTypes.any,
@@ -263,24 +251,22 @@ ComboBox.propTypes = {
   ListBoxProps: PropTypes.object,
   NotFoundComponent: componentValidator,
   NotFoundProps: PropTypes.object,
-  OpenButtonComponent: componentValidator,
-  OpenButtonProps: PropTypes.object,
   OptionComponent: componentValidator,
   OptionProps: PropTypes.object,
-  SpinnerComponent: componentValidator,
-  SpinnerProps: PropTypes.object,
   ValueComponent: componentValidator,
   ValueProps: PropTypes.object,
 };
 
 ComboBox.defaultProps = {
   'aria-describedby': null,
+  autoSelect: false,
   busy: null,
   className: 'combobox',
   layoutListBox: null,
   managedFocus: true,
   notFoundMessage: 'No matches found',
   value: null,
+  onSearch: null,
 
   ClearButtonComponent: 'span',
   ClearButtonProps: null,
@@ -294,12 +280,8 @@ ComboBox.defaultProps = {
   ListBoxProps: null,
   NotFoundComponent: 'div',
   NotFoundProps: null,
-  OpenButtonComponent: 'span',
-  OpenButtonProps: null,
   OptionComponent: 'li',
   OptionProps: null,
-  SpinnerComponent: 'span',
-  SpinnerProps: null,
   ValueComponent: Fragment,
   ValueProps: null,
 };

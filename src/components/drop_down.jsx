@@ -38,10 +38,9 @@ export function DropDown(rawProps) {
     reducer,
     { ...optionisedProps, buttonRef, listRef },
     initialState,
-    id,
   );
   const { expanded, search, focusedIndex, listClassName, listStyle } = state;
-  const onBlurHandler = useOnBlur(() => dispatch(onBlur()), listRef);
+  const [handleBlur, handleFocus] = useOnBlur(() => dispatch(onBlur()), listRef);
 
   const prevOptions = usePrevious(options);
   useLayoutEffect(() => {
@@ -114,8 +113,11 @@ export function DropDown(rawProps) {
           hidden={!expanded}
           tabIndex={-1}
           aria-activedescendant={options[focusedIndex]?.key || null}
-          onFocus={(e) => dispatch(onFocus(e))}
-          onBlur={onBlurHandler}
+          onFocus={(e) => {
+            handleFocus(e);
+            dispatch(onFocus(e));
+          }}
+          onBlur={handleBlur}
           onKeyDown={(e) => dispatch(onKeyDown(e))}
           className={joinTokens(classes('listbox'), listClassName)}
           {...ListBoxProps}

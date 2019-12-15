@@ -19,6 +19,7 @@ function ComboBoxField({ label, options: originalOptions, ...props }) {
         {label}
       </label>
       <ComboBox
+        autoSelect
         id={id}
         value={value}
         setValue={setValue}
@@ -79,7 +80,6 @@ function Example() {
       </pre>
       <ComboBoxField
         label="With a disabled option"
-        blank="Please choose…"
         options={[
           { label: 'Apple' },
           { label: 'Banana' },
@@ -108,7 +108,6 @@ function Example() {
       </pre>
       <ComboBoxField
         label="Grouped options"
-        blank="Please choose…"
         options={[
           { label: 'Apple' },
           { label: 'Orange', group: 'Citrus' },
