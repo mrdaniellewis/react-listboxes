@@ -5,5 +5,6 @@ export function initialState() {
     listClassName: null,
     listStyle: null,
     search: '',
+    autocomplete: '',
   };
 }

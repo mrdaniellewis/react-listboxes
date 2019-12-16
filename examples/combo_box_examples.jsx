@@ -19,7 +19,8 @@ function ComboBoxField({ label, options: originalOptions, ...props }) {
         {label}
       </label>
       <ComboBox
-        autoSelect
+        autoSelect="inline"
+        managedFocus={false}
         id={id}
         value={value}
         setValue={setValue}

@@ -8,13 +8,10 @@ export const SET_SEARCH_KEY = 'SET_SEARCH_KEY';
 export const SET_CLOSED = 'SET_CLOSED';
 export const SET_FOCUSED_INDEX = 'SET_FOCUSED_INDEX';
 export const SET_LIST_PROPS = 'SET_LIST_PROPS';
+export const SET_HIGHLIGHT = 'SET_HIGHLIGHT';
 
 export function setExpanded(expanded) {
   return { type: SET_EXPANDED, expanded };
-}
-
-export function setSearch(search) {
-  return { type: SET_SEARCH, search };
 }
 
 export function setFocusedIndex(focusedIndex) {
@@ -27,6 +24,10 @@ export function setClosed() {
 
 export function setListProps({ className, style }) {
   return { type: SET_LIST_PROPS, listClassName: className, listStyle: style };
+}
+
+export function setHighlight(highlight) {
+  return { type: SET_HIGHLIGHT, highlight };
 }
 
 export function onSelectValue(newValue) {
@@ -59,8 +60,8 @@ export function onButtonKeyDown(event) {
 
 export function onKeyDown(event) {
   return (dispatch, getState, getProps) => {
-    const { expanded, focusedIndex } = getState();
-    const { options, inputRef, managedFocus, selectedIndex, autoSelect } = getProps();
+    const { expanded, focusedIndex, highlight } = getState();
+    const { options, inputRef, managedFocus, autoSelect } = getProps();
     const { altKey, metaKey, ctrlKey, key } = event;
 
     if (metaKey || ctrlKey) {
@@ -143,7 +144,10 @@ export function onKeyDown(event) {
       case 'Delete':
         if (managedFocus && expanded) {
           inputRef.current.focus();
-          dispatch(setFocusedIndex(null));
+        }
+        dispatch(setFocusedIndex(null));
+        if (highlight && autoSelect === 'inline') {
+          dispatch(setHighlight(false));
         }
         break;
       default:
@@ -156,8 +160,10 @@ export function onKeyDown(event) {
 }
 
 export function onChange({ target: { value } }) {
-  return (dispatch) => {
-    dispatch(setSearch(value));
+  return (dispatch, getState, getProps) => {
+    const { inputRef, autoSelect } = getProps();
+
+    dispatch({ type: 'SET_SEARCH', search: value });
   };
 }
 

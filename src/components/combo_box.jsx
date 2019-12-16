@@ -45,7 +45,7 @@ export function ComboBox(rawProps) {
     initialState,
   );
 
-  const { expanded, focusedIndex, search, listClassName, listStyle } = state;
+  const { expanded, focusedIndex, search, listClassName, listStyle, autocomplete } = state;
   const [handleBlur, handleFocus] = useOnBlur(() => dispatch(onBlur()), comboRef);
 
   const prevOptions = usePrevious(options);
@@ -82,13 +82,19 @@ export function ComboBox(rawProps) {
     }
   }, [onSearch, search, value]);
 
+  const highlightIndex = focusedIndex ?? (search && (autoSelect ? options.findIndex((o) => !o.unselectable) : selectedIndex))
   const classes = bemClassGenerator(className);
   const showListBox = expanded && options.length
     && !(!search && options.length === 1 && options[0].identity === value?.identity);
-  const inputLabel = (search ?? value?.label) || '';
   const showNotFound = expanded && !options.length && search?.trim();
   const showBusy = busy && search !== (value?.label);
-  const highlightIndex = focusedIndex ?? (search && (autoSelect ? options.findIndex((o) => !o.unselectable) : selectedIndex))
+  const inputLabel = (search !== null ? `${search}${autocomplete}` : value?.label) || '';
+
+  useLayoutEffect(() => {
+    if (autocomplete) {
+      inputRef.current.setSelectionRange(inputRef.current.length - autocomplete.length, inputRef.current.length, 'forward');
+    }
+  }, [autocomplete]);
 
   return (
     <Context.Provider value={{ dispatch, ...optionisedProps, ...state }}>
