@@ -9,24 +9,12 @@ export const SET_SELECTED = 'SET_SELECTED';
 export const SET_FOCUSED_INDEX = 'SET_FOCUSED_INDEX';
 export const SET_LIST_PROPS = 'SET_LIST_PROPS';
 
-export function setExpanded(expanded) {
-  return { type: SET_EXPANDED, expanded };
-}
-
 export function clearSearch() {
   return { type: CLEAR_SEARCH };
 }
 
-export function setSearchKey(key) {
-  return { type: SET_SEARCH_KEY, key };
-}
-
 export function setFocusedIndex(focusedIndex) {
   return { type: SET_FOCUSED_INDEX, focusedIndex };
-}
-
-export function setSelected() {
-  return { type: SET_SELECTED };
 }
 
 export function setListProps({ className, style }) {
@@ -37,11 +25,11 @@ export function onSelectValue(newValue) {
   return (dispatch, getState, getProps) => {
     const { setValue, value } = getProps();
     if (newValue.unselectable) {
-      dispatch(setExpanded(false));
+      dispatch({ type: SET_EXPANDED, expanded: false });
       return;
     }
-    dispatch(setSelected());
-    if (newValue.identity !== value.identity) {
+    dispatch({ type: SET_SELECTED });
+    if (newValue.identity !== value?.identity) {
       setValue(newValue?.value);
     }
   };
@@ -75,7 +63,7 @@ export function onKeyDown(event) {
 
     if (key === 'Escape') {
       event.preventDefault();
-      dispatch(setExpanded(false));
+      dispatch({ type: SET_EXPANDED, expanded: false });
       buttonRef.current.focus();
       return;
     }
@@ -85,7 +73,7 @@ export function onKeyDown(event) {
         // Close if altKey, otherwise next item and show
         event.preventDefault();
         if (altKey) {
-          dispatch(setExpanded(false));
+          dispatch({ type: SET_EXPANDED, expanded: false });
         } else if (expanded) {
           dispatch(setFocusedIndex(previousInList(options, focusedIndex)));
         }
@@ -96,7 +84,7 @@ export function onKeyDown(event) {
         if (expanded && !altKey) {
           dispatch(setFocusedIndex(nextInList(options, focusedIndex)));
         } else {
-          dispatch(setExpanded(true));
+          dispatch({ type: SET_EXPANDED, expanded: true });
         }
         break;
       case 'Home':
@@ -126,7 +114,7 @@ export function onKeyDown(event) {
         break;
       default:
         if (expanded && !rNonPrintableKey.test(key)) {
-          dispatch(setSearchKey(key));
+          dispatch({ type: SET_SEARCH_KEY, key });
         }
     }
   };
@@ -137,7 +125,7 @@ export function onToggleOpen() {
     const { expanded } = getState();
     const { selectedIndex } = getProps();
     if (expanded) {
-      dispatch(setExpanded(false));
+      dispatch({ type: SET_EXPANDED, expanded: false });
     } else {
       dispatch(setFocusedIndex(selectedIndex));
     }

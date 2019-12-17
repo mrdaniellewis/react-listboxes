@@ -18,10 +18,9 @@ export function ComboBox(rawProps) {
   const optionisedProps = useNormalisedOptions(rawProps);
   const {
     'aria-describedby': ariaDescribedBy,
-    autoSelect,
     options, value, id, className,
     notFoundMessage, layoutListBox, managedFocus, busy,
-    selectedIndex, setValue: _2,
+    selectedIndex: _1, setValue: _2,
     onSearch,
     ClearButtonComponent, ClearButtonProps,
     ComboBoxComponent, ComboBoxProps,
@@ -45,7 +44,7 @@ export function ComboBox(rawProps) {
     initialState,
   );
 
-  const { expanded, focusedIndex, search, listClassName, listStyle, autocomplete } = state;
+  const { expanded, focusedIndex, search, listClassName, listStyle, focusListBox } = state;
   const [handleBlur, handleFocus] = useOnBlur(() => dispatch(onBlur()), comboRef);
 
   const prevOptions = usePrevious(options);
@@ -56,12 +55,12 @@ export function ComboBox(rawProps) {
   }, [prevOptions, options]);
 
   useLayoutEffect(() => {
-    if (expanded && options[focusedIndex] && managedFocus) {
+    if (expanded && options[focusedIndex] && managedFocus && focusListBox) {
       focusedRef.current.focus();
     } else if (expanded) {
       inputRef.current.focus();
     }
-  }, [expanded, managedFocus, options, focusedIndex]);
+  }, [expanded, managedFocus, options, focusedIndex, focusListBox]);
 
   useLayoutEffect(() => {
     if (layoutListBox && expanded) {
@@ -82,19 +81,12 @@ export function ComboBox(rawProps) {
     }
   }, [onSearch, search, value]);
 
-  const highlightIndex = focusedIndex ?? (search && (autoSelect ? options.findIndex((o) => !o.unselectable) : selectedIndex))
   const classes = bemClassGenerator(className);
   const showListBox = expanded && options.length
     && !(!search && options.length === 1 && options[0].identity === value?.identity);
   const showNotFound = expanded && !options.length && search?.trim();
   const showBusy = busy && search !== (value?.label);
-  const inputLabel = (search !== null ? `${search}${autocomplete}` : value?.label) || '';
-
-  useLayoutEffect(() => {
-    if (autocomplete) {
-      inputRef.current.setSelectionRange(inputRef.current.length - autocomplete.length, inputRef.current.length, 'forward');
-    }
-  }, [autocomplete]);
+  const inputLabel = (search ?? value?.label) || '';
 
   return (
     <Context.Provider value={{ dispatch, ...optionisedProps, ...state }}>
@@ -115,7 +107,7 @@ export function ComboBox(rawProps) {
           aria-haspopup="true"
           aria-owns={`${id}_listbox`}
           aria-expanded={showListBox ? 'true' : 'false'}
-          aria-activedescendant={options[focusedIndex]?.key || null}
+          aria-activedescendant={focusListBox ? options[focusedIndex]?.key : null}
           value={inputLabel}
           onKeyDown={(e) => dispatch(onKeyDown(e))}
           onChange={(e) => dispatch(onChange(e))}
@@ -124,7 +116,7 @@ export function ComboBox(rawProps) {
           autoComplete="off"
           ref={inputRef}
           className={classes('input', expanded && 'focused')}
-          tabIndex={managedFocus && focusedIndex !== null ? -1 : 0}
+          tabIndex={managedFocus && focusListBox ? -1 : 0}
           {...InputProps}
         />
         <ClearButtonComponent
@@ -172,7 +164,7 @@ export function ComboBox(rawProps) {
                     aria-label={label}
                     tabIndex={-1}
                     aria-disabled="true"
-                    className={classes('group', index === highlightIndex && 'focused', group && 'grouped')}
+                    className={classes('group', index === focusedIndex && 'focused', group && 'grouped')}
                     {...GroupProps}
                     {...html}
                   >
@@ -194,10 +186,10 @@ export function ComboBox(rawProps) {
                     id={key}
                     role="option"
                     tabIndex={-1}
-                    aria-selected={highlightIndex === index ? 'true' : null}
+                    aria-selected={focusedIndex === index ? 'true' : null}
                     aria-disabled={disabled ? 'true' : null}
                     ref={index === focusedIndex ? focusedRef : null}
-                    className={classes('option', index === highlightIndex && 'focused')}
+                    className={classes('option', index === focusedIndex && 'focused')}
                     {...OptionProps}
                     {...html}
                     onClick={disabled ? null : () => dispatch(onSelectValue(option))}
@@ -233,7 +225,6 @@ ComboBox.propTypes = {
     PropTypes.string,
     PropTypes.arrayOf(PropTypes.string),
   ]),
-  autoSelect: PropTypes.oneOf([true, false, 'inline']),
   busy: PropTypes.bool,
   className: PropTypes.string,
   id: PropTypes.string.isRequired,
@@ -265,7 +256,6 @@ ComboBox.propTypes = {
 
 ComboBox.defaultProps = {
   'aria-describedby': null,
-  autoSelect: false,
   busy: null,
   className: 'combobox',
   layoutListBox: null,

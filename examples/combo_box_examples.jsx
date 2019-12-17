@@ -19,8 +19,6 @@ function ComboBoxField({ label, options: originalOptions, ...props }) {
         {label}
       </label>
       <ComboBox
-        autoSelect="inline"
-        managedFocus={false}
         id={id}
         value={value}
         setValue={setValue}
@@ -130,6 +128,11 @@ function Example() {
           'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
           'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
         ]}
+      />
+      <ComboBoxField
+        label="No autocomplete"
+        options={countries}
+        onSearch={null}
       />
     </>
   );

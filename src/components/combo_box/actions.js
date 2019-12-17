@@ -8,36 +8,18 @@ export const SET_SEARCH_KEY = 'SET_SEARCH_KEY';
 export const SET_CLOSED = 'SET_CLOSED';
 export const SET_FOCUSED_INDEX = 'SET_FOCUSED_INDEX';
 export const SET_LIST_PROPS = 'SET_LIST_PROPS';
-export const SET_HIGHLIGHT = 'SET_HIGHLIGHT';
-
-export function setExpanded(expanded) {
-  return { type: SET_EXPANDED, expanded };
-}
-
-export function setFocusedIndex(focusedIndex) {
-  return { type: SET_FOCUSED_INDEX, focusedIndex };
-}
-
-export function setClosed() {
-  return { type: SET_CLOSED };
-}
 
 export function setListProps({ className, style }) {
   return { type: SET_LIST_PROPS, listClassName: className, listStyle: style };
 }
 
-export function setHighlight(highlight) {
-  return { type: SET_HIGHLIGHT, highlight };
-}
-
 export function onSelectValue(newValue) {
   return (dispatch, getState, getProps) => {
     const { setValue } = getProps();
+    dispatch({ type: SET_CLOSED });
     if (newValue?.unselectable) {
-      dispatch(setClosed());
       return;
     }
-    dispatch(setClosed());
     setValue(newValue ? newValue.value : null);
   };
 }
@@ -53,15 +35,15 @@ export function onButtonKeyDown(event) {
 
     if (key === 'ArrowUp' || key === 'ArrowDown') {
       event.preventDefault();
-      dispatch(setFocusedIndex(selectedIndex));
+      dispatch({ type: SET_FOCUSED_INDEX, focusedIndex: selectedIndex });
     }
   };
 }
 
 export function onKeyDown(event) {
   return (dispatch, getState, getProps) => {
-    const { expanded, focusedIndex, highlight } = getState();
-    const { options, inputRef, managedFocus, autoSelect } = getProps();
+    const { expanded, focusedIndex } = getState();
+    const { options, inputRef, managedFocus } = getProps();
     const { altKey, metaKey, ctrlKey, key } = event;
 
     if (metaKey || ctrlKey) {
@@ -70,7 +52,7 @@ export function onKeyDown(event) {
 
     if (key === 'Escape') {
       event.preventDefault();
-      dispatch(setClosed());
+      dispatch({ type: SET_CLOSED });
       inputRef.current.focus();
       return;
     }
@@ -80,13 +62,16 @@ export function onKeyDown(event) {
         // Close if altKey, otherwise next item and show
         event.preventDefault();
         if (altKey) {
-          dispatch(setExpanded(false));
+          dispatch({ type: SET_EXPANDED, expanded: false });
           inputRef.current.focus();
         } else if (expanded) {
           if (focusedIndex === null) {
-            dispatch(setFocusedIndex(previousInList(options, 0)));
+            dispatch({ type: SET_FOCUSED_INDEX, focusedIndex: previousInList(options, 0) });
           } else {
-            dispatch(setFocusedIndex(previousInList(options, focusedIndex, { allowEmpty: true })));
+            dispatch({
+              type: SET_FOCUSED_INDEX,
+              focusedIndex: previousInList(options, focusedIndex, { allowEmpty: true }),
+            });
           }
         }
         break;
@@ -95,26 +80,32 @@ export function onKeyDown(event) {
         event.preventDefault();
         if (expanded && !altKey) {
           if (focusedIndex === null) {
-            dispatch(setFocusedIndex(0));
+            dispatch({ type: SET_FOCUSED_INDEX, focusedIndex: 0 });
           } else {
-            dispatch(setFocusedIndex(nextInList(options, focusedIndex, { allowEmpty: true })));
+            dispatch({
+              type: SET_FOCUSED_INDEX,
+              focusedIndex: nextInList(options, focusedIndex, { allowEmpty: true }),
+            });
           }
         } else {
-          dispatch(setExpanded(true));
+          dispatch({ type: SET_EXPANDED, expanded: true });
         }
         break;
       case 'Home':
         // First item
         if (expanded) {
           event.preventDefault();
-          dispatch(setFocusedIndex(nextInList(options, options.length - 1)));
+          dispatch({
+            type: SET_FOCUSED_INDEX,
+            focusedIndex: nextInList(options, options.length - 1),
+          });
         }
         break;
       case 'End':
         // Last item
         if (expanded) {
           event.preventDefault();
-          dispatch(setFocusedIndex(previousInList(options, 0)));
+          dispatch({ type: SET_FOCUSED_INDEX, focusedIndex: previousInList(options, 0) });
         }
         break;
       case 'Enter':
@@ -123,18 +114,10 @@ export function onKeyDown(event) {
           break;
         }
         event.preventDefault();
-        if (focusedIndex !== null) {
-          if (options[focusedIndex].unselectable) {
-            break;
-          }
+        if (focusedIndex !== null && !options[focusedIndex].unselectable) {
           dispatch(onSelectValue(options[focusedIndex]));
           if (managedFocus) {
             inputRef.current.focus();
-          }
-        } else if (autoSelect) {
-          const option = options.find((o) => !o.unselectable);
-          if (option) {
-            dispatch(onSelectValue(option));
           }
         }
         break;
@@ -145,41 +128,36 @@ export function onKeyDown(event) {
         if (managedFocus && expanded) {
           inputRef.current.focus();
         }
-        dispatch(setFocusedIndex(null));
-        if (highlight && autoSelect === 'inline') {
-          dispatch(setHighlight(false));
-        }
         break;
       default:
         if (managedFocus && expanded && !rNonPrintableKey.test(key)) {
           inputRef.current.focus();
-          dispatch(setFocusedIndex(null));
+          dispatch({ type: SET_FOCUSED_INDEX, focusedIndex: null });
         }
     }
   };
 }
 
 export function onChange({ target: { value } }) {
-  return (dispatch, getState, getProps) => {
-    const { inputRef, autoSelect } = getProps();
-
-    dispatch({ type: 'SET_SEARCH', search: value });
+  return (dispatch) => {
+    dispatch({ type: 'SET_SEARCH', search: value, focusedIndex: value ? undefined : null });
   };
 }
 
 export function onFocus() {
-  return (dispatch, getState) => {
+  return (dispatch, getState, getProps) => {
     const { expanded } = getState();
     if (expanded) {
       return;
     }
-    dispatch(setExpanded(true));
+    const { selectedIndex } = getProps();
+    dispatch({ type: SET_EXPANDED, expanded: true, focusedIndex: selectedIndex });
   };
 }
 
 export function onBlur() {
   return (dispatch, getState, getProps) => {
-    const { options, setValue, autoSelect } = getProps();
+    const { options, setValue } = getProps();
     const { focusedIndex, search } = getState();
 
     if (focusedIndex !== null) {
@@ -187,15 +165,7 @@ export function onBlur() {
       return;
     }
 
-    if (autoSelect && search) {
-      const option = options.find((o) => !o.unselectable);
-      if (option) {
-        dispatch(onSelectValue(option));
-        return;
-      }
-    }
-
-    dispatch(setClosed());
+    dispatch({ type: SET_CLOSED });
     if (search === '') {
       setValue(null);
     }
@@ -226,6 +196,6 @@ export function onOptionsChanged(prevOptions) {
     const { identity } = prevOptions[focusedIndex];
     const index = options.findIndex((o) => o.identity === identity);
 
-    dispatch(setFocusedIndex(index === -1 ? null : index));
+    dispatch({ type: SET_FOCUSED_INDEX, focusedIndex: index === -1 ? null : index });
   };
 }

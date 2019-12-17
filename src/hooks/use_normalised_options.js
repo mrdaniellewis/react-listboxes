@@ -21,7 +21,7 @@ export function useNormalisedOptions({
   id, options, blank, value, mapOption, ...props
 }, { mustHaveSelection = false } = {}) {
   const normalisedValue = useMemo(
-    () => value == null ? null : optionise(value, mapOption),
+    () => (value == null ? null : optionise(value, mapOption)),
     [value, mapOption],
   );
 
