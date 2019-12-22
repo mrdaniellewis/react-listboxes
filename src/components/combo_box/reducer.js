@@ -10,7 +10,7 @@ export function reducer(
     case SET_EXPANDED:
       return { ...state, expanded, focusedIndex };
     case SET_CLOSED:
-      return { ...state, expanded: false, search: null, focusListBox: false };
+      return { ...state, expanded: false, search: null, focusListBox: false, focusedIndex: null };
     case SET_FOCUSED_INDEX:
       return { ...state, focusedIndex, focusListBox: focusedIndex !== null && expanded };
     case SET_LIST_PROPS:
