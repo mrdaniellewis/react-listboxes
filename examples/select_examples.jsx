@@ -16,7 +16,7 @@ function SelectField({ label, ...props }) {
         <Select
           id={id}
           value={value}
-          setValue={setValue}
+          onValue={setValue}
           {...props}
         />
       </div>

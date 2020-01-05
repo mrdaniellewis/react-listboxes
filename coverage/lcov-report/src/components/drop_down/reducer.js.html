@@ -20,14 +20,14 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">42.86% </span>
+        <span class="strong">100% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>3/7</span>
+        <span class='fraction'>7/7</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">25% </span>
+        <span class="strong">100% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>2/8</span>
+        <span class='fraction'>8/8</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
@@ -35,16 +35,16 @@
         <span class='fraction'>1/1</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">42.86% </span>
+        <span class="strong">100% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>3/7</span>
+        <span class='fraction'>7/7</span>
       </div>
     </div>
     <p class="quiet">
       Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
     </p>
   </div>
-  <div class='status-line low'></div>
+  <div class='status-line high'></div>
 <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -64,40 +64,49 @@
 <a name='L16'></a><a href='#L16'>16</a>
 <a name='L17'></a><a href='#L17'>17</a>
 <a name='L18'></a><a href='#L18'>18</a>
-<a name='L19'></a><a href='#L19'>19</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">74x</span>
+<span class="cline-any cline-yes">267x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">17x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">44x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">61x</span>
+<span class="cline-any cline-yes">195x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { SET_EXPANDED, SET_SEARCH_KEY, CLEAR_SEARCH, SET_FOCUSED_INDEX, SET_SELECTED } from './actions.js';
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { SET_EXPANDED, SET_SEARCH_KEY, CLEAR_SEARCH, SET_FOCUSED_INDEX, SET_SELECTED, SET_LIST_PROPS } from './actions.js';
 &nbsp;
-export function reducer(state, { type, expanded, key, focusedIndex }) {
+export function reducer(state, { type, expanded, key, focusedIndex, listStyle, listClassName }) {
   switch (type) {
-<span class="branch-0 cbranch-no" title="branch not covered" >    case SET_EXPANDED:</span>
-<span class="cstat-no" title="statement not covered" >      return { ...state, expanded };</span>
-<span class="branch-1 cbranch-no" title="branch not covered" >    case CLEAR_SEARCH:</span>
-<span class="cstat-no" title="statement not covered" >      return { ...state, search: '' };</span>
-<span class="branch-2 cbranch-no" title="branch not covered" >    case SET_SEARCH_KEY:</span>
-<span class="cstat-no" title="statement not covered" >      return { ...state, search: (state.search || '') + key.toLowerCase() };</span>
+    case SET_EXPANDED:
+      return { ...state, expanded };
+    case CLEAR_SEARCH:
+      return { ...state, search: '' };
+    case SET_SEARCH_KEY:
+      return { ...state, search: (state.search || '') + key.toLowerCase() };
     case SET_SELECTED:
       return { ...state, expanded: false, focusedIndex: null };
     case SET_FOCUSED_INDEX:
       return { ...state, focusedIndex, expanded: true };
-<span class="branch-5 cbranch-no" title="branch not covered" >    default:</span>
-<span class="cstat-no" title="statement not covered" >      throw new Error(`${type} unknown`);</span>
+    case SET_LIST_PROPS:
+      return { ...state, listStyle, listClassName };
+    /* istanbul ignore next */
+    default:
+      throw new Error(`${type} unknown`);
   }
 }
 &nbsp;</pre></td></tr>
@@ -106,7 +115,7 @@ export function reducer(state, { type, expanded, key, focusedIndex }) {
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Oct 31 2019 23:28:25 GMT+0000 (Greenwich Mean Time)
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Sat Jan 04 2020 19:07:01 GMT+0000 (Greenwich Mean Time)
 </div>
 </div>
 <script src="../../../prettify.js"></script>

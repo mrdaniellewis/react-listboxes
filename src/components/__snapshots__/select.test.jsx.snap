@@ -4,17 +4,17 @@ exports[`options as array of strings renders an select 1`] = `
 <div>
   <select>
     <option
-      value="0"
+      value="Apple"
     >
       Apple
     </option>
     <option
-      value="1"
+      value="Banana"
     >
       Banana
     </option>
     <option
-      value="2"
+      value="Orange"
     >
       Orange
     </option>
@@ -26,17 +26,17 @@ exports[`options options as array of numbers renders an select 1`] = `
 <div>
   <select>
     <option
-      value="0"
+      value="1"
     >
       1
     </option>
     <option
-      value="1"
+      value="2"
     >
       2
     </option>
     <option
-      value="2"
+      value="3"
     >
       3
     </option>
@@ -48,7 +48,7 @@ exports[`options options as array of objects group renders grouped options 1`] =
 <div>
   <select>
     <option
-      value="0"
+      value="Apple"
     >
       Apple
     </option>
@@ -56,12 +56,12 @@ exports[`options options as array of objects group renders grouped options 1`] =
       label="Citrus"
     >
       <option
-        value="2"
+        value="Orange"
       >
         Orange
       </option>
       <option
-        value="3"
+        value="Lemon"
       >
         Lemon
       </option>
@@ -70,12 +70,12 @@ exports[`options options as array of objects group renders grouped options 1`] =
       label="Berry"
     >
       <option
-        value="5"
+        value="Raspberry"
       >
         Raspberry
       </option>
       <option
-        value="6"
+        value="Strawberry"
       >
         Strawberry
       </option>
@@ -88,17 +88,17 @@ exports[`options options as array of objects label renders an select 1`] = `
 <div>
   <select>
     <option
-      value="0"
+      value="Apple"
     >
       Apple
     </option>
     <option
-      value="1"
+      value="Banana"
     >
       Banana
     </option>
     <option
-      value="2"
+      value="Orange"
     >
       Orange
     </option>

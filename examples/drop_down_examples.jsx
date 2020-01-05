@@ -20,7 +20,7 @@ function DropDownField({ label, ...props }) {
       <DropDown
         id={id}
         value={value}
-        setValue={setValue}
+        onValue={setValue}
         aria-labelledby={`${id}_label ${id}`}
         {...props}
       />

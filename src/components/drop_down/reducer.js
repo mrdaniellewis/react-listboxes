@@ -14,6 +14,7 @@ export function reducer(state, { type, expanded, key, focusedIndex, listStyle, l
       return { ...state, focusedIndex, expanded: true };
     case SET_LIST_PROPS:
       return { ...state, listStyle, listClassName };
+    /* istanbul ignore next */
     default:
       throw new Error(`${type} unknown`);
   }

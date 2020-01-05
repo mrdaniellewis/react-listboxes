@@ -34,9 +34,9 @@ export function useNormalisedOptions({
     if (blank) {
       normalised.push({
         label: blank,
-        identity: null,
+        identity: '',
         value: null,
-        key: idGenerator.uniqueId(blank),
+        key: idGenerator.uniqueId(`${id}_option_blank`),
       });
     }
 

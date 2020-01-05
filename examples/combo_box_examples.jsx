@@ -21,7 +21,7 @@ function ComboBoxField({ label, options: originalOptions, ...props }) {
       <ComboBox
         id={id}
         value={value}
-        setValue={setValue}
+        onValue={setValue}
         options={options}
         onSearch={onSearch}
         {...props}
@@ -41,14 +41,14 @@ function Example() {
       <pre>
         <code className="language-js">
           {unindent`
-            const [value, setValue] = useState();
+            const [value, onValue] = useState();
             const [options, onSearch] = useSearch([
               'Apple', 'Banana', 'Cherry', 'Mango', 'Ugli fruit',
             ]);
 
             <ComboBox
               value={value}
-              setValue={setValue}
+              onValue={onValue}
               onSearch={onSearch}
               options={options}
             />
@@ -62,7 +62,7 @@ function Example() {
       <pre>
         <code className="language-js">
           {unindent`
-            const [value, setValue] = useState();
+            const [value, onValue] = useState();
             const options = [
               { label: 'Apple' },
               { label: 'Banana' },
@@ -71,7 +71,7 @@ function Example() {
 
             <ComboBox
               value={value}
-              setValue={setValue}
+              onValue={onValue}
               options={options}
             />
           `}
@@ -88,7 +88,7 @@ function Example() {
       <pre>
         <code className="language-js">
           {unindent`
-            const [value, setValue] = useState();
+            const [value, onValue] = useState();
             const options = [
               { label: 'Apple' },
               { label: 'Orange', group: 'Citrus' },
@@ -99,7 +99,7 @@ function Example() {
 
             <ComboBox
               value={value}
-              setValue={setValue}
+              onValue={onValue}
               options={options}
             />
           `}
@@ -133,6 +133,16 @@ function Example() {
         label="No autocomplete"
         options={countries}
         onSearch={null}
+      />
+      <ComboBoxField
+        label="Autocomplete"
+        options={countries}
+        autoComplete
+      />
+      <ComboBoxField
+        label="Inline autocomplete"
+        options={countries}
+        autoComplete="inline"
       />
     </>
   );

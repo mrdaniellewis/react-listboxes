@@ -4,10 +4,39 @@ import { rNonPrintableKey } from '../../constants/r_non_printable_key.js';
 
 export const SET_SEARCH = 'SET_SEARCH';
 export const SET_EXPANDED = 'SET_EXPANDED';
-export const SET_SEARCH_KEY = 'SET_SEARCH_KEY';
 export const SET_CLOSED = 'SET_CLOSED';
 export const SET_FOCUSED_INDEX = 'SET_FOCUSED_INDEX';
 export const SET_LIST_PROPS = 'SET_LIST_PROPS';
+
+function applyAutocomplete(action) {
+  return (dispatch, getState, getProps) => {
+    const { autoComplete, inputRef, options } = getProps();
+    const focusedIndex = 'focusedIndex' in action ? action.focusedIndex : getState().focusedIndex;
+    const search = 'search' in action ? action.search : getState().search;
+
+    const inlineAutoComplete = autoComplete === 'inline'
+      && action.inlineAutoComplete !== false
+      && search
+      && options[focusedIndex]
+      && options[focusedIndex].label.toLowerCase().startsWith(search.toLowerCase())
+      && !options[focusedIndex].unselectable
+      && inputRef.current.selectionStart === search.length;
+
+    dispatch({ ...action, inlineAutoComplete });
+  };
+}
+
+export function setFocusedIndex({ focusedIndex, focusListBox }) {
+  return (dispatch, getState) => {
+    const { expanded } = getState();
+
+    dispatch(applyAutocomplete({
+      type: SET_FOCUSED_INDEX,
+      focusedIndex,
+      focusListBox: focusListBox ?? (focusedIndex === null ? false : expanded),
+    }));
+  };
+}
 
 export function setListProps({ className, style }) {
   return { type: SET_LIST_PROPS, listClassName: className, listStyle: style };
@@ -15,34 +44,20 @@ export function setListProps({ className, style }) {
 
 export function onSelectValue(newValue) {
   return (dispatch, getState, getProps) => {
-    const { setValue } = getProps();
+    const { onValue, inputRef } = getProps();
     dispatch({ type: SET_CLOSED });
     if (newValue?.unselectable) {
       return;
     }
-    setValue(newValue ? newValue.value : null);
-  };
-}
-
-export function onButtonKeyDown(event) {
-  return (dispatch, getState, getProps) => {
-    const { selectedIndex } = getProps();
-    const { metaKey, ctrlKey, key } = event;
-
-    if (metaKey || ctrlKey) {
-      return;
-    }
-
-    if (key === 'ArrowUp' || key === 'ArrowDown') {
-      event.preventDefault();
-      dispatch({ type: SET_FOCUSED_INDEX, focusedIndex: selectedIndex });
-    }
+    inputRef.current.value = newValue?.label ?? '';
+    inputRef.current.dispatchEvent(new Event('click', { bubbles: true }));
+    onValue(newValue ? newValue.value : null);
   };
 }
 
 export function onKeyDown(event) {
   return (dispatch, getState, getProps) => {
-    const { expanded, focusedIndex } = getState();
+    const { expanded, focusedIndex, search, inlineAutoComplete } = getState();
     const { options, inputRef, managedFocus } = getProps();
     const { altKey, metaKey, ctrlKey, key } = event;
 
@@ -66,12 +81,13 @@ export function onKeyDown(event) {
           inputRef.current.focus();
         } else if (expanded) {
           if (focusedIndex === null) {
-            dispatch({ type: SET_FOCUSED_INDEX, focusedIndex: previousInList(options, 0) });
+            dispatch(setFocusedIndex({
+              focusedIndex: previousInList(options, 0),
+            }));
           } else {
-            dispatch({
-              type: SET_FOCUSED_INDEX,
+            dispatch(setFocusedIndex({
               focusedIndex: previousInList(options, focusedIndex, { allowEmpty: true }),
-            });
+            }));
           }
         }
         break;
@@ -80,12 +96,11 @@ export function onKeyDown(event) {
         event.preventDefault();
         if (expanded && !altKey) {
           if (focusedIndex === null) {
-            dispatch({ type: SET_FOCUSED_INDEX, focusedIndex: 0 });
+            dispatch(setFocusedIndex({ focusedIndex: 0 }));
           } else {
-            dispatch({
-              type: SET_FOCUSED_INDEX,
+            dispatch(setFocusedIndex({
               focusedIndex: nextInList(options, focusedIndex, { allowEmpty: true }),
-            });
+            }));
           }
         } else {
           dispatch({ type: SET_EXPANDED, expanded: true });
@@ -95,17 +110,16 @@ export function onKeyDown(event) {
         // First item
         if (expanded) {
           event.preventDefault();
-          dispatch({
-            type: SET_FOCUSED_INDEX,
+          dispatch(setFocusedIndex({
             focusedIndex: nextInList(options, options.length - 1),
-          });
+          }));
         }
         break;
       case 'End':
         // Last item
         if (expanded) {
           event.preventDefault();
-          dispatch({ type: SET_FOCUSED_INDEX, focusedIndex: previousInList(options, 0) });
+          dispatch(setFocusedIndex({ focusedIndex: previousInList(options, 0) }));
         }
         break;
       case 'Enter':
@@ -121,10 +135,21 @@ export function onKeyDown(event) {
           }
         }
         break;
+      case 'Backspace':
+        if (inlineAutoComplete) {
+          event.preventDefault();
+          dispatch({
+            type: SET_SEARCH,
+            search: search === null ? search : search.slice(0, -1),
+            inlineAutoComplete: false,
+          });
+        }
+        // Fall through
+      case 'Delete':
+        dispatch({ type: SET_FOCUSED_INDEX, focusedIndex: null, inlineAutoComplete: false });
+        // Fall through
       case 'ArrowLeft':
       case 'ArrowRight':
-      case 'Backspace':
-      case 'Delete':
         if (managedFocus && expanded) {
           inputRef.current.focus();
         }
@@ -132,15 +157,24 @@ export function onKeyDown(event) {
       default:
         if (managedFocus && expanded && !rNonPrintableKey.test(key)) {
           inputRef.current.focus();
-          dispatch({ type: SET_FOCUSED_INDEX, focusedIndex: null });
         }
     }
   };
 }
 
-export function onChange({ target: { value } }) {
-  return (dispatch) => {
-    dispatch({ type: 'SET_SEARCH', search: value, focusedIndex: value ? undefined : null });
+export function onChange(event) {
+  return (dispatch, getState, getProps) => {
+    const { onChange: passedOnChange } = getProps();
+    const { target: { value } } = event;
+    if (!value) {
+      dispatch({ type: SET_SEARCH, search: value, focusedIndex: null });
+    } else {
+      dispatch(applyAutocomplete({
+        type: SET_SEARCH,
+        search: value,
+      }));
+    }
+    passedOnChange(event);
   };
 }
 
@@ -157,7 +191,7 @@ export function onFocus() {
 
 export function onBlur() {
   return (dispatch, getState, getProps) => {
-    const { options, setValue } = getProps();
+    const { options, onValue } = getProps();
     const { focusedIndex, search } = getState();
 
     if (focusedIndex !== null) {
@@ -167,7 +201,7 @@ export function onBlur() {
 
     dispatch({ type: SET_CLOSED });
     if (search === '') {
-      setValue(null);
+      onValue(null);
     }
   };
 }
@@ -186,16 +220,20 @@ export function onClick(e, value) {
 
 export function onOptionsChanged(prevOptions) {
   return (dispatch, getState, getProps) => {
-    const { focusedIndex } = getState();
-    const { options } = getProps();
+    const { search, focusedIndex, inlineAutoComplete } = getState();
+    const { options, selectedIndex } = getProps();
 
-    if (focusedIndex === null) {
+    if (search === null && selectedIndex !== null) {
+      dispatch({ type: SET_FOCUSED_INDEX, focusedIndex: selectedIndex, inlineAutoComplete: false });
+    }
+
+    if (!prevOptions[focusedIndex]) {
       return;
     }
 
     const { identity } = prevOptions[focusedIndex];
     const index = options.findIndex((o) => o.identity === identity);
 
-    dispatch({ type: SET_FOCUSED_INDEX, focusedIndex: index === -1 ? null : index });
+    dispatch(setFocusedIndex({ focusedIndex: index === -1 ? null : index, inlineAutoComplete }));
   };
 }

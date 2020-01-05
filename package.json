@@ -1,8 +1,8 @@
 {
-  "name": "@citizensadvice/react-combo-box",
+  "name": "@citizensadvice/react-combo-boxes",
   "version": "1.0.0",
   "private": true,
-  "description": "A combo box implemented in React",
+  "description": "A combo box implementations in React",
   "main": "src/index.jsx",
   "scripts": {
     "prebuild": "rm -rf dist",

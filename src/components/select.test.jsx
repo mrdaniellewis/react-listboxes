@@ -5,7 +5,7 @@ import { Select } from './select.jsx';
 function SelectWrapper({ value: initialValue, ...props }) {
   const [value, setValue] = useState(initialValue);
   return (
-    <Select value={value} setValue={setValue} {...props} />
+    <Select value={value} onValue={setValue} {...props} />
   );
 }
 
@@ -25,23 +25,31 @@ describe('options', () => {
         <SelectWrapper options={options} value="Orange" />,
       );
       const select = container.querySelector('select');
-      expect(select).toHaveValue('2');
+      expect(select).toHaveValue('Orange');
       expect(select.querySelector('option:nth-child(3)')).toHaveTextContent('Orange');
     });
 
-    it('triggers the setValue callback with the selected value', () => {
+    it('triggers the onValue callback with the selected value', () => {
       const spy = jest.fn();
-      const { container } = render(<SelectWrapper options={options} setValue={spy} />);
+      const { container } = render(<SelectWrapper options={options} onValue={spy} />);
       const select = container.querySelector('select');
-      fireEvent.change(select, { target: { value: '1' } });
+      fireEvent.change(select, { target: { value: 'Banana' } });
       expect(spy).toHaveBeenCalledWith('Banana');
+    });
+
+    it('triggers the onChange callback with the selected value', () => {
+      const spy = jest.fn((e) => e.persist());
+      const { container } = render(<SelectWrapper options={options} onChange={spy} />);
+      const select = container.querySelector('select');
+      fireEvent.change(select, { target: { value: 'Banana' } });
+      expect(spy).toHaveBeenCalledWith(expect.objectContaining({ target: select }));
     });
 
     it('updates when the value changes', () => {
       const { container } = render(<SelectWrapper options={options} />);
       const select = container.querySelector('select');
-      fireEvent.change(select, { target: { value: '1' } });
-      expect(select).toHaveValue('1');
+      fireEvent.change(select, { target: { value: 'Apple' } });
+      expect(select).toHaveValue('Apple');
       expect(select.querySelector('option:nth-child(2)')).toHaveTextContent('Banana');
     });
   });
@@ -56,12 +64,20 @@ describe('options', () => {
       expect(container).toMatchSnapshot();
     });
 
-    it('triggers the setValue callback with the selected value', () => {
+    it('triggers the onValue callback with the selected value', () => {
       const spy = jest.fn();
-      const { container } = render(<SelectWrapper options={options} setValue={spy} />);
+      const { container } = render(<SelectWrapper options={options} onValue={spy} />);
       const select = container.querySelector('select');
-      fireEvent.change(select, { target: { value: '1' } });
+      fireEvent.change(select, { target: { value: '2' } });
       expect(spy).toHaveBeenCalledWith(2);
+    });
+
+    it('triggers the onChange callback with the selected value', () => {
+      const spy = jest.fn((e) => e.persist());
+      const { container } = render(<SelectWrapper options={options} onChange={spy} />);
+      const select = container.querySelector('select');
+      fireEvent.change(select, { target: { value: '2' } });
+      expect(spy).toHaveBeenCalledWith(expect.objectContaining({ target: select }));
     });
 
     it('updates when the value changes', () => {
@@ -84,19 +100,27 @@ describe('options', () => {
         expect(container).toMatchSnapshot();
       });
 
-      it('triggers the setValue callback with the selected value', () => {
+      it('triggers the onValue callback with the selected value', () => {
         const spy = jest.fn();
-        const { container } = render(<SelectWrapper options={options} setValue={spy} />);
+        const { container } = render(<SelectWrapper options={options} onValue={spy} />);
         const select = container.querySelector('select');
-        fireEvent.change(select, { target: { value: '1' } });
+        fireEvent.change(select, { target: { value: 'Banana' } });
         expect(spy).toHaveBeenCalledWith({ label: 'Banana' });
+      });
+
+      it('triggers the onChange callback with the selected value', () => {
+        const spy = jest.fn((e) => e.persist());
+        const { container } = render(<SelectWrapper options={options} onChange={spy} />);
+        const select = container.querySelector('select');
+        fireEvent.change(select, { target: { value: 'Banana' } });
+        expect(spy).toHaveBeenCalledWith(expect.objectContaining({ target: select }));
       });
 
       it('updates when the value changes', () => {
         const { container } = render(<SelectWrapper options={options} />);
         const select = container.querySelector('select');
-        fireEvent.change(select, { target: { value: '1' } });
-        expect(select).toHaveValue('1');
+        fireEvent.change(select, { target: { value: 'Banana' } });
+        expect(select).toHaveValue('Banana');
         expect(select.querySelector('option:nth-child(2)')).toHaveTextContent('Banana');
       });
     });
@@ -105,10 +129,10 @@ describe('options', () => {
       it('is used as a options identity', () => {
         const options = [{ label: 'foo', value: 1 }, { label: 'foo', value: 2 }, { label: 'foo', value: 3 }];
         const spy = jest.fn();
-        const { container } = render(<SelectWrapper options={options} value={2} setValue={spy} />);
+        const { container } = render(<SelectWrapper options={options} value={2} onValue={spy} />);
         const select = container.querySelector('select');
-        expect(select).toHaveValue('1');
-        fireEvent.change(select, { target: { value: '2' } });
+        expect(select).toHaveValue('2');
+        fireEvent.change(select, { target: { value: '3' } });
         expect(spy).toHaveBeenCalledWith({ label: 'foo', value: 3 });
       });
     });
@@ -117,10 +141,10 @@ describe('options', () => {
       it('is used as a options identity', () => {
         const options = [{ label: 'foo', id: 1 }, { label: 'foo', id: 2 }, { label: 'foo', id: 3 }];
         const spy = jest.fn();
-        const { container } = render(<SelectWrapper options={options} value={2} setValue={spy} />);
+        const { container } = render(<SelectWrapper options={options} value={2} onValue={spy} />);
         const select = container.querySelector('select');
-        expect(select).toHaveValue('1');
-        fireEvent.change(select, { target: { value: '2' } });
+        expect(select).toHaveValue('2');
+        fireEvent.change(select, { target: { value: '3' } });
         expect(spy).toHaveBeenCalledWith({ label: 'foo', id: 3 });
       });
     });
@@ -158,19 +182,27 @@ describe('options', () => {
         expect(container).toMatchSnapshot();
       });
 
-      it('triggers the setValue callback with the selected value', () => {
+      it('triggers the onValue callback with the selected value', () => {
         const spy = jest.fn();
-        const { container } = render(<SelectWrapper options={options} setValue={spy} />);
+        const { container } = render(<SelectWrapper options={options} onValue={spy} />);
         const select = container.querySelector('select');
-        fireEvent.change(select, { target: { value: '3' } });
+        fireEvent.change(select, { target: { value: 'Lemon' } });
         expect(spy).toHaveBeenCalledWith({ label: 'Lemon', group: 'Citrus' });
+      });
+
+      it('triggers the onChange callback with the selected value', () => {
+        const spy = jest.fn((e) => e.persist());
+        const { container } = render(<SelectWrapper options={options} onChange={spy} />);
+        const select = container.querySelector('select');
+        fireEvent.change(select, { target: { value: 'Lemon' } });
+        expect(spy).toHaveBeenCalledWith(expect.objectContaining({ target: select }));
       });
 
       it('updates when the value changes', () => {
         const { container } = render(<SelectWrapper options={options} />);
         const select = container.querySelector('select');
-        fireEvent.change(select, { target: { value: '3' } });
-        expect(select).toHaveValue('3');
+        fireEvent.change(select, { target: { value: 'Lemon' } });
+        expect(select).toHaveValue('Lemon');
         expect(select.querySelector('optgroup:first-of-type > option:nth-child(2)')).toHaveTextContent('Lemon');
       });
     });
@@ -192,11 +224,11 @@ describe('options', () => {
       const spy = jest.fn();
       const { container } = render(<SelectWrapper
         options={options}
-        setValue={spy}
+        onValue={spy}
         mapOption={({ name }) => ({ label: name })}
       />);
       const select = container.querySelector('select');
-      fireEvent.change(select, { target: { value: '2' } });
+      fireEvent.change(select, { target: { value: 'Orange' } });
       expect(spy).toHaveBeenCalledWith({ name: 'Orange' });
     });
 
@@ -207,9 +239,10 @@ describe('options', () => {
         mapOption={({ name }) => ({ label: name })}
       />);
       const select = container.querySelector('select');
-      expect(select).toHaveValue('1');
-      fireEvent.change(select, { target: { value: '2' } });
-      expect(select.querySelector('option:nth-child(2)')).toHaveTextContent('Banana');
+      expect(select).toHaveValue('Banana');
+      fireEvent.change(select, { target: { value: 'Orange' } });
+      expect(select).toHaveValue('Orange');
+      expect(select.querySelector('option:nth-child(3)')).toHaveTextContent('Orange');
     });
   });
 });
@@ -221,13 +254,13 @@ describe('blank', () => {
     const { container } = render(<SelectWrapper options={options} blank="Please select…" />);
     const select = container.querySelector('select');
     expect(select.querySelector('option')).toHaveTextContent('Please select…');
-    expect(select).toHaveValue('0');
+    expect(select).toHaveValue('');
   });
 
   it('renders with a selected value', () => {
     const { container } = render(<SelectWrapper options={options} blank="Please select…" value="Orange" />);
     const select = container.querySelector('select');
-    expect(select).toHaveValue('3');
+    expect(select).toHaveValue('Orange');
     expect(select.querySelector('option:nth-child(4)')).toHaveTextContent('Orange');
   });
 });

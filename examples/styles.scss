@@ -23,7 +23,8 @@ label,
 button,
 [type=button],
 [type=reset],
-[type=submit] {
+[type=submit],
+.dropdown__combobox {
   outline: none;
   align-items: center;
   border: none;
@@ -63,7 +64,7 @@ select {
 }
 
 .select,
-.dropdown__button {
+.dropdown__combobox {
   display: inline-block;
   position: relative;
 
@@ -100,7 +101,7 @@ select {
   max-width: 100%;
 }
 
-.dropdown__button {
+.dropdown__combobox {
   padding-right: 2em;
   background: #eee;
   white-space: nowrap;

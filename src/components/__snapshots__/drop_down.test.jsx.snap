@@ -1,28 +1,87 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`blank renders a blank option 1`] = `
+<div>
+  <div
+    class="dropdown"
+  >
+    <div
+      aria-controls="id_listbox"
+      class="dropdown__combobox"
+      id="id"
+      role="combobox"
+      tabindex="0"
+    >
+      Please select…
+    </div>
+    <ul
+      class="dropdown__listbox"
+      hidden=""
+      id="id_listbox"
+      role="listbox"
+      tabindex="-1"
+    >
+      <li
+        class="dropdown__option"
+        id="id_option_blank"
+        role="option"
+        tabindex="-1"
+      >
+        Please select…
+      </li>
+      <li
+        class="dropdown__option"
+        id="id_option_apple"
+        role="option"
+        tabindex="-1"
+      >
+        Apple
+      </li>
+      <li
+        class="dropdown__option"
+        id="id_option_banana"
+        role="option"
+        tabindex="-1"
+      >
+        Banana
+      </li>
+      <li
+        class="dropdown__option"
+        id="id_option_orange"
+        role="option"
+        tabindex="-1"
+      >
+        Orange
+      </li>
+    </ul>
+  </div>
+</div>
+`;
+
 exports[`options as array of objects disabled sets the aria-disabled attribute 1`] = `
 <div>
   <div
     class="dropdown"
   >
-    <button
+    <div
+      aria-activedescendant="id_option_apple"
       aria-controls="id_listbox"
       aria-expanded="true"
-      aria-haspopup="listbox"
-      class="dropdown__button"
+      class="dropdown__combobox"
       id="id"
-      type="button"
+      role="combobox"
+      tabindex="0"
     >
       Apple
-    </button>
+    </div>
     <ul
-      aria-activedescendant="id_option_apple"
       class="dropdown__listbox"
       id="id_listbox"
       role="listbox"
       tabindex="-1"
     >
       <li
+        aria-selected="true"
         class="dropdown__option dropdown__option--focused"
         id="id_option_apple"
         role="option"
@@ -49,15 +108,15 @@ exports[`options as array of objects group renders grouped options 1`] = `
   <div
     class="dropdown"
   >
-    <button
+    <div
       aria-controls="id_listbox"
-      aria-haspopup="listbox"
-      class="dropdown__button"
+      class="dropdown__combobox"
       id="id"
-      type="button"
+      role="combobox"
+      tabindex="0"
     >
       Apple
-    </button>
+    </div>
     <ul
       class="dropdown__listbox"
       hidden=""
@@ -75,10 +134,9 @@ exports[`options as array of objects group renders grouped options 1`] = `
       </li>
       <li
         aria-disabled="true"
-        aria-label="Citrus"
         class="dropdown__group"
         id="id_group_citrus"
-        role="group"
+        role="option"
         tabindex="-1"
       >
         Citrus
@@ -101,10 +159,9 @@ exports[`options as array of objects group renders grouped options 1`] = `
       </li>
       <li
         aria-disabled="true"
-        aria-label="Berry"
         class="dropdown__group"
         id="id_group_berry"
-        role="group"
+        role="option"
         tabindex="-1"
       >
         Berry
@@ -135,15 +192,15 @@ exports[`options as array of objects label renders a closed drop down 1`] = `
   <div
     class="dropdown"
   >
-    <button
+    <div
       aria-controls="id_listbox"
-      aria-haspopup="listbox"
-      class="dropdown__button"
+      class="dropdown__combobox"
       id="id"
-      type="button"
+      role="combobox"
+      tabindex="0"
     >
       Apple
-    </button>
+    </div>
     <ul
       class="dropdown__listbox"
       hidden=""
@@ -180,20 +237,43 @@ exports[`options as array of objects label renders a closed drop down 1`] = `
 </div>
 `;
 
+exports[`options empty options renders an empty combo box 1`] = `
+<div>
+  <div
+    class="dropdown"
+  >
+    <div
+      aria-controls="id_listbox"
+      class="dropdown__combobox"
+      id="id"
+      role="combobox"
+      tabindex="0"
+    />
+    <ul
+      class="dropdown__listbox"
+      hidden=""
+      id="id_listbox"
+      role="listbox"
+      tabindex="-1"
+    />
+  </div>
+</div>
+`;
+
 exports[`options options as array of numbers renders a closed drop down 1`] = `
 <div>
   <div
     class="dropdown"
   >
-    <button
+    <div
       aria-controls="id_listbox"
-      aria-haspopup="listbox"
-      class="dropdown__button"
+      class="dropdown__combobox"
       id="id"
-      type="button"
+      role="combobox"
+      tabindex="0"
     >
       1
-    </button>
+    </div>
     <ul
       class="dropdown__listbox"
       hidden=""
@@ -235,15 +315,15 @@ exports[`options options as array of strings renders a closed drop down 1`] = `
   <div
     class="dropdown"
   >
-    <button
+    <div
       aria-controls="id_listbox"
-      aria-haspopup="listbox"
-      class="dropdown__button"
+      class="dropdown__combobox"
       id="id"
-      type="button"
+      role="combobox"
+      tabindex="0"
     >
       Apple
-    </button>
+    </div>
     <ul
       class="dropdown__listbox"
       hidden=""
@@ -285,24 +365,25 @@ exports[`options updating options updates the options 1`] = `
   <div
     class="dropdown"
   >
-    <button
+    <div
+      aria-activedescendant="id_option_strawberry"
       aria-controls="id_listbox"
       aria-expanded="true"
-      aria-haspopup="listbox"
-      class="dropdown__button"
+      class="dropdown__combobox"
       id="id"
-      type="button"
+      role="combobox"
+      tabindex="0"
     >
       Strawberry
-    </button>
+    </div>
     <ul
-      aria-activedescendant="id_option_strawberry"
       class="dropdown__listbox"
       id="id_listbox"
       role="listbox"
       tabindex="-1"
     >
       <li
+        aria-selected="true"
         class="dropdown__option dropdown__option--focused"
         id="id_option_strawberry"
         role="option"

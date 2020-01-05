@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
 import { renderGroupedOptions } from '../helpers/render_grouped_options.js';
@@ -7,7 +7,7 @@ import { componentCustomiser } from '../validators/component_customiser.js';
 
 export function Select(rawProps) {
   const {
-    options, setValue, selectedIndex, value: _,
+    options, onChange, onValue, selectedIndex, value: _,
     OptGroupComponent, OptionComponent, SelectComponent,
     ...props
   } = useNormalisedOptions(rawProps, { mustHaveSelection: true });
@@ -16,10 +16,15 @@ export function Select(rawProps) {
   const customOptionComponent = dismemberComponent(OptionComponent, 'option');
   const customSelectComponent = dismemberComponent(SelectComponent, 'select');
 
+  const handleChange = useCallback((e) => {
+    onValue(options.find((o) => o.identity === e.target.value)?.value ?? null);
+    onChange(e);
+  }, [onValue, onChange, options]);
+
   return (
     <customSelectComponent.type
-      value={selectedIndex}
-      onChange={({ target: { value: index } }) => setValue(options[+index]?.value ?? null)}
+      value={options[selectedIndex]?.identity ?? ''}
+      onChange={handleChange}
       {...customSelectComponent.props}
       {...props}
     >
@@ -38,10 +43,10 @@ export function Select(rawProps) {
           );
         },
         // eslint-disable-next-line react/prop-types
-        renderOption({ label, key, html, disabled, index }) {
+        renderOption({ identity, label, key, html, disabled }) {
           return (
             <customOptionComponent.type
-              value={index}
+              value={identity}
               key={key}
               disabled={disabled}
               {...customOptionComponent.props}
@@ -58,7 +63,8 @@ export function Select(rawProps) {
 
 Select.propTypes = {
   blank: PropTypes.node,
-  setValue: PropTypes.func.isRequired,
+  onChange: PropTypes.func,
+  onValue: PropTypes.func,
   options: PropTypes.arrayOf(PropTypes.any).isRequired,
   value: PropTypes.any,
   OptionComponent: componentCustomiser,
@@ -69,6 +75,8 @@ Select.propTypes = {
 Select.defaultProps = {
   blank: null,
   value: null,
+  onChange: () => {},
+  onValue: () => {},
   OptionComponent: null,
   OptGroupComponent: null,
   SelectComponent: null,

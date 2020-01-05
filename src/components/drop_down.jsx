@@ -7,7 +7,7 @@ import { initialState } from './drop_down/initial_state.js';
 import {
   clearSearch, onKeyDown, setFocusedIndex, onBlur,
   onToggleOpen, onFocus, onButtonKeyDown, onClick,
-  onOptionsChanged, setListProps,
+  onOptionsChanged, setListProps, onSelectValue,
 } from './drop_down/actions.js';
 import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
 import { useOnBlur } from '../hooks/use_on_blur.js';
@@ -20,23 +20,23 @@ import { joinTokens } from '../helpers/join_tokens.js';
 export function DropDown(rawProps) {
   const optionisedProps = useNormalisedOptions(rawProps, { mustHaveSelection: true });
   const {
-    options, value: _, setValue, id, className,
+    options, value: _1, onValue: _3, id, className,
     children, selectedIndex, managedFocus, layoutListBox,
     DropDownComponent, DropDownProps,
-    ButtonComponent, ButtonProps,
+    ComboBoxComponent, ComboBoxProps,
     ListBoxComponent, ListBoxProps,
     OptionComponent, OptionProps,
     GroupComponent, GroupProps,
     ValueComponent, ValueProps,
     ...componentProps
   } = optionisedProps;
-  const buttonRef = useRef();
+  const comboBoxRef = useRef();
   const listRef = useRef();
   const focusedRef = useRef();
 
   const [state, dispatch] = useReducer(
     reducer,
-    { ...optionisedProps, buttonRef, listRef },
+    { ...optionisedProps, comboBoxRef, listRef },
     initialState,
   );
   const { expanded, search, focusedIndex, listClassName, listStyle } = state;
@@ -50,17 +50,21 @@ export function DropDown(rawProps) {
   }, [prevOptions, options]);
 
   useEffect(() => {
-    if (!search || !expanded) {
+    if (!search) {
       return undefined;
     }
     const found = options.findIndex((o) => o.label.toLowerCase().startsWith(search));
     if (found > -1) {
-      dispatch(setFocusedIndex(found));
+      if (expanded) {
+        dispatch(setFocusedIndex(found));
+      } else {
+        dispatch(onSelectValue(options[found]));
+      }
     }
     const timeout = setTimeout(() => dispatch(clearSearch()), 1000);
 
     return () => clearTimeout(timeout);
-  }, [options, search, expanded, setValue]);
+  }, [options, search, expanded]);
 
   useLayoutEffect(() => {
     if (expanded && options[focusedIndex] && managedFocus) {
@@ -73,8 +77,8 @@ export function DropDown(rawProps) {
   useLayoutEffect(() => {
     if (layoutListBox && expanded) {
       const listProps = layoutListBox({
-        listbox: listRef.current,
-        button: buttonRef.current,
+        listBox: listRef.current,
+        comboBox: comboBoxRef.current,
         option: focusedRef.current,
       });
       if (listProps) {
@@ -86,33 +90,33 @@ export function DropDown(rawProps) {
   const classes = bemClassGenerator(className);
 
   return (
-    <Context.Provider value={{ dispatch, ...optionisedProps, listRef, buttonRef, ...state }}>
+    <Context.Provider value={{ dispatch, ...optionisedProps, listRef, comboBoxRef, ...state }}>
       <DropDownComponent
         {...(DropDownComponent === Fragment ? undefined : { className })}
         {...DropDownProps}
         {...componentProps}
       >
-        <ButtonComponent
-          type="button"
+        <ComboBoxComponent
+          role="combobox"
           id={id}
           aria-controls={`${id}_listbox`}
           aria-expanded={expanded ? 'true' : null}
-          aria-haspopup="listbox"
-          ref={buttonRef}
-          onClick={() => dispatch(onToggleOpen())}
+          aria-activedescendant={options[focusedIndex]?.key || null}
+          tabIndex={0}
+          ref={comboBoxRef}
+          onClick={(e) => dispatch(onToggleOpen(e))}
           onKeyDown={(e) => dispatch(onButtonKeyDown(e))}
-          className={classes('button')}
-          {...ButtonProps}
+          className={classes('combobox')}
+          {...ComboBoxProps}
         >
-          {children ?? options[selectedIndex].label}
-        </ButtonComponent>
+          {(children ?? options[selectedIndex]?.label) || null}
+        </ComboBoxComponent>
         <ListBoxComponent
           ref={listRef}
           id={`${id}_listbox`}
           role="listbox"
           hidden={!expanded}
           tabIndex={-1}
-          aria-activedescendant={options[focusedIndex]?.key || null}
           onFocus={(e) => {
             handleFocus(e);
             dispatch(onFocus(e));
@@ -135,9 +139,9 @@ export function DropDown(rawProps) {
                   <GroupComponent
                     id={key}
                     ref={index === focusedIndex ? focusedRef : null}
-                    role="group"
-                    aria-label={label}
+                    role="option"
                     tabIndex={-1}
+                    aria-selected={focusedIndex === index ? 'true' : null}
                     aria-disabled="true"
                     className={classes('group', index === focusedIndex && 'focused')}
                     {...GroupProps}
@@ -151,7 +155,7 @@ export function DropDown(rawProps) {
             },
             // eslint-disable-next-line react/prop-types
             renderOption(option) {
-              const { label, key, html, disabled, index, selected, group } = option;
+              const { label, key, html, disabled, index, group } = option;
               return (
                 <Context.Provider
                   key={key}
@@ -161,7 +165,7 @@ export function DropDown(rawProps) {
                     id={key}
                     role="option"
                     tabIndex={-1}
-                    aria-selected={selected ? 'true' : null}
+                    aria-selected={focusedIndex === index ? 'true' : null}
                     aria-disabled={disabled ? 'true' : null}
                     ref={index === focusedIndex ? focusedRef : null}
                     className={classes('option', index === focusedIndex && 'focused', group && 'grouped')}
@@ -191,14 +195,14 @@ DropDown.propTypes = {
   id: PropTypes.string.isRequired,
   layoutListBox: PropTypes.func,
   options: PropTypes.arrayOf(PropTypes.any).isRequired,
-  setValue: PropTypes.func.isRequired,
+  onValue: PropTypes.func,
   value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
   managedFocus: PropTypes.bool,
   className: PropTypes.string,
   ListBoxComponent: componentValidator,
   ListBoxProps: PropTypes.object,
-  ButtonComponent: componentValidator,
-  ButtonProps: PropTypes.object,
+  ComboBoxComponent: componentValidator,
+  ComboBoxProps: PropTypes.object,
   GroupComponent: componentValidator,
   GroupProps: PropTypes.object,
   OptionComponent: componentValidator,
@@ -216,10 +220,11 @@ DropDown.defaultProps = {
   value: null,
   className: 'dropdown',
   managedFocus: true,
+  onValue: () => {},
   ListBoxComponent: 'ul',
   ListBoxProps: null,
-  ButtonComponent: 'button',
-  ButtonProps: null,
+  ComboBoxComponent: 'div',
+  ComboBoxProps: null,
   GroupComponent: 'li',
   GroupProps: null,
   OptionComponent: 'li',
