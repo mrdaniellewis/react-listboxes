@@ -59,6 +59,11 @@ function Example() {
         label="Select"
         options={['Apple', 'Banana', 'Cherry', 'Mango', 'Ugli fruit']}
       />
+      <ComboBoxField
+        label="Select without managed focus"
+        options={['Apple', 'Banana', 'Cherry', 'Mango', 'Ugli fruit']}
+        managedFocus={false}
+      />
       <pre>
         <code className="language-js">
           {unindent`
@@ -143,6 +148,12 @@ function Example() {
         label="Inline autocomplete"
         options={countries}
         autoComplete="inline"
+      />
+      <ComboBoxField
+        label="Inline autocomplete without managed focus"
+        options={countries}
+        autoComplete="inline"
+        managedFocus={false}
       />
     </>
   );

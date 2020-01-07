@@ -8,33 +8,49 @@ export const SET_CLOSED = 'SET_CLOSED';
 export const SET_FOCUSED_INDEX = 'SET_FOCUSED_INDEX';
 export const SET_LIST_PROPS = 'SET_LIST_PROPS';
 
-function applyAutocomplete(action) {
-  return (dispatch, getState, getProps) => {
-    const { autoComplete, inputRef, options } = getProps();
-    const focusedIndex = 'focusedIndex' in action ? action.focusedIndex : getState().focusedIndex;
-    const search = 'search' in action ? action.search : getState().search;
-
-    const inlineAutoComplete = autoComplete === 'inline'
-      && action.inlineAutoComplete !== false
-      && search
-      && options[focusedIndex]
-      && options[focusedIndex].label.toLowerCase().startsWith(search.toLowerCase())
-      && !options[focusedIndex].unselectable
-      && inputRef.current.selectionStart === search.length;
-
-    dispatch({ ...action, inlineAutoComplete });
-  };
+function getAutoCompleteFocusedIndex({ autoComplete, options, focusListBox, search }) {
+  if (autoComplete && !focusListBox && search && options?.length) {
+    for (let i = 0; i < options.length; i += 1) {
+      if (!options[i].unselectable) {
+        if (options[i].label.toLowerCase().startsWith(search.toLowerCase())) {
+          return i;
+        }
+        break;
+      }
+    }
+  }
+  return null;
 }
 
-export function setFocusedIndex({ focusedIndex, focusListBox }) {
-  return (dispatch, getState) => {
-    const { expanded } = getState();
+function getUpdatedFocusedIndex({ prevOptions, options, focusedIndex }) {
+  if (!prevOptions[focusedIndex]) {
+    return null;
+  }
+  const { identity } = prevOptions[focusedIndex];
+  const index = options.findIndex((o) => o.identity === identity);
+  return index === -1 ? null : index;
+}
 
-    dispatch(applyAutocomplete({
+function getInlineAutoComplete({ autoComplete, inputRef, options, focusedIndex, search }) {
+  return autoComplete === 'inline'
+    && search
+    && options[focusedIndex]
+    && options[focusedIndex].label.toLowerCase().startsWith(search.toLowerCase())
+    && !options[focusedIndex].unselectable
+    && inputRef.current.selectionStart === search.length;
+}
+
+function setFocusedIndex({ focusedIndex, focusListBox }) {
+  return (dispatch, getState, getProps) => {
+    const { expanded, search } = getState();
+    const { autoComplete, inputRef, options } = getProps();
+
+    dispatch({
       type: SET_FOCUSED_INDEX,
       focusedIndex,
       focusListBox: focusListBox ?? (focusedIndex === null ? false : expanded),
-    }));
+      inlineAutoComplete: getInlineAutoComplete({ autoComplete, inputRef, options, focusedIndex, search }),
+    });
   };
 }
 
@@ -137,12 +153,7 @@ export function onKeyDown(event) {
         break;
       case 'Backspace':
         if (inlineAutoComplete) {
-          event.preventDefault();
-          dispatch({
-            type: SET_SEARCH,
-            search: search === null ? search : search.slice(0, -1),
-            inlineAutoComplete: false,
-          });
+          inputRef.current.value = search;
         }
         // Fall through
       case 'Delete':
@@ -164,15 +175,19 @@ export function onKeyDown(event) {
 
 export function onChange(event) {
   return (dispatch, getState, getProps) => {
-    const { onChange: passedOnChange } = getProps();
-    const { target: { value } } = event;
-    if (!value) {
-      dispatch({ type: SET_SEARCH, search: value, focusedIndex: null });
+    const { onChange: passedOnChange, autoComplete, inputRef, options } = getProps();
+    const { focusedIndex: currentFocusedIndex, focusListBox } = getState();
+    const { target: { value: search } } = event;
+    if (!search) {
+      dispatch({ type: SET_SEARCH, search, focusedIndex: null });
     } else {
-      dispatch(applyAutocomplete({
+      const focusedIndex = getAutoCompleteFocusedIndex({ autoComplete, options, focusListBox: false, search }) ?? currentFocusedIndex;
+
+      dispatch({
         type: SET_SEARCH,
-        search: value,
-      }));
+        focusedIndex,
+        search, inlineAutoComplete: getInlineAutoComplete({ autoComplete, inputRef, options, focusedIndex, search }),
+      });
     }
     passedOnChange(event);
   };
@@ -220,20 +235,17 @@ export function onClick(e, value) {
 
 export function onOptionsChanged(prevOptions) {
   return (dispatch, getState, getProps) => {
-    const { search, focusedIndex, inlineAutoComplete } = getState();
-    const { options, selectedIndex } = getProps();
+    const { search, focusedIndex, focusListBox } = getState();
+    const { autoComplete, inputRef, options, selectedIndex } = getProps();
 
     if (search === null && selectedIndex !== null) {
       dispatch({ type: SET_FOCUSED_INDEX, focusedIndex: selectedIndex, inlineAutoComplete: false });
     }
 
-    if (!prevOptions[focusedIndex]) {
-      return;
-    }
-
-    const { identity } = prevOptions[focusedIndex];
-    const index = options.findIndex((o) => o.identity === identity);
-
-    dispatch(setFocusedIndex({ focusedIndex: index === -1 ? null : index, inlineAutoComplete }));
+    dispatch({
+      type: SET_FOCUSED_INDEX,
+      focusedIndex: getAutoCompleteFocusedIndex({ autoComplete, options, focusListBox, search }) ?? getUpdatedFocusedIndex({ prevOptions, options, focusedIndex }),
+      inlineAutoComplete: getInlineAutoComplete({ autoComplete, inputRef, options, focusedIndex, search }),
+    });
   };
 }

@@ -4,7 +4,7 @@ import { Context } from '../context.js';
 import { useThunkReducer as useReducer } from '../hooks/use_thunk_reducer.js';
 import { reducer } from './combo_box/reducer.js';
 import { initialState } from './combo_box/initial_state.js';
-import { onKeyDown, onChange, onFocus, onSelectValue, onBlur, onOptionsChanged, setListProps, setFocusedIndex } from './combo_box/actions.js';
+import { onKeyDown, onChange, onFocus, onSelectValue, onBlur, onOptionsChanged, setListProps } from './combo_box/actions.js';
 import { options as validateOptions } from '../validators/options.js';
 import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
 import { useOnBlur } from '../hooks/use_on_blur.js';
@@ -21,7 +21,7 @@ export function ComboBox(rawProps) {
     options, value, id, className,
     notFoundMessage, layoutListBox, managedFocus, busy,
     selectedIndex: _1, onValue: _2,
-    onSearch, autoComplete,
+    onSearch, autoComplete, showSelectedValue,
     ClearButtonComponent, ClearButtonProps,
     ComboBoxComponent, ComboBoxProps,
     GroupComponent, GroupProps,
@@ -83,23 +83,13 @@ export function ComboBox(rawProps) {
     }
   }, [onSearch, search, value]);
 
-  useEffect(() => {
-    if (autoComplete && search && options && options.length) {
-      for (let i = 0; i < options.length; i += 1) {
-        if (!options[i].unselectable) {
-          if (options[i].label.toLowerCase().startsWith(search.toLowerCase())) {
-            dispatch(setFocusedIndex({ focusedIndex: i, focusListBox: false }));
-          }
-          break;
-        }
-      }
-    }
-  }, [autoComplete, search, options]);
-
-  const inputLabel = inlineAutoComplete ? options[focusedIndex]?.label : (search ?? value?.label);
+  let inputLabel = search ?? value?.label;
+  if (inlineAutoComplete || (showSelectedValue && focusListBox)) {
+    inputLabel = options[focusedIndex]?.label;
+  }
 
   useLayoutEffect(() => {
-    if (search && autoComplete === 'inline' && inlineAutoComplete) {
+    if (search && autoComplete === 'inline' && inlineAutoComplete && options[focusedIndex]) {
       inputRef.current.setSelectionRange(search.length, options[focusedIndex].label.length);
     }
   }, [inlineAutoComplete, options, focusedIndex, search, autoComplete]);
@@ -260,6 +250,7 @@ ComboBox.propTypes = {
   onChange: PropTypes.func,
   value: PropTypes.any,
   autoComplete: PropTypes.oneOf([false, true, 'inline']),
+  showSelectedValue: PropTypes.bool,
 
   ClearButtonComponent: componentValidator,
   ClearButtonProps: PropTypes.object,
@@ -291,6 +282,7 @@ ComboBox.defaultProps = {
   onValue: () => {},
   onChange: () => {},
   autoComplete: false,
+  showSelectedValue: true,
 
   ClearButtonComponent: 'span',
   ClearButtonProps: null,
