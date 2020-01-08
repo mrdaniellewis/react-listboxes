@@ -34,6 +34,7 @@ function getUpdatedFocusedIndex({ prevOptions, options, focusedIndex }) {
 function getInlineAutoComplete({ autoComplete, inputRef, options, focusedIndex, search }) {
   return autoComplete === 'inline'
     && search
+    && focusedIndex !== null
     && options[focusedIndex]
     && options[focusedIndex].label.toLowerCase().startsWith(search.toLowerCase())
     && !options[focusedIndex].unselectable
@@ -73,8 +74,8 @@ export function onSelectValue(newValue) {
 
 export function onKeyDown(event) {
   return (dispatch, getState, getProps) => {
-    const { expanded, focusedIndex, search, inlineAutoComplete } = getState();
-    const { options, inputRef, managedFocus } = getProps();
+    const { expanded, focusedIndex } = getState();
+    const { options, inputRef, managedFocus, lastKeyRef } = getProps();
     const { altKey, metaKey, ctrlKey, key } = event;
 
     if (metaKey || ctrlKey) {
@@ -152,12 +153,8 @@ export function onKeyDown(event) {
         }
         break;
       case 'Backspace':
-        if (inlineAutoComplete) {
-          inputRef.current.value = search;
-        }
-        // Fall through
       case 'Delete':
-        dispatch({ type: SET_FOCUSED_INDEX, focusedIndex: null, inlineAutoComplete: false });
+        lastKeyRef.current = key;
         // Fall through
       case 'ArrowLeft':
       case 'ArrowRight':
@@ -175,18 +172,25 @@ export function onKeyDown(event) {
 
 export function onChange(event) {
   return (dispatch, getState, getProps) => {
-    const { onChange: passedOnChange, autoComplete, inputRef, options } = getProps();
-    const { focusedIndex: currentFocusedIndex, focusListBox } = getState();
+    const { onChange: passedOnChange, autoComplete, inputRef, options, lastKeyRef, lastKeyRef: { current: key } } = getProps();
+    let { focusedIndex } = getState();
     const { target: { value: search } } = event;
+    lastKeyRef.current = null;
     if (!search) {
       dispatch({ type: SET_SEARCH, search, focusedIndex: null });
     } else {
-      const focusedIndex = getAutoCompleteFocusedIndex({ autoComplete, options, focusListBox: false, search }) ?? currentFocusedIndex;
+      console.log(key);
+      if (key === 'Delete') {
+        focusedIndex = null;
+      } else {
+        focusedIndex = getAutoCompleteFocusedIndex({ autoComplete, options, focusListBox: false, search }) ?? focusedIndex;
+      }
 
       dispatch({
         type: SET_SEARCH,
         focusedIndex,
-        search, inlineAutoComplete: getInlineAutoComplete({ autoComplete, inputRef, options, focusedIndex, search }),
+        search,
+        inlineAutoComplete: getInlineAutoComplete({ autoComplete, inputRef, options, focusedIndex, search }),
       });
     }
     passedOnChange(event);

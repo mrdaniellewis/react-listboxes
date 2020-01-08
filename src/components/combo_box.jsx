@@ -37,10 +37,11 @@ export function ComboBox(rawProps) {
   const inputRef = useRef();
   const listRef = useRef();
   const focusedRef = useRef();
+  const lastKeyRef = useRef();
 
   const [state, dispatch] = useReducer(
     reducer,
-    { ...optionisedProps, inputRef, listRef },
+    { ...optionisedProps, inputRef, lastKeyRef },
     initialState,
   );
 
