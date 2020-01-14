@@ -42,15 +42,14 @@ function getInlineAutoComplete({ autoComplete, inputRef, options, focusedIndex, 
 }
 
 function setFocusedIndex({ focusedIndex, focusListBox }) {
-  return (dispatch, getState, getProps) => {
-    const { expanded, search } = getState();
-    const { autoComplete, inputRef, options } = getProps();
+  return (dispatch, getState) => {
+    const { expanded } = getState();
 
     dispatch({
       type: SET_FOCUSED_INDEX,
       focusedIndex,
       focusListBox: focusListBox ?? (focusedIndex === null ? false : expanded),
-      inlineAutoComplete: getInlineAutoComplete({ autoComplete, inputRef, options, focusedIndex, search }),
+      inlineAutoComplete: false,
     });
   };
 }
@@ -152,9 +151,14 @@ export function onKeyDown(event) {
           }
         }
         break;
-      case 'Backspace':
       case 'Delete':
+        dispatch({ type: SET_FOCUSED_INDEX, focusedIndex: null });
+        // fallthrough
+      case 'Backspace':
         lastKeyRef.current = key;
+        setTimeout(() => {
+          lastKeyRef.current = null;
+        }, 0);
         // Fall through
       case 'ArrowLeft':
       case 'ArrowRight':
@@ -174,15 +178,14 @@ export function onChange(event) {
   return (dispatch, getState, getProps) => {
     const { onChange: passedOnChange, autoComplete, inputRef, options, lastKeyRef, lastKeyRef: { current: key } } = getProps();
     let { focusedIndex } = getState();
-    const { target: { value: search } } = event;
+    let { target: { value: search } } = event;
     lastKeyRef.current = null;
     if (!search) {
       dispatch({ type: SET_SEARCH, search, focusedIndex: null });
     } else {
-      console.log(key);
       if (key === 'Delete') {
         focusedIndex = null;
-      } else {
+      } else if (key !== 'Backspace') {
         focusedIndex = getAutoCompleteFocusedIndex({ autoComplete, options, focusListBox: false, search }) ?? focusedIndex;
       }
 
@@ -190,7 +193,7 @@ export function onChange(event) {
         type: SET_SEARCH,
         focusedIndex,
         search,
-        inlineAutoComplete: getInlineAutoComplete({ autoComplete, inputRef, options, focusedIndex, search }),
+        inlineAutoComplete: key === 'Backspace' ? false : getInlineAutoComplete({ autoComplete, inputRef, options, focusedIndex, search }),
       });
     }
     passedOnChange(event);
@@ -239,7 +242,7 @@ export function onClick(e, value) {
 
 export function onOptionsChanged(prevOptions) {
   return (dispatch, getState, getProps) => {
-    const { search, focusedIndex, focusListBox } = getState();
+    const { search, focusedIndex, focusListBox, inlineAutoComplete } = getState();
     const { autoComplete, inputRef, options, selectedIndex } = getProps();
 
     if (search === null && selectedIndex !== null) {
@@ -249,7 +252,7 @@ export function onOptionsChanged(prevOptions) {
     dispatch({
       type: SET_FOCUSED_INDEX,
       focusedIndex: getAutoCompleteFocusedIndex({ autoComplete, options, focusListBox, search }) ?? getUpdatedFocusedIndex({ prevOptions, options, focusedIndex }),
-      inlineAutoComplete: getInlineAutoComplete({ autoComplete, inputRef, options, focusedIndex, search }),
+      inlineAutoComplete: (inlineAutoComplete && !focusListBox) ? getInlineAutoComplete({ autoComplete, inputRef, options, focusedIndex, search }) : false,
     });
   };
 }
