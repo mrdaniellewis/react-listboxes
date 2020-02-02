@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useLayoutEffect, Fragment } from 'react';
+import React, { useRef, useEffect, useLayoutEffect, Fragment, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Context } from '../context.js';
 import { useThunkReducer as useReducer } from '../hooks/use_thunk_reducer.js';
@@ -25,6 +25,7 @@ export function ComboBox(rawProps) {
     ClearButtonComponent, ClearButtonProps,
     ComboBoxComponent, ComboBoxProps,
     GroupComponent, GroupProps,
+    GroupWrapperComponent, GroupWrapperProps,
     InputComponent, InputProps,
     ListBoxComponent, ListBoxProps,
     NotFoundComponent, NotFoundProps,
@@ -59,7 +60,7 @@ export function ComboBox(rawProps) {
 
   useLayoutEffect(() => {
     if (expanded && options[focusedIndex] && managedFocus && focusListBox) {
-      focusedRef.current.focus();
+      focusedRef.current?.focus?.();
     } else if (expanded && document.activeElement !== inputRef.current) {
       inputRef.current.focus();
     }
@@ -85,7 +86,7 @@ export function ComboBox(rawProps) {
   }, [onSearch, search, value]);
 
   let inputLabel = search ?? value?.label;
-  if (inlineAutoComplete || (showSelectedValue && focusListBox)) {
+  if (inlineAutoComplete || ((showSelectedValue ?? autoComplete === 'inline') && focusListBox)) {
     inputLabel = options[focusedIndex]?.label;
   }
 
@@ -94,6 +95,16 @@ export function ComboBox(rawProps) {
       inputRef.current.setSelectionRange(search.length, options[focusedIndex].label.length);
     }
   }, [inlineAutoComplete, options, focusedIndex, search, autoComplete]);
+
+  const ariaAutocomplete = useMemo(() => {
+    if (!onSearch) {
+      return 'none';
+    }
+    if (autoComplete === 'inline') {
+      return 'both';
+    }
+    return 'list';
+  }, [onSearch, autoComplete]);
 
   const classes = bemClassGenerator(className);
   const showListBox = expanded && options.length
@@ -116,7 +127,7 @@ export function ComboBox(rawProps) {
           id={id}
           type="text"
           role="combobox"
-          aria-autocomplete={onSearch ? 'list' : null}
+          aria-autocomplete={ariaAutocomplete}
           aria-haspopup="true"
           aria-controls={`${id}_listbox`}
           aria-expanded={showListBox ? 'true' : 'false'}
@@ -126,9 +137,8 @@ export function ComboBox(rawProps) {
           onChange={(e) => dispatch(onChange(e))}
           onFocus={(e) => dispatch(onFocus(e))}
           aria-describedby={joinTokens(showNotFound && `${id}_not_found`, ariaDescribedBy)}
-          autoComplete="off"
           ref={inputRef}
-          className={classes('input', expanded && 'focused')}
+          className={classes('input', expanded && 'focused', options[focusedIndex]?.unselectable && 'unselectable')}
           tabIndex={managedFocus && focusListBox ? -1 : 0}
           {...InputProps}
         />
@@ -164,27 +174,26 @@ export function ComboBox(rawProps) {
           {renderGroupedOptions({
             options,
             renderGroup(group) {
-              const { key, html, label, index, children: groupChildren } = group;
+              const { key, html, label, children: groupChildren } = group;
               return (
                 <Context.Provider
                   key={key}
                   value={{ dispatch, ...optionisedProps, ...state, group }}
                 >
-                  <GroupComponent
-                    id={key}
-                    ref={index === focusedIndex ? focusedRef : null}
-                    role="option"
-                    aria-label={label}
-                    tabIndex={-1}
-                    aria-selected={focusedIndex === index ? 'true' : null}
-                    aria-disabled="true"
-                    className={classes('group', index === focusedIndex && 'focused')}
-                    {...GroupProps}
-                    {...html}
+                  <GroupWrapperComponent
+                    {...GroupWrapperProps}
                   >
-                    {label}
-                  </GroupComponent>
-                  {groupChildren}
+                    <GroupComponent
+                      id={key}
+                      className={classes('group')}
+                      aria-hidden="true" // Prevent screen readers reading the wrong number of options
+                      {...GroupProps}
+                      {...html}
+                    >
+                      {label}
+                    </GroupComponent>
+                    {groupChildren}
+                  </GroupWrapperComponent>
                 </Context.Provider>
               );
             },
@@ -208,7 +217,14 @@ export function ComboBox(rawProps) {
                     {...html}
                     onClick={disabled ? null : () => dispatch(onSelectValue(option))}
                   >
+                    {/*
+                        Prefix the label with the group
+                        VoiceOver will not read any label in managedFocus mode if
+                        if aria-label or aria-labelledby is applied to the option
+                    */}
                     <ValueComponent
+                      aria-labelledby={group ? `${group?.key} ${key}_label` : null}
+                      id={group ? `${key}_label` : null}
                       {...ValueProps}
                     >
                       {label}
@@ -259,6 +275,8 @@ ComboBox.propTypes = {
   ComboBoxProps: PropTypes.object,
   GroupComponent: componentValidator,
   GroupProps: PropTypes.object,
+  GroupWrapperComponent: componentValidator,
+  GroupWrapperProps: PropTypes.object,
   InputComponent: componentValidator,
   InputProps: PropTypes.object,
   ListBoxComponent: componentValidator,
@@ -283,7 +301,7 @@ ComboBox.defaultProps = {
   onValue: () => {},
   onChange: () => {},
   autoComplete: false,
-  showSelectedValue: true,
+  showSelectedValue: undefined,
 
   ClearButtonComponent: 'span',
   ClearButtonProps: null,
@@ -291,6 +309,8 @@ ComboBox.defaultProps = {
   ComboBoxProps: null,
   GroupComponent: 'li',
   GroupProps: null,
+  GroupWrapperComponent: Fragment,
+  GroupWrapperProps: null,
   InputComponent: 'input',
   InputProps: null,
   ListBoxComponent: 'ul',
@@ -299,6 +319,6 @@ ComboBox.defaultProps = {
   NotFoundProps: null,
   OptionComponent: 'li',
   OptionProps: null,
-  ValueComponent: Fragment,
+  ValueComponent: 'div',
   ValueProps: null,
 };

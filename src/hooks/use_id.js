@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { name, version } from '../../package.json';
 
 let count = 0;
+const prefix = Array(8).fill().map(() => Math.floor(Math.random() * 36).toString(36)).join('');
 
 export function useId(initialId) {
   const [id] = useState(() => {
     if (initialId) {
       return initialId;
     }
-    return `${name}${version}_id_${count++}`; // eslint-disable-line no-plusplus
+    return `${prefix}_${count++}`; // eslint-disable-line no-plusplus
   });
   return id;
 }

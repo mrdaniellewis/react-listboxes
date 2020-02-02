@@ -5,7 +5,8 @@
     "plugin:jest/recommended"
   ],
   "plugins": [
-    "react-hooks"
+    "react-hooks",
+    "babel"
   ],
   "env": {
     "browser": true
@@ -26,7 +27,9 @@
     "jsx-a11y/control-has-associated-label": "off",
     "jsx-a11y/interactive-supports-focus": "off",
     "jsx-a11y/label-has-for": "off",
-    "jsx-a11y/no-static-element-interactions": "off"
+    "jsx-a11y/no-static-element-interactions": "off",
+    "no-unused-expressions": "off",
+    "babel/no-unused-expressions": "error"
   },
   "overrides": [
     {

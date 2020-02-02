@@ -6,6 +6,7 @@ import { unindent } from './lib/unindent.js';
 import { useId } from '../src/hooks/use_id.js';
 import countries from './lib/countries.json';
 import { useSearch } from '../src/hooks/use_search.js';
+import { useAsyncSearch } from '../src/hooks/use_async_search.js';
 
 function ComboBoxField({ label, options: originalOptions, ...props }) {
   const [value, setValue] = useState(null);
@@ -34,6 +35,32 @@ ComboBoxField.propTypes = {
   label: PropTypes.string.isRequired,
   options: PropTypes.array.isRequired,
 };
+
+
+function AyncComboBoxField({ label, options: originalOptions, ...props }) {
+  const [value, setValue] = useState(null);
+  const [options, onSearch, busy] = useAsyncSearch(originalOptions);
+  const id = useId();
+  return (
+    <>
+      <label
+        htmlFor={id}
+      >
+        {label}
+      </label>
+      <ComboBox
+        id={id}
+        value={value}
+        onValue={setValue}
+        options={options}
+        onSearch={onSearch}
+        busy={busy}
+        {...props}
+      />
+    </>
+  );
+}
+
 
 function Example() {
   return (
@@ -151,6 +178,12 @@ function Example() {
       />
       <ComboBoxField
         label="Inline autocomplete without managed focus"
+        options={countries}
+        autoComplete="inline"
+        managedFocus={false}
+      />
+      <ComboBoxField
+        label="Async search"
         options={countries}
         autoComplete="inline"
         managedFocus={false}

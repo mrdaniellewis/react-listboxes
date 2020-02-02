@@ -13,6 +13,7 @@ function DropDownField({ label, ...props }) {
     <>
       <span
         id={`${id}_label`}
+        // This simulates the action of clicking on a label
         onClick={() => document.getElementById(id).focus()}
       >
         {label}

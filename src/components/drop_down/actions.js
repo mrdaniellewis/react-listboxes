@@ -87,7 +87,7 @@ export function onButtonKeyDown(event) {
 export function onKeyDown(event) {
   return (dispatch, getState, getProps) => {
     const { focusedIndex } = getState();
-    const { options, comboBoxRef } = getProps();
+    const { options, comboBoxRef, skipOption: skip } = getProps();
     const { altKey, metaKey, ctrlKey, key } = event;
 
     if (metaKey || ctrlKey) {
@@ -102,25 +102,25 @@ export function onKeyDown(event) {
           dispatch(onSelectValue(options[focusedIndex]));
           comboBoxRef.current.focus();
         } else {
-          dispatch(setFocusedIndex(previousInList(options, focusedIndex)));
+          dispatch(setFocusedIndex(previousInList(options, focusedIndex, { skip })));
         }
         break;
       case 'ArrowDown':
         // Show, and next item unless altKey
         event.preventDefault();
         if (!altKey) {
-          dispatch(setFocusedIndex(nextInList(options, focusedIndex)));
+          dispatch(setFocusedIndex(nextInList(options, focusedIndex, { skip })));
         }
         break;
       case 'Home':
         // First item
         event.preventDefault();
-        dispatch(setFocusedIndex(nextInList(options, options.length - 1)));
+        dispatch(setFocusedIndex(nextInList(options, options.length - 1, { skip })));
         break;
       case 'End':
         // Last item
         event.preventDefault();
-        dispatch(setFocusedIndex(previousInList(options, 0)));
+        dispatch(setFocusedIndex(previousInList(options, 0, { skip })));
         break;
       case 'Escape':
       case 'Enter':

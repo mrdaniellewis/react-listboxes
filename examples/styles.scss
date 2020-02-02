@@ -118,6 +118,11 @@ select {
   &--focused {
     box-shadow: inset 0 0 0 2px $colour-heritage-yellow;
   }
+
+  &--unselectable {
+    color: #777;
+    text-decoration: line-through;
+  }
 }
 
 .dropdown__listbox,

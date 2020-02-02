@@ -65,8 +65,10 @@ export function onSelectValue(newValue) {
     if (newValue?.unselectable) {
       return;
     }
-    inputRef.current.value = newValue?.label ?? '';
-    inputRef.current.dispatchEvent(new Event('click', { bubbles: true }));
+    const { current: input } = inputRef;
+    input.value = newValue?.label ?? '';
+    input.dispatchEvent(new Event('click', { bubbles: true }));
+    input.setSelectionRange(input.value.length, input.value.length, 'forward');
     onValue(newValue ? newValue.value : null);
   };
 }
@@ -87,6 +89,8 @@ export function onKeyDown(event) {
       inputRef.current.focus();
       return;
     }
+
+    lastKeyRef.current = key;
 
     switch (key) {
       case 'ArrowUp':
@@ -155,11 +159,6 @@ export function onKeyDown(event) {
         dispatch({ type: SET_FOCUSED_INDEX, focusedIndex: null });
         // fallthrough
       case 'Backspace':
-        lastKeyRef.current = key;
-        setTimeout(() => {
-          lastKeyRef.current = null;
-        }, 0);
-        // Fall through
       case 'ArrowLeft':
       case 'ArrowRight':
         if (managedFocus && expanded) {
