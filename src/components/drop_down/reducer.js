@@ -1,6 +1,6 @@
 import { SET_EXPANDED, SET_SEARCH_KEY, CLEAR_SEARCH, SET_FOCUSED_INDEX, SET_SELECTED, SET_LIST_PROPS } from './actions.js';
 
-export function reducer(state, { type, expanded, key, focusedIndex, listStyle, listClassName }) {
+export function reducer(state, props, { type, expanded, key, focusedIndex, listStyle, listClassName }) {
   switch (type) {
     case SET_EXPANDED:
       return { ...state, expanded };

@@ -11,7 +11,6 @@ import { useOnBlur } from '../hooks/use_on_blur.js';
 import { joinTokens } from '../helpers/join_tokens.js';
 import { componentValidator } from '../validators/component_validator.js';
 import { renderGroupedOptions } from '../helpers/render_grouped_options.js';
-import { usePrevious } from '../hooks/use_previous.js';
 import { bemClassGenerator } from '../helpers/bem_class_generator.js';
 
 export function ComboBox(rawProps) {
@@ -51,12 +50,9 @@ export function ComboBox(rawProps) {
   } = state;
   const [handleBlur, handleFocus] = useOnBlur(() => dispatch(onBlur()), comboRef);
 
-  const prevOptions = usePrevious(options);
   useLayoutEffect(() => {
-    if (prevOptions && prevOptions !== options) {
-      dispatch(onOptionsChanged(prevOptions));
-    }
-  }, [prevOptions, options]);
+    dispatch(onOptionsChanged());
+  }, [options]);
 
   useLayoutEffect(() => {
     if (expanded && options[focusedIndex] && managedFocus && focusListBox) {
@@ -92,7 +88,7 @@ export function ComboBox(rawProps) {
 
   useLayoutEffect(() => {
     if (search && autoComplete === 'inline' && inlineAutoComplete && options[focusedIndex]) {
-      inputRef.current.setSelectionRange(search.length, options[focusedIndex].label.length);
+      inputRef.current.setSelectionRange(search.length, options[focusedIndex].label.length, 'backwards');
     }
   }, [inlineAutoComplete, options, focusedIndex, search, autoComplete]);
 
@@ -113,7 +109,7 @@ export function ComboBox(rawProps) {
   const showBusy = busy && search !== (value?.label);
 
   return (
-    <Context.Provider value={{ dispatch, ...optionisedProps, ...state }}>
+    <Context.Provider value={{ dispatch, props: optionisedProps, state }}>
       <ComboBoxComponent
         aria-busy={showBusy ? 'true' : 'false'}
         className={className}
@@ -178,7 +174,7 @@ export function ComboBox(rawProps) {
               return (
                 <Context.Provider
                   key={key}
-                  value={{ dispatch, ...optionisedProps, ...state, group }}
+                  value={{ dispatch, props: optionisedProps, state, group }}
                 >
                   <GroupWrapperComponent
                     {...GroupWrapperProps}
@@ -203,7 +199,7 @@ export function ComboBox(rawProps) {
               return (
                 <Context.Provider
                   key={key}
-                  value={{ dispatch, ...optionisedProps, ...state, option }}
+                  value={{ dispatch, props: optionisedProps, state, option }}
                 >
                   <OptionComponent
                     id={key}

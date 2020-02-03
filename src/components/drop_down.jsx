@@ -96,7 +96,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
   const classes = classGenerator(className);
 
   return (
-    <Context.Provider value={{ dispatch, ...optionisedProps, listRef, comboBoxRef, ...state }}>
+    <Context.Provider value={{ dispatch, props: optionisedProps, state }}>
       <DropDownComponent
         {...(DropDownComponent === Fragment ? undefined : { className })}
         {...DropDownProps}
@@ -143,7 +143,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
               return (
                 <Context.Provider
                   key={key}
-                  value={{ dispatch, ...optionisedProps, ...state, group }}
+                  value={{ dispatch, props: optionisedProps, state, group }}
                 >
                   <GroupWrapperComponent
                     {...GroupWrapperProps}
@@ -168,7 +168,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
               return (
                 <Context.Provider
                   key={key}
-                  value={{ dispatch, ...optionisedProps, ...state, option }}
+                  value={{ dispatch, props: optionisedProps, state, option }}
                 >
                   <OptionComponent
                     id={key}

@@ -2,6 +2,7 @@ import { SET_SEARCH, SET_EXPANDED, SET_CLOSED, SET_FOCUSED_INDEX, SET_LIST_PROPS
 
 export function reducer(
   state,
+  props,
   {
     expanded, focusedIndex = state.focusedIndex, listClassName,
     listStyle, search, type, inlineAutoComplete = false, focusListBox = false,
@@ -15,6 +16,7 @@ export function reducer(
         expanded: true,
         focusListBox: false,
         focusedIndex,
+        focusedIdentity: props.options[focusedIndex]?.identity,
         inlineAutoComplete,
       };
     case SET_EXPANDED:
@@ -22,6 +24,7 @@ export function reducer(
         ...state,
         expanded,
         focusedIndex,
+        focusedIdentity: props.options[focusedIndex]?.identity,
       };
     case SET_CLOSED:
       return {
@@ -30,6 +33,7 @@ export function reducer(
         search: null,
         focusListBox: false,
         focusedIndex: null,
+        focusedIdentity: undefined,
         autoComplete: false,
         inlineAutoComplete: false,
       };
@@ -37,6 +41,7 @@ export function reducer(
       return {
         ...state,
         focusedIndex,
+        focusedIdentity: props.options[focusedIndex]?.identity,
         focusListBox,
         inlineAutoComplete,
       };

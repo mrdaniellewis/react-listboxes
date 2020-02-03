@@ -61,6 +61,10 @@ function AyncComboBoxField({ label, options: originalOptions, ...props }) {
   );
 }
 
+AyncComboBoxField.propTypes = {
+  label: PropTypes.string.isRequired,
+  options: PropTypes.array.isRequired,
+};
 
 function Example() {
   return (
