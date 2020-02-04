@@ -11,10 +11,10 @@ export function previousInList(
     i = options.length - 1;
   }
   if (startIndex === i) {
-    return i;
+    return options[i];
   }
   if (skip?.(options[i])) {
     return previousInList(options, i, { allowEmpty, skip, startIndex });
   }
-  return i;
+  return options[i];
 }

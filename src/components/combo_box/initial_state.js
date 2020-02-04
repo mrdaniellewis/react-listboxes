@@ -1,4 +1,4 @@
-export function initialState() {
+export function initialState({ value }) {
   return {
     inlineAutoComplete: false,
     expanded: false,
@@ -8,5 +8,6 @@ export function initialState() {
     listClassName: null,
     listStyle: null,
     search: '',
+    value,
   };
 }

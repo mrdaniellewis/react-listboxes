@@ -5,7 +5,7 @@ export const optionise = (rawOption, mapOption) => {
     return {
       label,
       group,
-      disabled,
+      disabled: !!disabled,
       unselectable: !!disabled,
       identity: String(value ?? option.id ?? option.label),
       value: rawOption,
@@ -14,5 +14,11 @@ export const optionise = (rawOption, mapOption) => {
   }
 
   // A primitive
-  return { label: option ?? '', identity: String(option), value: option, selectable: true };
+  return {
+    label: option ?? '',
+    identity: String(option),
+    value: option,
+    unselectable: false,
+    disabled: false,
+  };
 };

@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { useMemo } from 'react';
 import { optionise } from '../helpers/optionise.js';
-import { useSelectedIndex } from './use_selected_index.js';
 import { UniqueIdGenerator } from '../helpers/unique_id_generator.js';
 
 /**
@@ -18,14 +17,9 @@ import { UniqueIdGenerator } from '../helpers/unique_id_generator.js';
  *   - html
  */
 export function useNormalisedOptions({
-  id, options, blank, value, mapOption, ...props
+  id, options: rawOptions, blank, value: rawValue, mapOption, ...props
 }, { mustHaveSelection = false } = {}) {
-  const normalisedValue = useMemo(
-    () => (value == null ? null : optionise(value, mapOption)),
-    [value, mapOption],
-  );
-
-  const normalisedOptions = useMemo(() => {
+  const options = useMemo(() => {
     const idGenerator = new UniqueIdGenerator();
     const groups = new Map();
     const normalised = [];
@@ -40,10 +34,9 @@ export function useNormalisedOptions({
       });
     }
 
-    options
+    rawOptions
       .map((option) => optionise(option, mapOption))
       .forEach((option) => {
-        option.selected = option.identity === normalisedValue?.identity;
         if (option.group) {
           let group = groups.get(option.group);
           if (!group) {
@@ -66,19 +59,21 @@ export function useNormalisedOptions({
       });
 
     return normalised;
-  }, [id, options, blank, normalisedValue, mapOption]);
+  }, [id, rawOptions, blank, mapOption]);
 
-  const selectedIndex = useSelectedIndex({
-    options: normalisedOptions,
-    value: normalisedValue,
-    mustHaveSelection,
-  });
+  const value = useMemo(() => {
+    let normalised = rawValue && optionise(rawValue, mapOption);
+    normalised = normalised && options.find((o) => normalised.identity === o.identity);
+    if (normalised || !mustHaveSelection) {
+      return normalised;
+    }
+    return options.find((o) => !o.unselectable);
+  }, [rawValue, mapOption, options, mustHaveSelection]);
 
   return {
     id,
-    options: normalisedOptions,
-    value: normalisedValue,
-    selectedIndex,
+    options,
+    value,
     ...props,
   };
 }

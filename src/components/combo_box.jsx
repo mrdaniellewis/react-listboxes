@@ -88,7 +88,7 @@ export function ComboBox(rawProps) {
 
   useLayoutEffect(() => {
     if (search && autoComplete === 'inline' && inlineAutoComplete && options[focusedIndex]) {
-      inputRef.current.setSelectionRange(search.length, options[focusedIndex].label.length, 'backwards');
+      inputRef.current.setSelectionRange(search.length, options[focusedIndex].label.length);
     }
   }, [inlineAutoComplete, options, focusedIndex, search, autoComplete]);
 

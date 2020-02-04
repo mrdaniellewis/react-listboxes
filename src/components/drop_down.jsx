@@ -1,17 +1,16 @@
-import React, { useRef, useEffect, useLayoutEffect, Fragment, forwardRef } from 'react';
+import React, { useRef, useEffect, useLayoutEffect, Fragment, forwardRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Context } from '../context.js';
 import { useThunkReducer as useReducer } from '../hooks/use_thunk_reducer.js';
 import { reducer } from './drop_down/reducer.js';
 import { initialState } from './drop_down/initial_state.js';
 import {
-  clearSearch, onKeyDown, setFocusedIndex, onBlur,
+  clearSearch, onKeyDown, onBlur,
   onToggleOpen, onFocus, onButtonKeyDown, onClick,
-  onOptionsChanged, setListProps, onSelectValue,
+  setListProps, onSelectValue, setSelectedOption,
 } from './drop_down/actions.js';
 import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
 import { useOnBlur } from '../hooks/use_on_blur.js';
-import { usePrevious } from '../hooks/use_previous.js';
 import { componentValidator } from '../validators/component_validator.js';
 import { renderGroupedOptions } from '../helpers/render_grouped_options.js';
 import { bemClassGenerator } from '../helpers/bem_class_generator.js';
@@ -22,9 +21,9 @@ export const DropDown = forwardRef((rawProps, ref) => {
   const optionisedProps = useNormalisedOptions(rawProps, { mustHaveSelection: true });
   const {
     'aria-labelledby': ariaLabelledBy, required,
-    options, value: _1, onValue: _3, id, className,
-    children, selectedIndex, managedFocus, layoutListBox,
-    classGenerator,
+    options, value, onValue: _1, id, className,
+    children, managedFocus, layoutListBox,
+    classGenerator, skipOption: _2,
     DropDownComponent, DropDownProps,
     ComboBoxComponent, ComboBoxProps,
     ListBoxComponent, ListBoxProps,
@@ -43,26 +42,19 @@ export const DropDown = forwardRef((rawProps, ref) => {
     { ...optionisedProps, comboBoxRef, listRef },
     initialState,
   );
-  const { expanded, search, focusedIndex, listClassName, listStyle } = state;
+  const { expanded, search, selectedOption, listClassName, listStyle } = state;
   const [handleBlur, handleFocus] = useOnBlur(() => dispatch(onBlur()), listRef);
-
-  const prevOptions = usePrevious(options);
-  useLayoutEffect(() => {
-    if (prevOptions && prevOptions !== options) {
-      dispatch(onOptionsChanged(prevOptions));
-    }
-  }, [prevOptions, options]);
 
   useEffect(() => {
     if (!search) {
       return undefined;
     }
-    const found = options.findIndex((o) => o.label.toLowerCase().startsWith(search));
-    if (found > -1) {
+    const found = options.find((o) => o.label.toLowerCase().startsWith(search));
+    if (found) {
       if (expanded) {
-        dispatch(setFocusedIndex(found));
+        dispatch(setSelectedOption(found));
       } else {
-        dispatch(onSelectValue(options[found]));
+        dispatch(onSelectValue(found));
       }
     }
     const timeout = setTimeout(() => dispatch(clearSearch()), 1000);
@@ -71,12 +63,12 @@ export const DropDown = forwardRef((rawProps, ref) => {
   }, [options, search, expanded]);
 
   useLayoutEffect(() => {
-    if (expanded && options[focusedIndex] && managedFocus) {
-      focusedRef.current.focus();
+    if (expanded && selectedOption && managedFocus) {
+      focusedRef.current?.focus?.();
     } else if (expanded) {
       listRef.current.focus();
     }
-  }, [expanded, managedFocus, options, focusedIndex]);
+  }, [expanded, managedFocus, selectedOption]);
 
   useLayoutEffect(() => {
     if (layoutListBox && expanded) {
@@ -89,7 +81,11 @@ export const DropDown = forwardRef((rawProps, ref) => {
         dispatch(setListProps(listProps));
       }
     }
-  }, [layoutListBox, expanded, focusedIndex, options]);
+  }, [layoutListBox, expanded, selectedOption]);
+
+  const selectedKey = useMemo(() => (
+    selectedOption && options.find((o) => selectedOption.identity === o.identity)?.key
+  ), [selectedOption, options]);
 
   const combinedRef = useCombineRefs(comboBoxRef, ref);
 
@@ -107,7 +103,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
           id={id}
           aria-controls={`${id}_listbox`}
           aria-expanded={expanded ? 'true' : null}
-          aria-activedescendant={options[focusedIndex]?.key || null}
+          aria-activedescendant={selectedOption?.key || null}
           aria-labelledby={ariaLabelledBy}
           aria-readonly="true"
           aria-required={required ? 'true' : null}
@@ -118,7 +114,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
           className={classes('combobox')}
           {...ComboBoxProps}
         >
-          {(children ?? options[selectedIndex]?.label) || null}
+          {(children ?? value?.label) || null}
         </ComboBoxComponent>
         <ListBoxComponent
           ref={listRef}
@@ -127,7 +123,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
           hidden={!expanded}
           tabIndex={-1}
           onFocus={(e) => {
-            handleFocus(e);
+            handleFocus();
             dispatch(onFocus(e));
           }}
           onBlur={handleBlur}
@@ -164,7 +160,8 @@ export const DropDown = forwardRef((rawProps, ref) => {
             },
             // eslint-disable-next-line react/prop-types
             renderOption(option) {
-              const { label, key, html, disabled, index, group } = option;
+              const { label, key, html, disabled, group } = option;
+              const selected = selectedKey === key;
               return (
                 <Context.Provider
                   key={key}
@@ -174,10 +171,10 @@ export const DropDown = forwardRef((rawProps, ref) => {
                     id={key}
                     role="option"
                     tabIndex={-1}
-                    aria-selected={focusedIndex === index ? 'true' : null}
+                    aria-selected={selected ? 'true' : null}
                     aria-disabled={disabled ? 'true' : null}
-                    ref={index === focusedIndex ? focusedRef : null}
-                    className={classes('option', index === focusedIndex && 'focused', group && 'grouped')}
+                    ref={selected ? focusedRef : null}
+                    className={classes('option', selected && 'focused', group && 'grouped')}
                     {...OptionProps}
                     {...html}
                     onClick={disabled ? null : (e) => dispatch(onClick(e, option))}

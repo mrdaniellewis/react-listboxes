@@ -7,7 +7,7 @@ import { componentCustomiser } from '../validators/component_customiser.js';
 
 export function Select(rawProps) {
   const {
-    options, onChange, onValue, selectedIndex, value: _,
+    options, onChange, onValue, value,
     OptGroupComponent, OptionComponent, SelectComponent,
     ...props
   } = useNormalisedOptions(rawProps, { mustHaveSelection: true });
@@ -23,7 +23,7 @@ export function Select(rawProps) {
 
   return (
     <customSelectComponent.type
-      value={options[selectedIndex]?.identity ?? ''}
+      value={value?.identity ?? ''}
       onChange={handleChange}
       {...customSelectComponent.props}
       {...props}

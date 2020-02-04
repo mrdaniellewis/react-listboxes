@@ -11,10 +11,10 @@ export function nextInList(
     i = 0;
   }
   if (startIndex === i) {
-    return i;
+    return options[i];
   }
   if (skip?.(options[i])) {
     return nextInList(options, i, { allowEmpty, skip, startIndex });
   }
-  return i;
+  return options[i];
 }

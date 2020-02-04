@@ -1,9 +1,9 @@
-export function initialState() {
+export function initialState({ value }) {
   return {
     expanded: false,
-    focusedIndex: null,
     listClassName: null,
     listStyle: null,
     search: '',
+    selectedOption: value,
   };
 }
