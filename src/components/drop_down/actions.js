@@ -179,3 +179,16 @@ export function onClick(event, value) {
     comboBoxRef.current.focus();
   };
 }
+
+export function onOptionsChanged() {
+  return (dispatch, getState, getProps) => {
+    const { selectedOption, expanded } = getState();
+    if (!expanded || !selectedOption) {
+      return;
+    }
+    const { options } = getProps();
+    dispatch(setSelectedOption(
+      options.find((o) => o.identity === selectedOption.identity) || options[0],
+    ));
+  };
+}

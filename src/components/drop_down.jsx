@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useLayoutEffect, Fragment, forwardRef, useMemo } from 'react';
+import React, { useRef, useEffect, useLayoutEffect, Fragment, forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import { Context } from '../context.js';
 import { useThunkReducer as useReducer } from '../hooks/use_thunk_reducer.js';
@@ -7,7 +7,7 @@ import { initialState } from './drop_down/initial_state.js';
 import {
   clearSearch, onKeyDown, onBlur,
   onToggleOpen, onFocus, onButtonKeyDown, onClick,
-  setListProps, onSelectValue, setSelectedOption,
+  setListProps, onSelectValue, setSelectedOption, onOptionsChanged,
 } from './drop_down/actions.js';
 import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
 import { useOnBlur } from '../hooks/use_on_blur.js';
@@ -83,9 +83,9 @@ export const DropDown = forwardRef((rawProps, ref) => {
     }
   }, [layoutListBox, expanded, selectedOption]);
 
-  const selectedKey = useMemo(() => (
-    selectedOption && options.find((o) => selectedOption.identity === o.identity)?.key
-  ), [selectedOption, options]);
+  useLayoutEffect(() => {
+    dispatch(onOptionsChanged());
+  }, [options]);
 
   const combinedRef = useCombineRefs(comboBoxRef, ref);
 
@@ -161,7 +161,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
             // eslint-disable-next-line react/prop-types
             renderOption(option) {
               const { label, key, html, disabled, group } = option;
-              const selected = selectedKey === key;
+              const selected = selectedOption?.key === key;
               return (
                 <Context.Provider
                   key={key}

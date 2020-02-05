@@ -18,8 +18,7 @@ export function ComboBox(rawProps) {
   const {
     'aria-describedby': ariaDescribedBy,
     options, value, id, className,
-    notFoundMessage, layoutListBox, managedFocus, busy,
-    selectedIndex: _1, onValue: _2,
+    notFoundMessage, layoutListBox, managedFocus, busy, onValue: _2,
     onSearch, autoComplete, showSelectedValue,
     ClearButtonComponent, ClearButtonProps,
     ComboBoxComponent, ComboBoxProps,
@@ -46,21 +45,17 @@ export function ComboBox(rawProps) {
   );
 
   const {
-    expanded, focusedIndex, search, listClassName, listStyle, focusListBox, inlineAutoComplete,
+    expanded, selectedOption, search, listClassName, listStyle, focusListBox, inlineAutoComplete,
   } = state;
   const [handleBlur, handleFocus] = useOnBlur(() => dispatch(onBlur()), comboRef);
 
   useLayoutEffect(() => {
-    dispatch(onOptionsChanged());
-  }, [options]);
-
-  useLayoutEffect(() => {
-    if (expanded && options[focusedIndex] && managedFocus && focusListBox) {
+    if (expanded && selectedOption && managedFocus && focusListBox) {
       focusedRef.current?.focus?.();
     } else if (expanded && document.activeElement !== inputRef.current) {
       inputRef.current.focus();
     }
-  }, [expanded, managedFocus, options, focusedIndex, focusListBox]);
+  }, [expanded, managedFocus, selectedOption, focusListBox]);
 
   useLayoutEffect(() => {
     if (layoutListBox && expanded) {
@@ -73,7 +68,7 @@ export function ComboBox(rawProps) {
         dispatch(setListProps(listProps));
       }
     }
-  }, [layoutListBox, expanded, focusedIndex, options]);
+  }, [layoutListBox, expanded, selectedOption]);
 
   useEffect(() => {
     if (onSearch) {
@@ -81,16 +76,21 @@ export function ComboBox(rawProps) {
     }
   }, [onSearch, search, value]);
 
-  let inputLabel = search ?? value?.label;
-  if (inlineAutoComplete || ((showSelectedValue ?? autoComplete === 'inline') && focusListBox)) {
-    inputLabel = options[focusedIndex]?.label;
-  }
+  const inputLabel = useMemo(() => {
+    if (inlineAutoComplete || ((showSelectedValue ?? autoComplete === 'inline') && focusListBox)) {
+      return selectedOption?.label;
+    }
+    return search ?? value?.label;
+  }, [
+    inlineAutoComplete, showSelectedValue, autoComplete,
+    focusListBox, selectedOption, search, value,
+  ]);
 
   useLayoutEffect(() => {
-    if (search && autoComplete === 'inline' && inlineAutoComplete && options[focusedIndex]) {
-      inputRef.current.setSelectionRange(search.length, options[focusedIndex].label.length);
+    if (search && autoComplete === 'inline' && inlineAutoComplete && selectedOption) {
+      inputRef.current.setSelectionRange(search.length, selectedOption.label.length);
     }
-  }, [inlineAutoComplete, options, focusedIndex, search, autoComplete]);
+  }, [inlineAutoComplete, selectedOption, search, autoComplete]);
 
   const ariaAutocomplete = useMemo(() => {
     if (!onSearch) {
@@ -101,6 +101,10 @@ export function ComboBox(rawProps) {
     }
     return 'list';
   }, [onSearch, autoComplete]);
+
+  useLayoutEffect(() => {
+    dispatch(onOptionsChanged());
+  }, [options]);
 
   const classes = bemClassGenerator(className);
   const showListBox = expanded && options.length
@@ -127,14 +131,14 @@ export function ComboBox(rawProps) {
           aria-haspopup="true"
           aria-controls={`${id}_listbox`}
           aria-expanded={showListBox ? 'true' : 'false'}
-          aria-activedescendant={focusListBox ? options[focusedIndex]?.key : null}
+          aria-activedescendant={(focusListBox && selectedOption?.key) || null}
           value={inputLabel || ''}
           onKeyDown={(e) => dispatch(onKeyDown(e))}
           onChange={(e) => dispatch(onChange(e))}
           onFocus={(e) => dispatch(onFocus(e))}
           aria-describedby={joinTokens(showNotFound && `${id}_not_found`, ariaDescribedBy)}
           ref={inputRef}
-          className={classes('input', expanded && 'focused', options[focusedIndex]?.unselectable && 'unselectable')}
+          className={classes('input', expanded && 'focused', selectedOption?.unselectable && 'unselectable')}
           tabIndex={managedFocus && focusListBox ? -1 : 0}
           {...InputProps}
         />
@@ -160,7 +164,7 @@ export function ComboBox(rawProps) {
           role="listbox"
           tabIndex={-1}
           hidden={!showListBox}
-          aria-activedescendant={focusListBox ? options[focusedIndex]?.key : null}
+          aria-activedescendant={(focusListBox && selectedOption?.key) || null}
           onKeyDown={(e) => dispatch(onKeyDown(e))}
           onMouseDown={(e) => e.preventDefault()}
           className={joinTokens(classes('listbox'), listClassName)}
@@ -195,7 +199,8 @@ export function ComboBox(rawProps) {
             },
             // eslint-disable-next-line react/prop-types
             renderOption(option) {
-              const { label, key, html, disabled, group, index } = option;
+              const { label, key, html, disabled, group } = option;
+              const selected = selectedOption?.key === key;
               return (
                 <Context.Provider
                   key={key}
@@ -205,10 +210,10 @@ export function ComboBox(rawProps) {
                     id={key}
                     role="option"
                     tabIndex={-1}
-                    aria-selected={focusedIndex === index ? 'true' : null}
+                    aria-selected={selected ? 'true' : null}
                     aria-disabled={disabled ? 'true' : null}
-                    ref={index === focusedIndex ? focusedRef : null}
-                    className={classes('option', index === focusedIndex && 'focused', group && 'grouped')}
+                    ref={selected ? focusedRef : null}
+                    className={classes('option', selected && 'focused', group && 'grouped')}
                     {...OptionProps}
                     {...html}
                     onClick={disabled ? null : () => dispatch(onSelectValue(option))}
