@@ -5,7 +5,7 @@ import { rNonPrintableKey } from '../../constants/r_non_printable_key.js';
 export const SET_SEARCH = 'SET_SEARCH';
 export const SET_EXPANDED = 'SET_EXPANDED';
 export const SET_CLOSED = 'SET_CLOSED';
-export const SET_FOCUSED_INDEX = 'SET_FOCUSED_INDEX';
+export const SET_SELECTED_OPTION = 'SET_SELECTED_OPTION';
 export const SET_LIST_PROPS = 'SET_LIST_PROPS';
 
 function getAutoCompleteFocusedIndex({ autoComplete, options, focusListBox, search }) {
@@ -33,6 +33,7 @@ function getInlineAutoComplete({ key, autoComplete, inputRef, option, search }) 
     && inputRef.current.selectionStart === search.length;
 }
 
+/*
 function setFocusedIndex({ focusedIndex, focusListBox }) {
   return (dispatch, getState) => {
     const { expanded } = getState();
@@ -44,6 +45,11 @@ function setFocusedIndex({ focusedIndex, focusListBox }) {
       inlineAutoComplete: false,
     });
   };
+}
+*/
+
+export function setSelectedOption(selectedOption, focusListBox) {
+  return { type: SET_SELECTED_OPTION, selectedOption, focusListBox };
 }
 
 export function setListProps({ className, style }) {
@@ -67,8 +73,8 @@ export function onSelectValue(newValue) {
 
 export function onKeyDown(event) {
   return (dispatch, getState, getProps) => {
-    const { expanded, focusedIndex } = getState();
-    const { options, inputRef, managedFocus, lastKeyRef } = getProps();
+    const { expanded, selectedOption } = getState();
+    const { options, inputRef, managedFocus, lastKeyRef, skipOption: skip } = getProps();
     const { altKey, metaKey, ctrlKey, key } = event;
 
     lastKeyRef.current = key;
@@ -84,6 +90,8 @@ export function onKeyDown(event) {
       return;
     }
 
+    const index = options.findIndex((o) => o.key === selectedOption?.key);
+
     switch (key) {
       case 'ArrowUp':
         // Close if altKey, otherwise next item and show
@@ -92,28 +100,20 @@ export function onKeyDown(event) {
           dispatch({ type: SET_EXPANDED, expanded: false });
           inputRef.current.focus();
         } else if (expanded) {
-          if (focusedIndex === null) {
-            dispatch(setFocusedIndex({
-              focusedIndex: previousInList(options, 0),
-            }));
-          } else {
-            dispatch(setFocusedIndex({
-              focusedIndex: previousInList(options, focusedIndex, { allowEmpty: true }),
-            }));
-          }
+          dispatch(setSelectedOption(
+            previousInList(options, index, { skip, allowEmpty: true }),
+            true,
+          ));
         }
         break;
       case 'ArrowDown':
         // Show, and next item unless altKey
         event.preventDefault();
         if (expanded && !altKey) {
-          if (focusedIndex === null) {
-            dispatch(setFocusedIndex({ focusedIndex: 0 }));
-          } else {
-            dispatch(setFocusedIndex({
-              focusedIndex: nextInList(options, focusedIndex, { allowEmpty: true }),
-            }));
-          }
+          dispatch(setSelectedOption(
+            nextInList(options, index, { skip, allowEmpty: true }),
+            true,
+          ));
         } else {
           dispatch({ type: SET_EXPANDED, expanded: true });
         }
@@ -122,16 +122,20 @@ export function onKeyDown(event) {
         // First item
         if (expanded) {
           event.preventDefault();
-          dispatch(setFocusedIndex({
-            focusedIndex: nextInList(options, options.length - 1),
-          }));
+          dispatch(setSelectedOption(
+            nextInList(options, -1, { skip }),
+            true,
+          ));
         }
         break;
       case 'End':
         // Last item
         if (expanded) {
           event.preventDefault();
-          dispatch(setFocusedIndex({ focusedIndex: previousInList(options, 0) }));
+          dispatch(setSelectedOption(
+            previousInList(options, -1, { skip }),
+            true,
+          ));
         }
         break;
       case 'Enter':
@@ -140,15 +144,15 @@ export function onKeyDown(event) {
           break;
         }
         event.preventDefault();
-        if (focusedIndex !== null && !options[focusedIndex].unselectable) {
-          dispatch(onSelectValue(options[focusedIndex]));
+        if (selectedOption && !selectedOption?.unselectable) {
+          dispatch(onSelectValue(selectedOption));
           if (managedFocus) {
             inputRef.current.focus();
           }
         }
         break;
       case 'Delete':
-        dispatch({ type: SET_FOCUSED_INDEX, focusedIndex: null });
+        dispatch(setSelectedOption(null));
         // fallthrough
       case 'Backspace':
       case 'ArrowLeft':
@@ -165,6 +169,16 @@ export function onKeyDown(event) {
   };
 }
 
+export function onChange(event) {
+  return (dispatch, getState, getProps) => {
+    const { onChange: passedOnChange } = getProps();
+    const { target: { value: search } } = event;
+    dispatch({ type: SET_SEARCH, search });
+    passedOnChange(event);
+  };
+}
+
+/*
 export function onChange(event) {
   return (dispatch, getState, getProps) => {
     const {
@@ -195,6 +209,7 @@ export function onChange(event) {
     passedOnChange(event);
   };
 }
+*/
 
 export function onFocus() {
   return (dispatch, getState, getProps) => {
@@ -202,18 +217,19 @@ export function onFocus() {
     if (expanded) {
       return;
     }
-    const { selectedIndex } = getProps();
-    dispatch({ type: SET_EXPANDED, expanded: true, focusedIndex: selectedIndex });
+    const { value } = getProps();
+    dispatch(setSelectedOption(value));
+    // dispatch({ type: SET_EXPANDED, expanded: true, focusedIndex: selectedIndex });
   };
 }
 
 export function onBlur() {
   return (dispatch, getState, getProps) => {
-    const { options, onValue } = getProps();
-    const { focusedIndex, search } = getState();
+    const { onValue } = getProps();
+    const { selectedOption, search } = getState();
 
-    if (focusedIndex !== null) {
-      dispatch(onSelectValue(options[focusedIndex]));
+    if (selectedOption) {
+      dispatch(onSelectValue(selectedOption));
       return;
     }
 
@@ -224,9 +240,9 @@ export function onBlur() {
   };
 }
 
-export function onClick(e, value) {
+export function onClick(event, value) {
   return (dispatch, getState, getProps) => {
-    if (e.button > 0) {
+    if (event.button > 0) {
       return;
     }
 
@@ -236,6 +252,20 @@ export function onClick(e, value) {
   };
 }
 
+export function onOptionsChanged() {
+  return (dispatch, getState, getProps) => {
+    const { selectedOption, expanded } = getState();
+    if (!expanded || !selectedOption) {
+      return;
+    }
+    const { options } = getProps();
+    dispatch(setSelectedOption(
+      options.find((o) => o.identity === selectedOption.identity) || options[0],
+    ));
+  };
+}
+
+/*
 export function onOptionsChanged() {
   return (dispatch, getState, getProps) => {
     const { search, focusListBox, focusedIdentity } = getState();
@@ -266,3 +296,4 @@ export function onOptionsChanged() {
     });
   };
 }
+*/

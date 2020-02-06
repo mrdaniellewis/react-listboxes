@@ -94,7 +94,7 @@ export function onKeyDown(event) {
       return;
     }
 
-    const index = options.findIndex((o) => o.key === selectedOption.key);
+    const index = options.findIndex((o) => o.key === selectedOption?.key);
 
     switch (key) {
       case 'ArrowUp':

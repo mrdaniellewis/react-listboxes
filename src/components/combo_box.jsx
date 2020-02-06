@@ -70,11 +70,12 @@ export function ComboBox(rawProps) {
     }
   }, [layoutListBox, expanded, selectedOption]);
 
+  const searchValue = (search ?? value?.label) || '';
   useEffect(() => {
     if (onSearch) {
-      onSearch((search ?? value?.label) || '');
+      onSearch(searchValue);
     }
-  }, [onSearch, search, value]);
+  }, [onSearch, searchValue]);
 
   const inputLabel = useMemo(() => {
     if (inlineAutoComplete || ((showSelectedValue ?? autoComplete === 'inline') && focusListBox)) {

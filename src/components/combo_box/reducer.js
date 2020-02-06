@@ -1,56 +1,55 @@
-import { SET_SEARCH, SET_EXPANDED, SET_CLOSED, SET_FOCUSED_INDEX, SET_LIST_PROPS } from './actions.js';
+import { SET_SEARCH, SET_EXPANDED, SET_CLOSED, SET_SELECTED_OPTION, SET_LIST_PROPS } from './actions.js';
 
-export function reducer(
-  state,
-  props,
-  {
-    expanded, focusedIndex = state.focusedIndex, listClassName,
-    listStyle, search, type, inlineAutoComplete = false, focusListBox = false,
-  },
-) {
+export function reducer(state, props, { type, ...params }) {
   switch (type) {
-    case SET_SEARCH:
+    case SET_SEARCH: {
+      const { search } = params;
+      const selectedOption = search ? state.selectedOption : null;
       return {
         ...state,
         search,
+        selectedOption,
         expanded: true,
         focusListBox: false,
-        focusedIndex,
-        focusedIdentity: props.options[focusedIndex]?.identity,
-        inlineAutoComplete,
       };
-    case SET_EXPANDED:
+    }
+    case SET_EXPANDED: {
+      const { expanded } = params;
+
       return {
         ...state,
         expanded,
-        focusedIndex,
-        focusedIdentity: props.options[focusedIndex]?.identity,
       };
+    }
     case SET_CLOSED:
       return {
         ...state,
         expanded: false,
-        search: null,
         focusListBox: false,
-        focusedIndex: null,
-        focusedIdentity: undefined,
+        search: null,
         autoComplete: false,
         inlineAutoComplete: false,
       };
-    case SET_FOCUSED_INDEX:
+    case SET_SELECTED_OPTION: {
+      const {
+        selectedOption,
+        focusListBox = state.focusListBox,
+      } = params;
       return {
         ...state,
-        focusedIndex,
-        focusedIdentity: props.options[focusedIndex]?.identity,
-        focusListBox,
-        inlineAutoComplete,
+        expanded: true,
+        focusListBox: selectedOption ? focusListBox : false,
+        selectedOption,
       };
-    case SET_LIST_PROPS:
+    }
+    case SET_LIST_PROPS: {
+      const { listStyle, listClassName } = params;
       return {
         ...state,
         listStyle,
         listClassName,
       };
+    }
 
     default:
       throw new Error(`${type} unknown`);

@@ -1,7 +1,7 @@
 export function previousInList(
   options,
   index = -1,
-  { allowEmpty = false, skip = (option) => option?.options, startIndex = index } = {},
+  { allowEmpty = false, skip, startIndex = index } = {},
 ) {
   let i = index - 1;
   if (i === -1 && allowEmpty) {

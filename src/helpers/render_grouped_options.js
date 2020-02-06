@@ -1,14 +1,17 @@
 export function renderGroupedOptions({ options, renderGroup, renderOption }) {
-  const groupChildren = new Map();
-  return options.reduce((accumulator, option, index) => {
-    if (option.options) {
-      const children = [];
-      groupChildren.set(option.identity, children);
-      accumulator.push(renderGroup({ ...option, children, index }));
-    } else if (option.group) {
-      groupChildren.get(option.group.identity).push(renderOption({ ...option, index }));
+  const groups = new Map();
+  return options.reduce((accumulator, option) => {
+    const renderedOption = renderOption(option);
+    if (option.group) {
+      if (groups.has(option.group)) {
+        groups.get(option.group).push(renderedOption);
+      } else {
+        const children = [renderedOption];
+        groups.set(option.group, children);
+        accumulator.push(renderGroup({ ...option.group, children }));
+      }
     } else {
-      accumulator.push(renderOption({ ...option, index }));
+      accumulator.push(renderedOption);
     }
     return accumulator;
   }, []);

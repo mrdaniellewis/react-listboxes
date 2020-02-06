@@ -22,11 +22,9 @@ export function useNormalisedOptions({
   const options = useMemo(() => {
     const idGenerator = new UniqueIdGenerator();
     const groups = new Map();
-    const normalised = [];
-
-    // Add a blank option
+    const normalisedOptions = [];
     if (blank) {
-      normalised.push({
+      normalisedOptions.push({
         label: blank,
         identity: '',
         value: null,
@@ -34,36 +32,32 @@ export function useNormalisedOptions({
       });
     }
 
-    rawOptions
-      .map((option) => optionise(option, mapOption))
-      .forEach((option) => {
-        if (option.group) {
-          let group = groups.get(option.group);
-          if (!group) {
-            group = {
-              label: option.group,
-              identity: option.group,
-              options: [option],
-              key: idGenerator.uniqueId(`${id}_group_${option.group}`),
-              unselectable: true,
-            };
-            groups.set(option.group, group);
-            normalised.push(group);
-          } else {
-            group.options.push(option);
-          }
-          option.group = group;
+    rawOptions.forEach((o) => {
+      const option = optionise(o, mapOption);
+      option.key = idGenerator.uniqueId(option.html?.id || `${id}_option_${option.label}`);
+      if (option.group) {
+        let group = groups.get(option.group);
+        if (!group) {
+          group = {
+            label: option.group,
+            identity: option.group,
+            options: [option],
+            key: idGenerator.uniqueId(`${id}_group_${option.group}`),
+          };
+          groups.set(option.group, group);
+        } else {
+          group.options.push(option);
         }
-        option.key = idGenerator.uniqueId(option.html?.id || `${id}_option_${option.label}`);
-        normalised.push(option);
-      });
+        option.group = group;
+      }
+      normalisedOptions.push(option);
+    });
 
-    return normalised;
+    return normalisedOptions;
   }, [id, rawOptions, blank, mapOption]);
 
   const value = useMemo(() => {
-    let normalised = rawValue && optionise(rawValue, mapOption);
-    normalised = normalised && options.find((o) => normalised.identity === o.identity);
+    const normalised = rawValue && optionise(rawValue, mapOption);
     if (normalised || !mustHaveSelection) {
       return normalised;
     }
