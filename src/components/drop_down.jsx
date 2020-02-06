@@ -7,7 +7,7 @@ import { initialState } from './drop_down/initial_state.js';
 import {
   clearSearch, onKeyDown, onBlur,
   onToggleOpen, onFocus, onButtonKeyDown, onClick,
-  setListProps, onSelectValue, setSelectedOption, onOptionsChanged,
+  setListProps, onSelectValue, setFocusedOption, onOptionsChanged,
 } from './drop_down/actions.js';
 import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
 import { useOnBlur } from '../hooks/use_on_blur.js';
@@ -23,7 +23,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
     'aria-labelledby': ariaLabelledBy, required,
     options, value, onValue: _1, id, className,
     children, managedFocus, layoutListBox,
-    classGenerator, skipOption: _2,
+    classGenerator, skipOption: _2, selectedOption,
     DropDownComponent, DropDownProps,
     ComboBoxComponent, ComboBoxProps,
     ListBoxComponent, ListBoxProps,
@@ -42,7 +42,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
     { ...optionisedProps, comboBoxRef, listRef },
     initialState,
   );
-  const { expanded, search, selectedOption, listClassName, listStyle } = state;
+  const { expanded, search, focusedOption, listClassName, listStyle } = state;
   const [handleBlur, handleFocus] = useOnBlur(() => dispatch(onBlur()), listRef);
 
   useEffect(() => {
@@ -52,7 +52,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
     const found = options.find((o) => o.label.toLowerCase().startsWith(search));
     if (found) {
       if (expanded) {
-        dispatch(setSelectedOption(found));
+        dispatch(setFocusedOption(found));
       } else {
         dispatch(onSelectValue(found));
       }
@@ -63,12 +63,12 @@ export const DropDown = forwardRef((rawProps, ref) => {
   }, [options, search, expanded]);
 
   useLayoutEffect(() => {
-    if (expanded && selectedOption && managedFocus) {
+    if (expanded && focusedOption && managedFocus) {
       focusedRef.current?.focus?.();
     } else if (expanded) {
       listRef.current.focus();
     }
-  }, [expanded, managedFocus, selectedOption]);
+  }, [expanded, managedFocus, focusedOption]);
 
   useLayoutEffect(() => {
     if (layoutListBox && expanded) {
@@ -81,7 +81,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
         dispatch(setListProps(listProps));
       }
     }
-  }, [layoutListBox, expanded, selectedOption]);
+  }, [layoutListBox, expanded, focusedOption]);
 
   useLayoutEffect(() => {
     dispatch(onOptionsChanged());
@@ -103,7 +103,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
           id={id}
           aria-controls={`${id}_listbox`}
           aria-expanded={expanded ? 'true' : null}
-          aria-activedescendant={selectedOption?.key || null}
+          aria-activedescendant={focusedOption?.key || null}
           aria-labelledby={ariaLabelledBy}
           aria-readonly="true"
           aria-required={required ? 'true' : null}
@@ -114,7 +114,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
           className={classes('combobox')}
           {...ComboBoxProps}
         >
-          {(children ?? value?.label) || null}
+          {(children ?? value?.label ?? selectedOption?.label) || null}
         </ComboBoxComponent>
         <ListBoxComponent
           ref={listRef}
@@ -161,7 +161,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
             // eslint-disable-next-line react/prop-types
             renderOption(option) {
               const { label, key, html, disabled, group } = option;
-              const selected = selectedOption?.key === key;
+              const selected = focusedOption?.key === key;
               return (
                 <Context.Provider
                   key={key}

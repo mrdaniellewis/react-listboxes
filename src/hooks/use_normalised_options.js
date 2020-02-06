@@ -29,12 +29,14 @@ export function useNormalisedOptions({
         identity: '',
         value: null,
         key: idGenerator.uniqueId(`${id}_option_blank`),
+        index: 0,
       });
     }
 
-    rawOptions.forEach((o) => {
+    rawOptions.forEach((o, index) => {
       const option = optionise(o, mapOption);
       option.key = idGenerator.uniqueId(option.html?.id || `${id}_option_${option.label}`);
+      option.index = index + (blank ? 1 : 0);
       if (option.group) {
         let group = groups.get(option.group);
         if (!group) {
@@ -56,18 +58,23 @@ export function useNormalisedOptions({
     return normalisedOptions;
   }, [id, rawOptions, blank, mapOption]);
 
-  const value = useMemo(() => {
-    const normalised = rawValue && optionise(rawValue, mapOption);
-    if (normalised || !mustHaveSelection) {
-      return normalised;
+  const value = useMemo(() => (
+    rawValue && optionise(rawValue, mapOption)
+  ), [rawValue, mapOption]);
+
+  const selectedOption = useMemo(() => {
+    const option = value && options.find((o) => o.identity === value?.identity);
+    if (option || !mustHaveSelection) {
+      return option;
     }
     return options.find((o) => !o.unselectable);
-  }, [rawValue, mapOption, options, mustHaveSelection]);
+  }, [value, options, mustHaveSelection]);
 
   return {
     id,
     options,
     value,
+    selectedOption,
     ...props,
   };
 }

@@ -6,15 +6,15 @@ export const SET_EXPANDED = 'SET_EXPANDED';
 export const CLEAR_SEARCH = 'CLEAR_SEARCH';
 export const SET_SEARCH_KEY = 'SET_SEARCH_KEY';
 export const SET_SELECTED = 'SET_SELECTED';
-export const SET_SELECTED_OPTION = 'SET_SELECTED_OPTION';
+export const SET_FOCUSED_OPTION = 'SET_FOCUSED_OPTION';
 export const SET_LIST_PROPS = 'SET_LIST_PROPS';
 
 export function clearSearch() {
   return { type: CLEAR_SEARCH };
 }
 
-export function setSelectedOption(selectedOption) {
-  return { type: SET_SELECTED_OPTION, selectedOption };
+export function setFocusedOption(focusedOption) {
+  return { type: SET_FOCUSED_OPTION, focusedOption };
 }
 
 export function setListProps({ className, style }) {
@@ -41,18 +41,18 @@ export function onToggleOpen(event) {
       return;
     }
     const { expanded } = getState();
-    const { value } = getProps();
+    const { selectedOption } = getProps();
     if (expanded) {
       dispatch({ type: SET_EXPANDED, expanded: false });
     } else {
-      dispatch(setSelectedOption(value));
+      dispatch(setFocusedOption(selectedOption));
     }
   };
 }
 
 export function onButtonKeyDown(event) {
   return (dispatch, getState, getProps) => {
-    const { value } = getProps();
+    const { selectedOption } = getProps();
     const { altKey, metaKey, ctrlKey, key } = event;
 
     if (metaKey || ctrlKey) {
@@ -73,7 +73,7 @@ export function onButtonKeyDown(event) {
         // fall through
       case 'ArrowDown':
         event.preventDefault();
-        dispatch(setSelectedOption(value));
+        dispatch(setFocusedOption(selectedOption));
         break;
 
       default:
@@ -86,7 +86,7 @@ export function onButtonKeyDown(event) {
 
 export function onKeyDown(event) {
   return (dispatch, getState, getProps) => {
-    const { selectedOption } = getState();
+    const { focusedOption } = getState();
     const { options, comboBoxRef, skipOption: skip } = getProps();
     const { altKey, metaKey, ctrlKey, key } = event;
 
@@ -94,49 +94,49 @@ export function onKeyDown(event) {
       return;
     }
 
-    const index = options.findIndex((o) => o.key === selectedOption?.key);
+    const index = focusedOption ? focusedOption.index : -1;
 
     switch (key) {
       case 'ArrowUp':
         // Close if altKey, otherwise next item and show
         event.preventDefault();
         if (altKey) {
-          dispatch(onSelectValue(selectedOption));
+          dispatch(onSelectValue(focusedOption));
           comboBoxRef.current.focus();
         } else {
-          dispatch(setSelectedOption(previousInList(options, index, { skip })));
+          dispatch(setFocusedOption(previousInList(options, index, { skip })));
         }
         break;
       case 'ArrowDown':
         // Show, and next item unless altKey
         event.preventDefault();
         if (!altKey) {
-          dispatch(setSelectedOption(nextInList(options, index, { skip })));
+          dispatch(setFocusedOption(nextInList(options, index, { skip })));
         }
         break;
       case 'Home':
         // First item
         event.preventDefault();
-        dispatch(setSelectedOption(nextInList(options, -1, { skip })));
+        dispatch(setFocusedOption(nextInList(options, -1, { skip })));
         break;
       case 'End':
         // Last item
         event.preventDefault();
-        dispatch(setSelectedOption(previousInList(options, -1, { skip })));
+        dispatch(setFocusedOption(previousInList(options, -1, { skip })));
         break;
       case 'Escape':
       case 'Enter':
       case 'Tab':
         // Select current item if one is selected
         event.preventDefault();
-        if (selectedOption?.unselectable) {
+        if (focusedOption?.unselectable) {
           if (key !== 'Enter') {
             dispatch({ type: SET_EXPANDED, expanded: false });
             comboBoxRef.current.focus();
           }
           return;
         }
-        dispatch(onSelectValue(selectedOption));
+        dispatch(onSelectValue(focusedOption));
         comboBoxRef.current.focus();
         break;
       default:
@@ -154,41 +154,41 @@ export function onFocus() {
     if (expanded) {
       return;
     }
-    const { value } = getProps();
-    dispatch(setSelectedOption(value));
+    const { selectedOption } = getProps();
+    dispatch(setFocusedOption(selectedOption));
   };
 }
 
 export function onBlur() {
   return (dispatch, getState) => {
-    const { selectedOption, expanded } = getState();
+    const { focusedOption, expanded } = getState();
     if (expanded) {
-      dispatch(onSelectValue(selectedOption));
+      dispatch(onSelectValue(focusedOption));
     }
   };
 }
 
-export function onClick(event, value) {
+export function onClick(event, option) {
   return (dispatch, getState, getProps) => {
     if (event.button > 0) {
       return;
     }
 
     const { comboBoxRef } = getProps();
-    dispatch(onSelectValue(value));
+    dispatch(onSelectValue(option));
     comboBoxRef.current.focus();
   };
 }
 
 export function onOptionsChanged() {
   return (dispatch, getState, getProps) => {
-    const { selectedOption, expanded } = getState();
-    if (!expanded || !selectedOption) {
+    const { focusedOption, expanded } = getState();
+    if (!expanded || !focusedOption) {
       return;
     }
     const { options } = getProps();
-    dispatch(setSelectedOption(
-      options.find((o) => o.identity === selectedOption.identity) || options[0],
+    dispatch(setFocusedOption(
+      options.find((o) => o.identity === focusedOption.identity) || options[0],
     ));
   };
 }

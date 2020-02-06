@@ -5,22 +5,8 @@ import { rNonPrintableKey } from '../../constants/r_non_printable_key.js';
 export const SET_SEARCH = 'SET_SEARCH';
 export const SET_EXPANDED = 'SET_EXPANDED';
 export const SET_CLOSED = 'SET_CLOSED';
-export const SET_SELECTED_OPTION = 'SET_SELECTED_OPTION';
+export const SET_FOCUSED_OPTION = 'SET_FOCUSED_OPTION';
 export const SET_LIST_PROPS = 'SET_LIST_PROPS';
-
-function getAutoCompleteFocusedIndex({ autoComplete, options, focusListBox, search }) {
-  if (autoComplete && !focusListBox && search && options?.length) {
-    for (let i = 0; i < options.length; i += 1) {
-      if (!options[i].unselectable) {
-        if (options[i].label.toLowerCase().startsWith(search.toLowerCase())) {
-          return i;
-        }
-        break;
-      }
-    }
-  }
-  return null;
-}
 
 function getInlineAutoComplete({ key, autoComplete, inputRef, option, search }) {
   return autoComplete === 'inline'
@@ -33,23 +19,8 @@ function getInlineAutoComplete({ key, autoComplete, inputRef, option, search }) 
     && inputRef.current.selectionStart === search.length;
 }
 
-/*
-function setFocusedIndex({ focusedIndex, focusListBox }) {
-  return (dispatch, getState) => {
-    const { expanded } = getState();
-
-    dispatch({
-      type: SET_FOCUSED_INDEX,
-      focusedIndex,
-      focusListBox: focusListBox ?? (focusedIndex === null ? false : expanded),
-      inlineAutoComplete: false,
-    });
-  };
-}
-*/
-
-export function setSelectedOption(selectedOption, focusListBox) {
-  return { type: SET_SELECTED_OPTION, selectedOption, focusListBox };
+export function setFocusedOption(focusedOption, focusListBox) {
+  return { type: SET_FOCUSED_OPTION, focusedOption, focusListBox };
 }
 
 export function setListProps({ className, style }) {
@@ -73,7 +44,7 @@ export function onSelectValue(newValue) {
 
 export function onKeyDown(event) {
   return (dispatch, getState, getProps) => {
-    const { expanded, selectedOption } = getState();
+    const { expanded, focusedOption } = getState();
     const { options, inputRef, managedFocus, lastKeyRef, skipOption: skip } = getProps();
     const { altKey, metaKey, ctrlKey, key } = event;
 
@@ -90,7 +61,7 @@ export function onKeyDown(event) {
       return;
     }
 
-    const index = options.findIndex((o) => o.key === selectedOption?.key);
+    const index = focusedOption ? focusedOption.index : -1;
 
     switch (key) {
       case 'ArrowUp':
@@ -100,7 +71,7 @@ export function onKeyDown(event) {
           dispatch({ type: SET_EXPANDED, expanded: false });
           inputRef.current.focus();
         } else if (expanded) {
-          dispatch(setSelectedOption(
+          dispatch(setFocusedOption(
             previousInList(options, index, { skip, allowEmpty: true }),
             true,
           ));
@@ -110,7 +81,7 @@ export function onKeyDown(event) {
         // Show, and next item unless altKey
         event.preventDefault();
         if (expanded && !altKey) {
-          dispatch(setSelectedOption(
+          dispatch(setFocusedOption(
             nextInList(options, index, { skip, allowEmpty: true }),
             true,
           ));
@@ -122,7 +93,7 @@ export function onKeyDown(event) {
         // First item
         if (expanded) {
           event.preventDefault();
-          dispatch(setSelectedOption(
+          dispatch(setFocusedOption(
             nextInList(options, -1, { skip }),
             true,
           ));
@@ -132,7 +103,7 @@ export function onKeyDown(event) {
         // Last item
         if (expanded) {
           event.preventDefault();
-          dispatch(setSelectedOption(
+          dispatch(setFocusedOption(
             previousInList(options, -1, { skip }),
             true,
           ));
@@ -144,15 +115,15 @@ export function onKeyDown(event) {
           break;
         }
         event.preventDefault();
-        if (selectedOption && !selectedOption?.unselectable) {
-          dispatch(onSelectValue(selectedOption));
+        if (focusedOption && !focusedOption?.unselectable) {
+          dispatch(onSelectValue(focusedOption));
           if (managedFocus) {
             inputRef.current.focus();
           }
         }
         break;
       case 'Delete':
-        dispatch(setSelectedOption(null));
+        dispatch(setFocusedOption(null));
         // fallthrough
       case 'Backspace':
       case 'ArrowLeft':
@@ -178,58 +149,24 @@ export function onChange(event) {
   };
 }
 
-/*
-export function onChange(event) {
-  return (dispatch, getState, getProps) => {
-    const {
-      onChange: passedOnChange, autoComplete, inputRef, options, lastKeyRef: { current: key },
-    } = getProps();
-    let { focusedIndex } = getState();
-    const { target: { value: search } } = event;
-    if (!search) {
-      dispatch({ type: SET_SEARCH, search, focusedIndex: null });
-    } else {
-      if (key === 'Delete') {
-        focusedIndex = null;
-      } else if (key !== 'Backspace') {
-        focusedIndex = getAutoCompleteFocusedIndex({
-          autoComplete, options, focusListBox: false, search,
-        }) ?? focusedIndex;
-      }
-
-      dispatch({
-        type: SET_SEARCH,
-        focusedIndex,
-        search,
-        inlineAutoComplete: getInlineAutoComplete({
-          key, autoComplete, inputRef, option: options[focusedIndex], search,
-        }),
-      });
-    }
-    passedOnChange(event);
-  };
-}
-*/
-
 export function onFocus() {
   return (dispatch, getState, getProps) => {
     const { expanded } = getState();
     if (expanded) {
       return;
     }
-    const { value } = getProps();
-    dispatch(setSelectedOption(value));
-    // dispatch({ type: SET_EXPANDED, expanded: true, focusedIndex: selectedIndex });
+    const { selectedOption } = getProps();
+    dispatch(setFocusedOption(selectedOption));
   };
 }
 
 export function onBlur() {
   return (dispatch, getState, getProps) => {
     const { onValue } = getProps();
-    const { selectedOption, search } = getState();
+    const { focusedOption, search } = getState();
 
-    if (selectedOption) {
-      dispatch(onSelectValue(selectedOption));
+    if (focusedOption) {
+      dispatch(onSelectValue(focusedOption));
       return;
     }
 
@@ -240,60 +177,27 @@ export function onBlur() {
   };
 }
 
-export function onClick(event, value) {
+export function onClick(event, option) {
   return (dispatch, getState, getProps) => {
     if (event.button > 0) {
       return;
     }
 
     const { buttonRef } = getProps();
-    dispatch(onSelectValue(value));
+    dispatch(onSelectValue(option));
     buttonRef.current.focus();
   };
 }
 
 export function onOptionsChanged() {
   return (dispatch, getState, getProps) => {
-    const { selectedOption, expanded } = getState();
-    if (!expanded || !selectedOption) {
+    const { focusedOption, expanded } = getState();
+    if (!expanded || !focusedOption) {
       return;
     }
     const { options } = getProps();
-    dispatch(setSelectedOption(
-      options.find((o) => o.identity === selectedOption.identity) || options[0],
+    dispatch(setFocusedOption(
+      options.find((o) => o.identity === focusedOption.identity) || options[0],
     ));
   };
 }
-
-/*
-export function onOptionsChanged() {
-  return (dispatch, getState, getProps) => {
-    const { search, focusListBox, focusedIdentity } = getState();
-    let { focusedIndex } = getState();
-    const {
-      autoComplete, inputRef, options, selectedIndex, lastKeyRef: { current: key },
-    } = getProps();
-
-    // If the user is not searching the focused index is the currently selected index
-    if (search === null && selectedIndex !== null) {
-      dispatch({ type: SET_FOCUSED_INDEX, focusedIndex: selectedIndex, inlineAutoComplete: false });
-      return;
-    }
-
-    // Get the focused index if autocomplete is valid
-    focusedIndex = getAutoCompleteFocusedIndex({ autoComplete, options, focusListBox, search });
-
-    // If there is no focused index, ensure it is on right option
-    focusedIndex = options.findIndex((o) => o.identity === focusedIdentity);
-    focusedIndex = focusedIndex === -1 ? null : focusedIndex;
-
-    dispatch({
-      type: SET_FOCUSED_INDEX,
-      focusedIndex,
-      inlineAutoComplete: getInlineAutoComplete({
-        key, autoComplete, inputRef, option: options[focusedIndex], search,
-      }),
-    });
-  };
-}
-*/

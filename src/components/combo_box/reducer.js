@@ -1,14 +1,47 @@
-import { SET_SEARCH, SET_EXPANDED, SET_CLOSED, SET_SELECTED_OPTION, SET_LIST_PROPS } from './actions.js';
+import { SET_SEARCH, SET_EXPANDED, SET_CLOSED, SET_FOCUSED_OPTION, SET_LIST_PROPS } from './actions.js';
 
-export function reducer(state, props, { type, ...params }) {
+function applyAutocomplete(state, props) {
+  const { search, focusListBox } = state;
+  const { options, autoComplete, lastKeyRef: { current: key } } = props;
+
+  if (!autoComplete || focusListBox || !search) {
+    return state;
+  }
+
+  if (key === 'Backspace' || key === 'Delete') {
+    return {
+      ...state,
+      focusedOption: null,
+    };
+  }
+
+  let { focusedOption } = state;
+  if (autoComplete && !focusListBox && search) {
+    for (let i = 0; i < options.length; i += 1) {
+      if (!options[i].unselectable) {
+        if (options[i].label.toLowerCase().startsWith(search.toLowerCase())) {
+          focusedOption = options[i];
+        }
+        break;
+      }
+    }
+  }
+
+  return {
+    ...state,
+    focusedOption,
+  };
+}
+
+function reduce(state, props, { type, ...params }) {
   switch (type) {
     case SET_SEARCH: {
       const { search } = params;
-      const selectedOption = search ? state.selectedOption : null;
+      const focusedOption = search ? state.focusedOption : null;
       return {
         ...state,
         search,
-        selectedOption,
+        focusedOption,
         expanded: true,
         focusListBox: false,
       };
@@ -30,16 +63,17 @@ export function reducer(state, props, { type, ...params }) {
         autoComplete: false,
         inlineAutoComplete: false,
       };
-    case SET_SELECTED_OPTION: {
+    case SET_FOCUSED_OPTION: {
       const {
-        selectedOption,
         focusListBox = state.focusListBox,
+        focusedOption,
       } = params;
+
       return {
         ...state,
         expanded: true,
-        focusListBox: selectedOption ? focusListBox : false,
-        selectedOption,
+        focusListBox: focusedOption ? focusListBox : false,
+        focusedOption,
       };
     }
     case SET_LIST_PROPS: {
@@ -54,4 +88,11 @@ export function reducer(state, props, { type, ...params }) {
     default:
       throw new Error(`${type} unknown`);
   }
+}
+
+export function reducer(state, props, action) {
+  console.log(action);
+  const result = applyAutocomplete(reduce(state, props, action), props);
+  console.log(result);
+  return result;
 }

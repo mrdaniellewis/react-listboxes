@@ -1,4 +1,4 @@
-export function initialState({ value }) {
+export function initialState({ selectedOption }) {
   return {
     inlineAutoComplete: false,
     expanded: false,
@@ -6,6 +6,6 @@ export function initialState({ value }) {
     listClassName: null,
     listStyle: null,
     search: '',
-    selectedOption: value,
+    focusedOption: selectedOption,
   };
 }

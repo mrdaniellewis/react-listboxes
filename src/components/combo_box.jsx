@@ -17,7 +17,7 @@ export function ComboBox(rawProps) {
   const optionisedProps = useNormalisedOptions(rawProps);
   const {
     'aria-describedby': ariaDescribedBy,
-    options, value, id, className,
+    options, value, selectedOption, id, className,
     notFoundMessage, layoutListBox, managedFocus, busy, onValue: _2,
     onSearch, autoComplete, showSelectedValue,
     ClearButtonComponent, ClearButtonProps,
@@ -45,17 +45,10 @@ export function ComboBox(rawProps) {
   );
 
   const {
-    expanded, selectedOption, search, listClassName, listStyle, focusListBox, inlineAutoComplete,
+    expanded, focusedOption, search, listClassName, listStyle, focusListBox, inlineAutoComplete,
   } = state;
   const [handleBlur, handleFocus] = useOnBlur(() => dispatch(onBlur()), comboRef);
 
-  useLayoutEffect(() => {
-    if (expanded && selectedOption && managedFocus && focusListBox) {
-      focusedRef.current?.focus?.();
-    } else if (expanded && document.activeElement !== inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [expanded, managedFocus, selectedOption, focusListBox]);
 
   useLayoutEffect(() => {
     if (layoutListBox && expanded) {
@@ -68,7 +61,7 @@ export function ComboBox(rawProps) {
         dispatch(setListProps(listProps));
       }
     }
-  }, [layoutListBox, expanded, selectedOption]);
+  }, [layoutListBox, expanded, focusedOption]);
 
   const searchValue = (search ?? value?.label) || '';
   useEffect(() => {
@@ -79,19 +72,19 @@ export function ComboBox(rawProps) {
 
   const inputLabel = useMemo(() => {
     if (inlineAutoComplete || ((showSelectedValue ?? autoComplete === 'inline') && focusListBox)) {
-      return selectedOption?.label;
+      return focusedOption?.label;
     }
     return search ?? value?.label;
   }, [
     inlineAutoComplete, showSelectedValue, autoComplete,
-    focusListBox, selectedOption, search, value,
+    focusListBox, focusedOption, search, value,
   ]);
 
   useLayoutEffect(() => {
-    if (search && autoComplete === 'inline' && inlineAutoComplete && selectedOption) {
-      inputRef.current.setSelectionRange(search.length, selectedOption.label.length);
+    if (search && autoComplete === 'inline' && inlineAutoComplete && focusedOption) {
+      inputRef.current.setSelectionRange(search.length, focusedOption.label.length);
     }
-  }, [inlineAutoComplete, selectedOption, search, autoComplete]);
+  }, [inlineAutoComplete, focusedOption, search, autoComplete]);
 
   const ariaAutocomplete = useMemo(() => {
     if (!onSearch) {
@@ -107,11 +100,25 @@ export function ComboBox(rawProps) {
     dispatch(onOptionsChanged());
   }, [options]);
 
+  // Do not show the list box is the only option is the currently selected option
+  const showListBox = useMemo(() => (
+    expanded && options.length
+      && !(!search && options.length === 1 && options[0].key === selectedOption?.key)
+  ), [expanded, options, search, selectedOption]);
+
+  useLayoutEffect(() => {
+    if (expanded && focusedOption && managedFocus && focusListBox && showListBox) {
+      focusedRef.current?.focus?.();
+    } else if (expanded && document.activeElement !== inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [expanded, managedFocus, focusedOption, focusListBox, showListBox]);
+
   const classes = bemClassGenerator(className);
-  const showListBox = expanded && options.length
-    && !(!search && options.length === 1 && options[0].identity === value?.identity);
   const showNotFound = expanded && !options.length && search?.trim();
   const showBusy = busy && search !== (value?.label);
+
+  console.log(focusedOption);
 
   return (
     <Context.Provider value={{ dispatch, props: optionisedProps, state }}>
@@ -132,15 +139,15 @@ export function ComboBox(rawProps) {
           aria-haspopup="true"
           aria-controls={`${id}_listbox`}
           aria-expanded={showListBox ? 'true' : 'false'}
-          aria-activedescendant={(focusListBox && selectedOption?.key) || null}
+          aria-activedescendant={(showListBox && focusListBox && focusedOption?.key) || null}
           value={inputLabel || ''}
           onKeyDown={(e) => dispatch(onKeyDown(e))}
           onChange={(e) => dispatch(onChange(e))}
           onFocus={(e) => dispatch(onFocus(e))}
           aria-describedby={joinTokens(showNotFound && `${id}_not_found`, ariaDescribedBy)}
           ref={inputRef}
-          className={classes('input', expanded && 'focused', selectedOption?.unselectable && 'unselectable')}
-          tabIndex={managedFocus && focusListBox ? -1 : 0}
+          className={classes('input', expanded && 'focused', focusedOption?.unselectable && 'unselectable')}
+          tabIndex={managedFocus && showListBox && focusListBox ? -1 : 0}
           {...InputProps}
         />
         <ClearButtonComponent
@@ -165,7 +172,7 @@ export function ComboBox(rawProps) {
           role="listbox"
           tabIndex={-1}
           hidden={!showListBox}
-          aria-activedescendant={(focusListBox && selectedOption?.key) || null}
+          aria-activedescendant={(showListBox && focusListBox && focusedOption?.key) || null}
           onKeyDown={(e) => dispatch(onKeyDown(e))}
           onMouseDown={(e) => e.preventDefault()}
           className={joinTokens(classes('listbox'), listClassName)}
@@ -201,7 +208,7 @@ export function ComboBox(rawProps) {
             // eslint-disable-next-line react/prop-types
             renderOption(option) {
               const { label, key, html, disabled, group } = option;
-              const selected = selectedOption?.key === key;
+              const selected = focusedOption?.key === key;
               return (
                 <Context.Provider
                   key={key}
