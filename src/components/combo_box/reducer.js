@@ -11,7 +11,7 @@ function applyAutocomplete(state, { type, ...params }, props) {
   switch (type) {
     case SET_FOCUSED_OPTION:
     case SET_SEARCH: {
-      const { options, lastKeyRef: { current: key } } = props;
+      const { options, lastKeyRef: { current: key }, findAutoComplete } = props;
       const { focusListBox, search, inlineAutoComplete } = state;
 
       if (focusListBox || !search || !params.autoComplete) {
@@ -37,10 +37,12 @@ function applyAutocomplete(state, { type, ...params }, props) {
 
       let focusedOption;
       for (let i = 0; i < options.length; i += 1) {
-        if (!options[i].unselectable) {
-          if (options[i].label.toLowerCase().startsWith(search.toLowerCase())) {
-            focusedOption = options[i];
-          }
+        const result = findAutoComplete(options[i], search);
+        if (result === true) {
+          focusedOption = options[i];
+          break;
+        }
+        if (result === false) {
           break;
         }
       }

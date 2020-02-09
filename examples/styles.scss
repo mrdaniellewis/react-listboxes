@@ -147,8 +147,13 @@ select {
   margin-top: -2em;
 }
 
-.combobox__listbox {
+.combobox__listbox,
+.combobox__not-found {
   margin-top: -2px;
+}
+
+.combobox__not-found {
+  padding: .2em .5em;
 }
 
 .dropdown__option,
@@ -176,7 +181,7 @@ select {
   }
 
   &--grouped {
-    padding-left: 1em;
+    padding-left: 1.5em;
   }
 
   &:hover,
@@ -184,7 +189,7 @@ select {
     background-color: $colour-heritage-blue-l40;
   }
 
-  &--focused {
+  &[aria-selected="true"] {
     color: white;
     background-color: $colour-heritage-blue;
   }
@@ -201,9 +206,6 @@ select {
 
 .dropdown__group,
 .combobox__group {
-  background-color: $colour-heritage-blue-l40;
-  color: white;
-  border-bottom: 1px solid $colour-heritage-blue;
   font-weight: bold;
   cursor: not-allowed;
 

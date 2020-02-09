@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useLayoutEffect, Fragment, useMemo } from 'react';
+import React, { useRef, useEffect, useLayoutEffect, Fragment, useMemo, forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import { Context } from '../context.js';
 import { useThunkReducer as useReducer } from '../hooks/use_thunk_reducer.js';
@@ -12,14 +12,16 @@ import { joinTokens } from '../helpers/join_tokens.js';
 import { componentValidator } from '../validators/component_validator.js';
 import { renderGroupedOptions } from '../helpers/render_grouped_options.js';
 import { bemClassGenerator } from '../helpers/bem_class_generator.js';
+import { findOption } from '../helpers/find_option.js';
+import { useCombineRefs } from '../hooks/use_combine_refs.js';
 
-export function ComboBox(rawProps) {
+export const ComboBox = forwardRef((rawProps, ref) => {
   const optionisedProps = useNormalisedOptions(rawProps);
   const {
     'aria-describedby': ariaDescribedBy,
-    options, value, selectedOption, id, className,
-    notFoundMessage, layoutListBox, managedFocus, busy, onValue: _2,
-    onSearch, autoComplete, showSelectedValue,
+    options, value, selectedOption, id, className, classGenerator,
+    notFoundMessage, layoutListBox, managedFocus, busy, onValue: _2, onSearch,
+    autoComplete, showSelectedLabel, findAutoComplete: _3, tabAutoComplete: _4,
     ClearButtonComponent, ClearButtonProps,
     ComboBoxComponent, ComboBoxProps,
     GroupComponent, GroupProps,
@@ -71,12 +73,12 @@ export function ComboBox(rawProps) {
   }, [onSearch, searchValue]);
 
   const inputLabel = useMemo(() => {
-    if (inlineAutoComplete || ((showSelectedValue ?? autoComplete === 'inline') && focusListBox)) {
+    if (inlineAutoComplete || ((showSelectedLabel ?? autoComplete === 'inline') && focusListBox)) {
       return focusedOption?.label;
     }
     return search ?? value?.label;
   }, [
-    inlineAutoComplete, showSelectedValue, autoComplete,
+    inlineAutoComplete, showSelectedLabel, autoComplete,
     focusListBox, focusedOption, search, value,
   ]);
 
@@ -114,9 +116,10 @@ export function ComboBox(rawProps) {
     }
   }, [expanded, managedFocus, focusedOption, focusListBox, showListBox]);
 
-  const classes = bemClassGenerator(className);
+  const classes = classGenerator(className);
   const showNotFound = expanded && !options.length && search?.trim();
   const showBusy = busy && search !== (value?.label);
+  const combinedRef = useCombineRefs(inputRef, ref);
 
   return (
     <Context.Provider value={{ dispatch, props: optionisedProps, state }}>
@@ -143,7 +146,7 @@ export function ComboBox(rawProps) {
           onChange={(e) => dispatch(onChange(e))}
           onFocus={(e) => dispatch(onFocus(e))}
           aria-describedby={joinTokens(showNotFound && `${id}_not_found`, ariaDescribedBy)}
-          ref={inputRef}
+          ref={combinedRef}
           className={classes('input', expanded && 'focused', focusedOption?.unselectable && 'unselectable')}
           tabIndex={managedFocus && showListBox && focusListBox ? -1 : 0}
           {...InputProps}
@@ -249,7 +252,7 @@ export function ComboBox(rawProps) {
       </ComboBoxComponent>
     </Context.Provider>
   );
-}
+});
 
 ComboBox.propTypes = {
   'aria-describedby': PropTypes.oneOfType([
@@ -267,8 +270,11 @@ ComboBox.propTypes = {
   onValue: PropTypes.func,
   onChange: PropTypes.func,
   value: PropTypes.any,
+  showSelectedLabel: PropTypes.bool,
+  tabAutoComplete: PropTypes.bool,
+  findAutoComplete: PropTypes.func,
   autoComplete: PropTypes.oneOf([false, true, 'inline']),
-  showSelectedValue: PropTypes.bool,
+  classGenerator: PropTypes.func,
 
   ClearButtonComponent: componentValidator,
   ClearButtonProps: PropTypes.object,
@@ -302,7 +308,10 @@ ComboBox.defaultProps = {
   onValue: () => {},
   onChange: () => {},
   autoComplete: false,
-  showSelectedValue: undefined,
+  showSelectedLabel: undefined,
+  tabAutoComplete: false,
+  findAutoComplete: findOption,
+  classGenerator: bemClassGenerator,
 
   ClearButtonComponent: 'span',
   ClearButtonProps: null,
@@ -323,3 +332,5 @@ ComboBox.defaultProps = {
   ValueComponent: 'div',
   ValueProps: null,
 };
+
+ComboBox.displayName = 'ComboBox';

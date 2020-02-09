@@ -16,6 +16,7 @@ import { renderGroupedOptions } from '../helpers/render_grouped_options.js';
 import { bemClassGenerator } from '../helpers/bem_class_generator.js';
 import { joinTokens } from '../helpers/join_tokens.js';
 import { useCombineRefs } from '../hooks/use_combine_refs.js';
+import { findOption } from '../helpers/find_option.js';
 
 export const DropDown = forwardRef((rawProps, ref) => {
   const optionisedProps = useNormalisedOptions(rawProps, { mustHaveSelection: true });
@@ -23,7 +24,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
     'aria-labelledby': ariaLabelledBy, required,
     options, value, onValue: _1, id, className,
     children, managedFocus, layoutListBox,
-    classGenerator, skipOption: _2, selectedOption,
+    classGenerator, skipOption: _2, selectedOption, findOption: currentFindOption,
     DropDownComponent, DropDownProps,
     ComboBoxComponent, ComboBoxProps,
     ListBoxComponent, ListBoxProps,
@@ -49,7 +50,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
     if (!search) {
       return undefined;
     }
-    const found = options.find((o) => o.label.toLowerCase().startsWith(search));
+    const found = options.find((o) => currentFindOption(o, search));
     if (found) {
       if (expanded) {
         dispatch(setFocusedOption(found));
@@ -60,7 +61,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
     const timeout = setTimeout(() => dispatch(clearSearch()), 1000);
 
     return () => clearTimeout(timeout);
-  }, [options, search, expanded]);
+  }, [options, search, expanded, currentFindOption]);
 
   useLayoutEffect(() => {
     if (expanded && focusedOption && managedFocus) {
@@ -111,6 +112,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
           ref={combinedRef}
           onClick={(e) => dispatch(onToggleOpen(e))}
           onKeyDown={(e) => dispatch(onButtonKeyDown(e))}
+          onMouseDown={(e) => e.preventDefault()}
           className={classes('combobox')}
           {...ComboBoxProps}
         >
@@ -216,6 +218,7 @@ DropDown.propTypes = {
   skipOption: PropTypes.func,
   classGenerator: PropTypes.func,
   required: PropTypes.bool,
+  findOption: PropTypes.func,
 
   ListBoxComponent: componentValidator,
   ListBoxProps: PropTypes.object,
@@ -245,7 +248,7 @@ DropDown.defaultProps = {
   skipOption: undefined,
   classGenerator: bemClassGenerator,
   required: false,
-
+  findOption,
   ListBoxComponent: 'ul',
   ListBoxProps: null,
   ComboBoxComponent: 'div',

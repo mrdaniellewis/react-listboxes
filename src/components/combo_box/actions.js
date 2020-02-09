@@ -28,7 +28,7 @@ export function onSelectValue(newValue) {
     const { current: input } = inputRef;
     input.value = newValue?.label ?? '';
     input.dispatchEvent(new Event('click', { bubbles: true }));
-    if (document.activeAlement === input) {
+    if (document.activeElement === input) {
       input.setSelectionRange(input.value.length, input.value.length, 'forward');
     }
     onValue(newValue ? newValue.value : null);
@@ -39,7 +39,7 @@ export function onKeyDown(event) {
   return (dispatch, getState, getProps) => {
     const { expanded, focusListBox, focusedOption } = getState();
     const { options, inputRef, managedFocus, lastKeyRef, skipOption: skip } = getProps();
-    const { altKey } = event;
+    const { altKey, metaKey, ctrlKey, shiftKey } = event;
     const key = getKey(event);
 
     // Navigation keyboard shortcuts reference
@@ -155,6 +155,18 @@ export function onKeyDown(event) {
           }
         }
         break;
+      case 'Tab': {
+        const { tabAutoComplete, value } = getProps();
+        if (tabAutoComplete && focusedOption && expanded && !focusListBox
+          && !focusedOption.unselectable
+          && focusedOption.identity !== value?.indentity
+          && !shiftKey && !altKey && !ctrlKey && !metaKey
+        ) {
+          event.preventDefault();
+          dispatch(onSelectValue(focusedOption));
+        }
+        break;
+      }
       default:
     }
   };
@@ -209,13 +221,11 @@ export function onClick(event, option) {
 }
 
 export function onClearValue(event) {
-  return (dispatch, getState, getProps) => {
+  return (dispatch) => {
     if (event.button > 0) {
       return;
     }
-    const { inputRef } = getProps();
     dispatch(onSelectValue(null));
-    // inputRef.current.focus();
   };
 }
 

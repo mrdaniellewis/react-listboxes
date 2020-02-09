@@ -181,6 +181,12 @@ function Example() {
         autoComplete="inline"
       />
       <ComboBoxField
+        label="Inline tab autocomplete"
+        options={countries}
+        autoComplete="inline"
+        tabAutoComplete
+      />
+      <ComboBoxField
         label="Inline autocomplete without managed focus"
         options={countries}
         autoComplete="inline"
