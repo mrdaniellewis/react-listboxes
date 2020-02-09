@@ -4,7 +4,7 @@ import { Context } from '../context.js';
 import { useThunkReducer as useReducer } from '../hooks/use_thunk_reducer.js';
 import { reducer } from './combo_box/reducer.js';
 import { initialState } from './combo_box/initial_state.js';
-import { onKeyDown, onChange, onFocus, onSelectValue, onBlur, onOptionsChanged, setListProps } from './combo_box/actions.js';
+import { onKeyDown, onChange, onFocus, onClearValue, onBlur, onClick, onOptionsChanged, setListProps } from './combo_box/actions.js';
 import { options as validateOptions } from '../validators/options.js';
 import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
 import { useOnBlur } from '../hooks/use_on_blur.js';
@@ -81,8 +81,8 @@ export function ComboBox(rawProps) {
   ]);
 
   useLayoutEffect(() => {
-    if (search && autoComplete === 'inline' && inlineAutoComplete && focusedOption) {
-      inputRef.current.setSelectionRange(search.length, focusedOption.label.length);
+    if (search && autoComplete === 'inline' && inlineAutoComplete && focusedOption && document.activeElement === inputRef.current) {
+      inputRef.current.setSelectionRange(search.length, focusedOption.label.length, 'backwards');
     }
   }, [inlineAutoComplete, focusedOption, search, autoComplete]);
 
@@ -118,8 +118,6 @@ export function ComboBox(rawProps) {
   const showNotFound = expanded && !options.length && search?.trim();
   const showBusy = busy && search !== (value?.label);
 
-  console.log(focusedOption);
-
   return (
     <Context.Provider value={{ dispatch, props: optionisedProps, state }}>
       <ComboBoxComponent
@@ -152,13 +150,7 @@ export function ComboBox(rawProps) {
         />
         <ClearButtonComponent
           onMouseDown={(e) => e.preventDefault()}
-          onClick={(e) => {
-            if (e.button > 0) {
-              return;
-            }
-            inputRef.current.focus();
-            dispatch(onSelectValue(null));
-          }}
+          onClick={(e) => dispatch(onClearValue(e))}
           hidden={!value || search === ''}
           aria-label="Clear"
           id={`${id}_clear_button`}
@@ -224,7 +216,7 @@ export function ComboBox(rawProps) {
                     className={classes('option', selected && 'focused', group && 'grouped')}
                     {...OptionProps}
                     {...html}
-                    onClick={disabled ? null : () => dispatch(onSelectValue(option))}
+                    onClick={disabled ? null : (e) => dispatch(onClick(e, option))}
                   >
                     {/*
                         Prefix the label with the group

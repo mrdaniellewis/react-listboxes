@@ -4,9 +4,9 @@ export function useThunkReducer(reducer, props, initialState) {
   // Holds the latest props
   const propsRef = useRef(props);
 
-  // Special reducer with the signature (state, props, action)
+  // Special reducer with the signature (state, action, props)
   const propsReducer = useCallback((state, action) => (
-    reducer(state, propsRef.current, action)
+    reducer(state, action, propsRef.current)
   ), [reducer]);
 
   const [state, dispatch] = useReducer(propsReducer, props, initialState);

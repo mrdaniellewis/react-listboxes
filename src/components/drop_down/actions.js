@@ -53,11 +53,7 @@ export function onToggleOpen(event) {
 export function onButtonKeyDown(event) {
   return (dispatch, getState, getProps) => {
     const { selectedOption } = getProps();
-    const { altKey, metaKey, ctrlKey, key } = event;
-
-    if (metaKey || ctrlKey) {
-      return;
-    }
+    const { altKey, ctrlKey, metaKey, key } = event;
 
     switch (key) {
       case ' ':
@@ -77,7 +73,7 @@ export function onButtonKeyDown(event) {
         break;
 
       default:
-        if (!rNonPrintableKey.test(key)) {
+        if (!rNonPrintableKey.test(key) && !altKey && !ctrlKey && !metaKey) {
           dispatch({ type: SET_SEARCH_KEY, key });
         }
     }
@@ -89,10 +85,6 @@ export function onKeyDown(event) {
     const { focusedOption } = getState();
     const { options, comboBoxRef, skipOption: skip } = getProps();
     const { altKey, metaKey, ctrlKey, key } = event;
-
-    if (metaKey || ctrlKey) {
-      return;
-    }
 
     const index = focusedOption ? focusedOption.index : -1;
 
@@ -140,7 +132,7 @@ export function onKeyDown(event) {
         comboBoxRef.current.focus();
         break;
       default:
-        if (!rNonPrintableKey.test(key)) {
+        if (!rNonPrintableKey.test(key) && !altKey && !ctrlKey && !metaKey) {
           event.preventDefault();
           dispatch({ type: SET_SEARCH_KEY, key });
         }

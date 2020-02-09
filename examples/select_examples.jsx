@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { Select } from '../src/components/select.jsx';
 import { unindent } from './lib/unindent.js';
+import countries from './lib/countries.json';
 
 function SelectField({ label, ...props }) {
   const [value, setValue] = useState(null);
@@ -126,6 +127,11 @@ function Example() {
           { label: 'Raspberry', group: 'Berry' },
           { label: 'Strawberry', group: 'Berry' },
         ]}
+      />
+      <SelectField
+        label="Very long list"
+        blank="Please choose…"
+        options={countries}
       />
     </>
   );

@@ -2,7 +2,6 @@ import { SET_EXPANDED, SET_SEARCH_KEY, CLEAR_SEARCH, SET_FOCUSED_OPTION, SET_SEL
 
 export function reducer(
   state,
-  props,
   { type, expanded, key, focusedOption, listStyle, listClassName },
 ) {
   switch (type) {
@@ -20,6 +19,6 @@ export function reducer(
       return { ...state, listStyle, listClassName };
     /* istanbul ignore next */
     default:
-      throw new Error(`${type} unknown`);
   }
+  return state;
 }

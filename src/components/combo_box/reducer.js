@@ -1,35 +1,66 @@
 import { SET_SEARCH, SET_EXPANDED, SET_CLOSED, SET_FOCUSED_OPTION, SET_LIST_PROPS } from './actions.js';
 
-function applyAutocomplete(state, props) {
-  const { search, focusListBox } = state;
-  const { options, autoComplete, lastKeyRef: { current: key } } = props;
+// AT RISK: It is debatable autocomplete in this form is actually useful
+function applyAutocomplete(state, { type, ...params }, props) {
+  const { autoComplete } = props;
 
-  if (!autoComplete || focusListBox || !search) {
+  if (!autoComplete) {
     return state;
   }
 
-  if (key === 'Backspace' || key === 'Delete') {
-    return {
-      ...state,
-      focusedOption: null,
-    };
-  }
+  switch (type) {
+    case SET_FOCUSED_OPTION:
+    case SET_SEARCH: {
+      const { options, lastKeyRef: { current: key } } = props;
+      const { focusListBox, search, inlineAutoComplete } = state;
 
-  let { focusedOption } = state;
-  if (autoComplete && !focusListBox && search) {
-    for (let i = 0; i < options.length; i += 1) {
-      if (!options[i].unselectable) {
-        if (options[i].label.toLowerCase().startsWith(search.toLowerCase())) {
-          focusedOption = options[i];
-        }
+      if (focusListBox || !search || !params.autoComplete) {
         break;
       }
-    }
-  }
 
+      if (type === SET_SEARCH && key === 'Backspace' && inlineAutoComplete) {
+        return {
+          ...state,
+          focusedOption: null,
+          inlineAutoComplete: false,
+          search: search.slice(0, -1),
+        };
+      }
+
+      if (key === 'Backspace' || key === 'Delete') {
+        return {
+          ...state,
+          focusedOption: null,
+          inlineAutoComplete: false,
+        };
+      }
+
+      let focusedOption;
+      for (let i = 0; i < options.length; i += 1) {
+        if (!options[i].unselectable) {
+          if (options[i].label.toLowerCase().startsWith(search.toLowerCase())) {
+            focusedOption = options[i];
+          }
+          break;
+        }
+      }
+      if (!focusedOption) {
+        break;
+      }
+
+      const { inputRef: { current: { selectionStart } } } = props;
+
+      return {
+        ...state,
+        focusedOption,
+        inlineAutoComplete: autoComplete === 'inline' && selectionStart === search.length,
+      };
+    }
+    default:
+  }
   return {
     ...state,
-    focusedOption,
+    inlineAutoComplete: false,
   };
 }
 
@@ -58,10 +89,9 @@ function reduce(state, props, { type, ...params }) {
       return {
         ...state,
         expanded: false,
+        focusedOption: null,
         focusListBox: false,
         search: null,
-        autoComplete: false,
-        inlineAutoComplete: false,
       };
     case SET_FOCUSED_OPTION: {
       const {
@@ -84,15 +114,13 @@ function reduce(state, props, { type, ...params }) {
         listClassName,
       };
     }
-
+    /* istanbul ignore next */
     default:
-      throw new Error(`${type} unknown`);
   }
+  return state;
 }
 
-export function reducer(state, props, action) {
-  console.log(action);
-  const result = applyAutocomplete(reduce(state, props, action), props);
-  console.log(result);
+export function reducer(state, action, props) {
+  const result = applyAutocomplete(reduce(state, props, action), action, props);
   return result;
 }
