@@ -73,7 +73,9 @@ export const ComboBox = forwardRef((rawProps, ref) => {
   }, [onSearch, searchValue]);
 
   const inputLabel = useMemo(() => {
-    if (inlineAutoComplete || ((showSelectedLabel ?? autoComplete === 'inline') && focusListBox)) {
+    if (inlineAutoComplete
+      || (((showSelectedLabel && !focusedOption?.unselectable) ?? autoComplete === 'inline') && focusListBox)
+    ) {
       return focusedOption?.label;
     }
     return search ?? value?.label;
@@ -147,7 +149,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
           onFocus={(e) => dispatch(onFocus(e))}
           aria-describedby={joinTokens(showNotFound && `${id}_not_found`, ariaDescribedBy)}
           ref={combinedRef}
-          className={classes('input', expanded && 'focused', focusedOption?.unselectable && 'unselectable')}
+          className={classes('input', expanded && 'focused')}
           tabIndex={managedFocus && showListBox && focusListBox ? -1 : 0}
           {...InputProps}
         />

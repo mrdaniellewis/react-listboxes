@@ -121,6 +121,15 @@ function Example() {
           { label: 'Orange', disabled: true },
         ]}
       />
+      <ComboBoxField
+        label="With a disabled option and showing the selected label"
+        showSelectedLabel
+        options={[
+          { label: 'Apple' },
+          { label: 'Banana' },
+          { label: 'Orange', disabled: true },
+        ]}
+      />
       <pre>
         <code className="language-js">
           {unindent`
