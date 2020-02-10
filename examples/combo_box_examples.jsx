@@ -7,6 +7,7 @@ import { useId } from '../src/hooks/use_id.js';
 import countries from './lib/countries.json';
 import { useSearch } from '../src/hooks/use_search.js';
 import { useAsyncSearch } from '../src/hooks/use_async_search.js';
+import { makeSearch } from '../src/helpers/make_search.js';
 
 function ComboBoxField({ label, options: originalOptions, ...props }) {
   const [value, setValue] = useState(null);
@@ -36,10 +37,18 @@ ComboBoxField.propTypes = {
   options: PropTypes.array.isRequired,
 };
 
-
-function AyncComboBoxField({ label, options: originalOptions, ...props }) {
+function AsyncComboBoxField({ label, options: originalOptions, ...props }) {
   const [value, setValue] = useState(null);
-  const [options, onSearch, busy] = useAsyncSearch(originalOptions);
+  const [search] = useState(() => {
+    const fn = makeSearch(originalOptions);
+    return async (query) => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, Math.random() * 10000);
+      });
+      return fn(query);
+    };
+  });
+  const [options, onSearch, busy] = useAsyncSearch(search, originalOptions);
   const id = useId();
   return (
     <>
@@ -61,7 +70,7 @@ function AyncComboBoxField({ label, options: originalOptions, ...props }) {
   );
 }
 
-AyncComboBoxField.propTypes = {
+AsyncComboBoxField.propTypes = {
   label: PropTypes.string.isRequired,
   options: PropTypes.array.isRequired,
 };
@@ -201,7 +210,7 @@ function Example() {
         autoComplete="inline"
         managedFocus={false}
       />
-      <ComboBoxField
+      <AsyncComboBoxField
         label="Async search"
         options={countries}
         autoComplete="inline"

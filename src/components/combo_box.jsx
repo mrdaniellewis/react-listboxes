@@ -4,7 +4,7 @@ import { Context } from '../context.js';
 import { useThunkReducer as useReducer } from '../hooks/use_thunk_reducer.js';
 import { reducer } from './combo_box/reducer.js';
 import { initialState } from './combo_box/initial_state.js';
-import { onKeyDown, onChange, onFocus, onClearValue, onBlur, onClick, onOptionsChanged, setListProps } from './combo_box/actions.js';
+import { onKeyDown, onChange, onFocus, onClearValue, onBlur, onClick, onOptionsChanged, setListProps, setAriaBusy } from './combo_box/actions.js';
 import { options as validateOptions } from '../validators/options.js';
 import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
 import { useOnBlur } from '../hooks/use_on_blur.js';
@@ -18,7 +18,7 @@ import { useCombineRefs } from '../hooks/use_combine_refs.js';
 export const ComboBox = forwardRef((rawProps, ref) => {
   const optionisedProps = useNormalisedOptions(rawProps);
   const {
-    'aria-describedby': ariaDescribedBy,
+    'aria-describedby': ariaDescribedBy, busyDebounce,
     options, value, selectedOption, id, className, classGenerator,
     notFoundMessage, layoutListBox, managedFocus, busy, onValue: _2, onSearch,
     autoComplete, showSelectedLabel, findAutoComplete: _3, tabAutoComplete: _4,
@@ -39,6 +39,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
   const listRef = useRef();
   const focusedRef = useRef();
   const lastKeyRef = useRef();
+  const busyTimeoutRef = useRef();
 
   const [state, dispatch] = useReducer(
     reducer,
@@ -47,7 +48,8 @@ export const ComboBox = forwardRef((rawProps, ref) => {
   );
 
   const {
-    expanded, focusedOption, search, listClassName, listStyle, focusListBox, inlineAutoComplete,
+    ariaBusy, expanded, focusedOption, search, listClassName,
+    listStyle, focusListBox, inlineAutoComplete,
   } = state;
   const [handleBlur, handleFocus] = useOnBlur(() => dispatch(onBlur()), comboRef);
 
@@ -118,9 +120,24 @@ export const ComboBox = forwardRef((rawProps, ref) => {
     }
   }, [expanded, managedFocus, focusedOption, focusListBox, showListBox]);
 
+  console.log(busy);
+  useEffect(() => {
+    clearTimeout(busyTimeoutRef.current);
+    if (busy && busyDebounce === null) {
+      dispatch(setAriaBusy(true));
+    } else if (busy) {
+      busyTimeoutRef.current = setTimeout(() => {
+        console.log('setBusy');
+        dispatch(setAriaBusy(true));
+      }, busyDebounce);
+    } else {
+      dispatch(setAriaBusy(false));
+    }
+  }, [busy, busyDebounce, busyTimeoutRef]);
+
   const classes = classGenerator(className);
   const showNotFound = expanded && !options.length && search?.trim();
-  const showBusy = busy && search !== (value?.label);
+  const showBusy = ariaBusy && search !== (value?.label);
   const combinedRef = useCombineRefs(inputRef, ref);
 
   return (
@@ -277,6 +294,7 @@ ComboBox.propTypes = {
   findAutoComplete: PropTypes.func,
   autoComplete: PropTypes.oneOf([false, true, 'inline']),
   classGenerator: PropTypes.func,
+  busyDebounce: PropTypes.number,
 
   ClearButtonComponent: componentValidator,
   ClearButtonProps: PropTypes.object,
@@ -314,6 +332,7 @@ ComboBox.defaultProps = {
   tabAutoComplete: false,
   findAutoComplete: findOption,
   classGenerator: bemClassGenerator,
+  busyDebounce: 200,
 
   ClearButtonComponent: 'span',
   ClearButtonProps: null,

@@ -1,10 +1,10 @@
-import { SET_SEARCH, SET_EXPANDED, SET_CLOSED, SET_FOCUSED_OPTION, SET_LIST_PROPS } from './actions.js';
+import { SET_SEARCH, SET_EXPANDED, SET_CLOSED, SET_FOCUSED_OPTION, SET_LIST_PROPS, SET_ARIA_BUSY } from './actions.js';
 
 // AT RISK: It is debatable autocomplete in this form is actually useful
 function applyAutocomplete(state, { type, ...params }, props) {
   const { autoComplete } = props;
 
-  if (!autoComplete) {
+  if (!autoComplete || type === SET_ARIA_BUSY) {
     return state;
   }
 
@@ -114,6 +114,16 @@ function reduce(state, props, { type, ...params }) {
         ...state,
         listStyle,
         listClassName,
+      };
+    }
+    case SET_ARIA_BUSY: {
+      const { ariaBusy } = params;
+      if (ariaBusy === state.ariaBusy) {
+        return state;
+      }
+      return {
+        ...state,
+        ariaBusy,
       };
     }
     /* istanbul ignore next */

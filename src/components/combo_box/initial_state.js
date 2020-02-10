@@ -1,5 +1,6 @@
 export function initialState({ selectedOption }) {
   return {
+    ariaBusy: false,
     inlineAutoComplete: false,
     expanded: false,
     focusListBox: false,

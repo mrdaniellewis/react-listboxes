@@ -6,6 +6,7 @@ export const useAsyncSearch = (fn, { initialOptions = [] }) => {
   const [options, setOptions] = useState(initialOptions);
 
   const onSearch = useCallback(async (query) => {
+    console.log('search', query);
     if (!query) {
       setOptions(initialOptions);
       return;
