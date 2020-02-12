@@ -1,10 +1,10 @@
-import React, { useRef, useEffect, useLayoutEffect, Fragment, useMemo, forwardRef } from 'react';
+import React, { useRef, useEffect, useLayoutEffect, Fragment, useMemo, forwardRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Context } from '../context.js';
 import { useThunkReducer as useReducer } from '../hooks/use_thunk_reducer.js';
 import { reducer } from './combo_box/reducer.js';
 import { initialState } from './combo_box/initial_state.js';
-import { onKeyDown, onChange, onFocus, onClearValue, onBlur, onClick, onOptionsChanged, setListProps, setAriaBusy } from './combo_box/actions.js';
+import { onKeyDown, onChange, onFocus, onClearValue, onBlur, onClick, onOptionsChanged } from './combo_box/actions.js';
 import { options as validateOptions } from '../validators/options.js';
 import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
 import { useOnBlur } from '../hooks/use_on_blur.js';
@@ -46,13 +46,17 @@ export const ComboBox = forwardRef((rawProps, ref) => {
     { ...optionisedProps, inputRef, lastKeyRef },
     initialState,
   );
+  const [showBusy, setShowBusy] = useState(false);
+  const [
+    { className: listClassName, style: listStyle },
+    setListProps,
+  ] = useState({ className: null, style: null });
 
   const {
-    ariaBusy, expanded, focusedOption, search, listClassName,
-    listStyle, focusListBox, inlineAutoComplete,
+    expanded, focusedOption, search,
+    focusListBox, inlineAutoComplete,
   } = state;
   const [handleBlur, handleFocus] = useOnBlur(() => dispatch(onBlur()), comboRef);
-
 
   useLayoutEffect(() => {
     if (layoutListBox && expanded) {
@@ -62,7 +66,10 @@ export const ComboBox = forwardRef((rawProps, ref) => {
         option: focusedRef.current,
       });
       if (listProps) {
-        dispatch(setListProps(listProps));
+        setListProps({
+          style: listProps.style || null,
+          className: listProps.className || null,
+        });
       }
     }
   }, [layoutListBox, expanded, focusedOption]);
@@ -120,30 +127,30 @@ export const ComboBox = forwardRef((rawProps, ref) => {
     }
   }, [expanded, managedFocus, focusedOption, focusListBox, showListBox]);
 
-  console.log(busy);
   useEffect(() => {
     clearTimeout(busyTimeoutRef.current);
     if (busy && busyDebounce === null) {
-      dispatch(setAriaBusy(true));
+      setShowBusy(true);
     } else if (busy) {
       busyTimeoutRef.current = setTimeout(() => {
-        console.log('setBusy');
-        dispatch(setAriaBusy(true));
+        setShowBusy(true);
       }, busyDebounce);
     } else {
-      dispatch(setAriaBusy(false));
+      setShowBusy(false);
     }
   }, [busy, busyDebounce, busyTimeoutRef]);
 
   const classes = classGenerator(className);
-  const showNotFound = expanded && !options.length && search?.trim();
-  const showBusy = ariaBusy && search !== (value?.label);
+  const showNotFound = !busy && expanded && !options.length && search?.trim();
+  const ariaBusy = showBusy && search?.trim() && search !== (value?.label);
   const combinedRef = useCombineRefs(inputRef, ref);
 
+  const context = { props: optionisedProps, state };
+
   return (
-    <Context.Provider value={{ dispatch, props: optionisedProps, state }}>
+    <Context.Provider value={context}>
       <ComboBoxComponent
-        aria-busy={showBusy ? 'true' : 'false'}
+        aria-busy={ariaBusy ? 'true' : 'false'}
         className={className}
         onBlur={handleBlur}
         onFocus={handleFocus}
@@ -200,7 +207,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
               return (
                 <Context.Provider
                   key={key}
-                  value={{ dispatch, props: optionisedProps, state, group }}
+                  value={{ ...context, group }}
                 >
                   <GroupWrapperComponent
                     {...GroupWrapperProps}
@@ -226,7 +233,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
               return (
                 <Context.Provider
                   key={key}
-                  value={{ dispatch, props: optionisedProps, state, option }}
+                  value={{ ...context, option }}
                 >
                   <OptionComponent
                     id={key}

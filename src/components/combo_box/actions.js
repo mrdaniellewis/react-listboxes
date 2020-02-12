@@ -9,7 +9,6 @@ export const SET_EXPANDED = 'SET_EXPANDED';
 export const SET_CLOSED = 'SET_CLOSED';
 export const SET_FOCUSED_OPTION = 'SET_FOCUSED_OPTION';
 export const SET_LIST_PROPS = 'SET_LIST_PROPS';
-export const SET_ARIA_BUSY = 'SET_ARIA_BUSY';
 
 export function setFocusedOption({ focusedOption, focusListBox, autoComplete }) {
   return { type: SET_FOCUSED_OPTION, focusedOption, focusListBox, autoComplete };
@@ -17,10 +16,6 @@ export function setFocusedOption({ focusedOption, focusListBox, autoComplete }) 
 
 export function setListProps({ className, style }) {
   return { type: SET_LIST_PROPS, listClassName: className, listStyle: style };
-}
-
-export function setAriaBusy(ariaBusy) {
-  return { type: SET_ARIA_BUSY, ariaBusy };
 }
 
 export function onSelectValue(newValue) {

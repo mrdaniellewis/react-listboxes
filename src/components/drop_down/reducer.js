@@ -1,9 +1,6 @@
-import { SET_EXPANDED, SET_SEARCH_KEY, CLEAR_SEARCH, SET_FOCUSED_OPTION, SET_SELECTED, SET_LIST_PROPS } from './actions.js';
+import { SET_EXPANDED, SET_SEARCH_KEY, CLEAR_SEARCH, SET_FOCUSED_OPTION, SET_SELECTED } from './actions.js';
 
-export function reducer(
-  state,
-  { type, expanded, key, focusedOption, listStyle, listClassName },
-) {
+export function reducer(state, { type, expanded, key, focusedOption }) {
   switch (type) {
     case SET_EXPANDED:
       return { ...state, expanded };
@@ -15,8 +12,6 @@ export function reducer(
       return { ...state, expanded: false, focusedOption: null };
     case SET_FOCUSED_OPTION:
       return { ...state, focusedOption, expanded: true };
-    case SET_LIST_PROPS:
-      return { ...state, listStyle, listClassName };
     /* istanbul ignore next */
     default:
   }

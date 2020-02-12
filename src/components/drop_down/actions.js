@@ -7,7 +7,6 @@ export const CLEAR_SEARCH = 'CLEAR_SEARCH';
 export const SET_SEARCH_KEY = 'SET_SEARCH_KEY';
 export const SET_SELECTED = 'SET_SELECTED';
 export const SET_FOCUSED_OPTION = 'SET_FOCUSED_OPTION';
-export const SET_LIST_PROPS = 'SET_LIST_PROPS';
 
 export function clearSearch() {
   return { type: CLEAR_SEARCH };
@@ -15,10 +14,6 @@ export function clearSearch() {
 
 export function setFocusedOption(focusedOption) {
   return { type: SET_FOCUSED_OPTION, focusedOption };
-}
-
-export function setListProps({ className, style }) {
-  return { type: SET_LIST_PROPS, listClassName: className, listStyle: style };
 }
 
 export function onSelectValue(newValue) {

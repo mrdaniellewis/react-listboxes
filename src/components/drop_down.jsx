@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useLayoutEffect, Fragment, forwardRef } from 'react';
+import React, { useRef, useEffect, useLayoutEffect, Fragment, forwardRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Context } from '../context.js';
 import { useThunkReducer as useReducer } from '../hooks/use_thunk_reducer.js';
@@ -7,7 +7,7 @@ import { initialState } from './drop_down/initial_state.js';
 import {
   clearSearch, onKeyDown, onBlur,
   onToggleOpen, onFocus, onButtonKeyDown, onClick,
-  setListProps, onSelectValue, setFocusedOption, onOptionsChanged,
+  onSelectValue, setFocusedOption, onOptionsChanged,
 } from './drop_down/actions.js';
 import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
 import { useOnBlur } from '../hooks/use_on_blur.js';
@@ -43,7 +43,12 @@ export const DropDown = forwardRef((rawProps, ref) => {
     { ...optionisedProps, comboBoxRef, listRef },
     initialState,
   );
-  const { expanded, search, focusedOption, listClassName, listStyle } = state;
+  const [
+    { className: listClassName, style: listStyle },
+    setListProps,
+  ] = useState({ className: null, style: null });
+
+  const { expanded, search, focusedOption } = state;
   const [handleBlur, handleFocus] = useOnBlur(() => dispatch(onBlur()), listRef);
 
   useEffect(() => {
@@ -79,7 +84,10 @@ export const DropDown = forwardRef((rawProps, ref) => {
         option: focusedRef.current,
       });
       if (listProps) {
-        dispatch(setListProps(listProps));
+        setListProps({
+          style: listProps.style || null,
+          className: listProps.className || null,
+        });
       }
     }
   }, [layoutListBox, expanded, focusedOption]);

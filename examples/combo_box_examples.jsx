@@ -43,7 +43,7 @@ function AsyncComboBoxField({ label, options: originalOptions, ...props }) {
     const fn = makeSearch(originalOptions);
     return async (query) => {
       await new Promise((resolve) => {
-        setTimeout(resolve, Math.random() * 10000);
+        setTimeout(resolve, Math.random() * 5000);
       });
       return fn(query);
     };
