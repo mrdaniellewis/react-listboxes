@@ -4,10 +4,11 @@ import PropTypes from 'prop-types';
 import { Select } from '../src/components/select.jsx';
 import { unindent } from './lib/unindent.js';
 import countries from './lib/countries.json';
+import { useId } from '../src/hooks/use_id.js';
 
 function SelectField({ label, ...props }) {
   const [value, setValue] = useState(null);
-  const id = label.trim().toLowerCase().replace(/[^a-z]+/ig, '_').toLowerCase();
+  const id = useId();
   return (
     <>
       <label htmlFor={id}>

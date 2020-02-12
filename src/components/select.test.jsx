@@ -265,29 +265,12 @@ describe('blank', () => {
   });
 });
 
-describe('OptionComponent', () => {
+describe('optionProps', () => {
   const options = ['Apple', 'Banana', 'Orange'];
 
   it('allows additional props to be added to all options', () => {
     const { container } = render(
-      <SelectWrapper options={options} OptionComponent={{ 'data-foo': 'bar' }} />,
-    );
-    container.querySelectorAll('option').forEach((option) => {
-      expect(option).toHaveAttribute('data-foo', 'bar');
-    });
-  });
-
-  it('allows the option component to be replaced', () => {
-    function TestOption({ props }) {
-      return (
-        <option
-          data-foo="bar"
-          {...props}
-        />
-      );
-    }
-    const { container } = render(
-      <SelectWrapper options={options} OptionComponent={TestOption} />,
+      <SelectWrapper options={options} optionProps={{ 'data-foo': 'bar' }} />,
     );
     container.querySelectorAll('option').forEach((option) => {
       expect(option).toHaveAttribute('data-foo', 'bar');
@@ -295,7 +278,7 @@ describe('OptionComponent', () => {
   });
 });
 
-describe('OptGroupComponent', () => {
+describe('optgroupProps', () => {
   const options = [
     { label: 'Apple' },
     { label: 'Orange', group: 'Citrus' },
@@ -306,24 +289,7 @@ describe('OptGroupComponent', () => {
 
   it('allows additional props to be added to all options', () => {
     const { container } = render(
-      <SelectWrapper options={options} OptGroupComponent={{ 'data-foo': 'bar' }} />,
-    );
-    container.querySelectorAll('optgroup').forEach((option) => {
-      expect(option).toHaveAttribute('data-foo', 'bar');
-    });
-  });
-
-  it('allows the option component to be replaced', () => {
-    function TestOptGroup({ props }) {
-      return (
-        <optgroup
-          data-foo="bar"
-          {...props}
-        />
-      );
-    }
-    const { container } = render(
-      <SelectWrapper options={options} OptGroupComponent={TestOptGroup} />,
+      <SelectWrapper options={options} optgroupProps={{ 'data-foo': 'bar' }} />,
     );
     container.querySelectorAll('optgroup').forEach((option) => {
       expect(option).toHaveAttribute('data-foo', 'bar');

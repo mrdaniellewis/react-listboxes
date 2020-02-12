@@ -13,13 +13,15 @@ export function DropDownField({ label, ...props }) {
       <label id={`${id}_label`} onClick={() => document.getElementById(id).focus()}>
         {label}
       </label>
-      <DropDown
-        id={id}
-        {...props}
-        value={value}
-        setValue={(newValue) => setValue(newValue)}
-        ButtonComponent={{ 'aria-labelledby': `${id}_label ${id}` }}
-      />
+      <div className="dropdown">
+        <DropDown
+          id={id}
+          {...props}
+          value={value}
+          setValue={(newValue) => setValue(newValue)}
+          ButtonComponent={{ 'aria-labelledby': `${id}_label ${id}` }}
+        />
+      </div>
     </>
   );
 }

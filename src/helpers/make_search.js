@@ -1,8 +1,11 @@
 import { tokenise } from './tokenise.js';
-import { optionise } from './optionise.js';
 
-export const makeSearch = (options) => {
-  const indexed = options.map((o) => optionise(o)).map(({ label }) => label).map(tokenise);
+function defaultIndex(option) {
+  return option?.label || option || '';
+}
+
+export const makeSearch = (options, index = defaultIndex) => {
+  const indexed = options.map((o) => tokenise(index(o)));
 
   return (query) => {
     if (!query || !query.trim()) {

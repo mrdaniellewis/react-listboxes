@@ -22,6 +22,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
     options, value, selectedOption, id, className, classGenerator,
     notFoundMessage, layoutListBox, managedFocus, busy, onValue: _2, onSearch,
     autoComplete, showSelectedLabel, findAutoComplete: _3, tabAutoComplete: _4,
+    onBlur, onFocus,
     ClearButtonComponent, ClearButtonProps,
     ComboBoxComponent, ComboBoxProps,
     GroupComponent, GroupProps,
@@ -156,7 +157,6 @@ export const ComboBox = forwardRef((rawProps, ref) => {
         onFocus={handleFocus}
         ref={comboRef}
         {...ComboBoxProps}
-        {...componentProps}
       >
         <InputComponent
           id={id}
@@ -170,12 +170,17 @@ export const ComboBox = forwardRef((rawProps, ref) => {
           value={inputLabel || ''}
           onKeyDown={(e) => dispatch(onKeyDown(e))}
           onChange={(e) => dispatch(onChange(e))}
-          onFocus={(e) => dispatch(onFocus(e))}
+          onFocus={(e) => {
+            dispatch(onFocus(e));
+            onFocus?.(e);
+          }}
+          onBlur={onBlur ? (e) => onBlur(e) : null}
           aria-describedby={joinTokens(showNotFound && `${id}_not_found`, ariaDescribedBy)}
           ref={combinedRef}
           className={classes('input', expanded && 'focused')}
           tabIndex={managedFocus && showListBox && focusListBox ? -1 : 0}
           {...InputProps}
+          {...componentProps}
         />
         <ClearButtonComponent
           onMouseDown={(e) => e.preventDefault()}
@@ -303,6 +308,9 @@ ComboBox.propTypes = {
   classGenerator: PropTypes.func,
   busyDebounce: PropTypes.number,
 
+  onBlur: PropTypes.func,
+  onFocus: PropTypes.func,
+
   ClearButtonComponent: componentValidator,
   ClearButtonProps: PropTypes.object,
   ComboBoxComponent: componentValidator,
@@ -340,6 +348,9 @@ ComboBox.defaultProps = {
   findAutoComplete: findOption,
   classGenerator: bemClassGenerator,
   busyDebounce: 200,
+
+  onBlur: null,
+  onFocus: null,
 
   ClearButtonComponent: 'span',
   ClearButtonProps: null,

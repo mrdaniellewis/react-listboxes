@@ -6,7 +6,9 @@ exports[`blank renders a blank option 1`] = `
     class="dropdown"
   >
     <div
+      aria-activedescendant="id_option_blank"
       aria-controls="id_listbox"
+      aria-readonly="true"
       class="dropdown__combobox"
       id="id"
       role="combobox"
@@ -22,12 +24,15 @@ exports[`blank renders a blank option 1`] = `
       tabindex="-1"
     >
       <li
-        class="dropdown__option"
+        aria-selected="true"
+        class="dropdown__option dropdown__option--focused"
         id="id_option_blank"
         role="option"
         tabindex="-1"
       >
-        Please select…
+        <div>
+          Please select…
+        </div>
       </li>
       <li
         class="dropdown__option"
@@ -35,7 +40,9 @@ exports[`blank renders a blank option 1`] = `
         role="option"
         tabindex="-1"
       >
-        Apple
+        <div>
+          Apple
+        </div>
       </li>
       <li
         class="dropdown__option"
@@ -43,7 +50,9 @@ exports[`blank renders a blank option 1`] = `
         role="option"
         tabindex="-1"
       >
-        Banana
+        <div>
+          Banana
+        </div>
       </li>
       <li
         class="dropdown__option"
@@ -51,7 +60,9 @@ exports[`blank renders a blank option 1`] = `
         role="option"
         tabindex="-1"
       >
-        Orange
+        <div>
+          Orange
+        </div>
       </li>
     </ul>
   </div>
@@ -67,6 +78,7 @@ exports[`options as array of objects disabled sets the aria-disabled attribute 1
       aria-activedescendant="id_option_apple"
       aria-controls="id_listbox"
       aria-expanded="true"
+      aria-readonly="true"
       class="dropdown__combobox"
       id="id"
       role="combobox"
@@ -87,7 +99,9 @@ exports[`options as array of objects disabled sets the aria-disabled attribute 1
         role="option"
         tabindex="-1"
       >
-        Apple
+        <div>
+          Apple
+        </div>
       </li>
       <li
         aria-disabled="true"
@@ -96,7 +110,9 @@ exports[`options as array of objects disabled sets the aria-disabled attribute 1
         role="option"
         tabindex="-1"
       >
-        Banana
+        <div>
+          Banana
+        </div>
       </li>
     </ul>
   </div>
@@ -109,7 +125,9 @@ exports[`options as array of objects group renders grouped options 1`] = `
     class="dropdown"
   >
     <div
+      aria-activedescendant="id_option_apple"
       aria-controls="id_listbox"
+      aria-readonly="true"
       class="dropdown__combobox"
       id="id"
       role="combobox"
@@ -125,19 +143,20 @@ exports[`options as array of objects group renders grouped options 1`] = `
       tabindex="-1"
     >
       <li
-        class="dropdown__option"
+        aria-selected="true"
+        class="dropdown__option dropdown__option--focused"
         id="id_option_apple"
         role="option"
         tabindex="-1"
       >
-        Apple
+        <div>
+          Apple
+        </div>
       </li>
       <li
-        aria-disabled="true"
+        aria-hidden="true"
         class="dropdown__group"
         id="id_group_citrus"
-        role="option"
-        tabindex="-1"
       >
         Citrus
       </li>
@@ -147,7 +166,12 @@ exports[`options as array of objects group renders grouped options 1`] = `
         role="option"
         tabindex="-1"
       >
-        Orange
+        <div
+          aria-labelledby="id_group_citrus id_option_orange_label"
+          id="id_option_orange_label"
+        >
+          Orange
+        </div>
       </li>
       <li
         class="dropdown__option dropdown__option--grouped"
@@ -155,14 +179,17 @@ exports[`options as array of objects group renders grouped options 1`] = `
         role="option"
         tabindex="-1"
       >
-        Lemon
+        <div
+          aria-labelledby="id_group_citrus id_option_lemon_label"
+          id="id_option_lemon_label"
+        >
+          Lemon
+        </div>
       </li>
       <li
-        aria-disabled="true"
+        aria-hidden="true"
         class="dropdown__group"
         id="id_group_berry"
-        role="option"
-        tabindex="-1"
       >
         Berry
       </li>
@@ -172,7 +199,12 @@ exports[`options as array of objects group renders grouped options 1`] = `
         role="option"
         tabindex="-1"
       >
-        Raspberry
+        <div
+          aria-labelledby="id_group_berry id_option_raspberry_label"
+          id="id_option_raspberry_label"
+        >
+          Raspberry
+        </div>
       </li>
       <li
         class="dropdown__option dropdown__option--grouped"
@@ -180,7 +212,12 @@ exports[`options as array of objects group renders grouped options 1`] = `
         role="option"
         tabindex="-1"
       >
-        Strawberry
+        <div
+          aria-labelledby="id_group_berry id_option_strawberry_label"
+          id="id_option_strawberry_label"
+        >
+          Strawberry
+        </div>
       </li>
     </ul>
   </div>
@@ -193,7 +230,9 @@ exports[`options as array of objects label renders a closed drop down 1`] = `
     class="dropdown"
   >
     <div
+      aria-activedescendant="id_option_apple"
       aria-controls="id_listbox"
+      aria-readonly="true"
       class="dropdown__combobox"
       id="id"
       role="combobox"
@@ -209,12 +248,15 @@ exports[`options as array of objects label renders a closed drop down 1`] = `
       tabindex="-1"
     >
       <li
-        class="dropdown__option"
+        aria-selected="true"
+        class="dropdown__option dropdown__option--focused"
         id="id_option_apple"
         role="option"
         tabindex="-1"
       >
-        Apple
+        <div>
+          Apple
+        </div>
       </li>
       <li
         class="dropdown__option"
@@ -222,7 +264,9 @@ exports[`options as array of objects label renders a closed drop down 1`] = `
         role="option"
         tabindex="-1"
       >
-        Banana
+        <div>
+          Banana
+        </div>
       </li>
       <li
         class="dropdown__option"
@@ -230,7 +274,9 @@ exports[`options as array of objects label renders a closed drop down 1`] = `
         role="option"
         tabindex="-1"
       >
-        Orange
+        <div>
+          Orange
+        </div>
       </li>
     </ul>
   </div>
@@ -244,6 +290,7 @@ exports[`options empty options renders an empty combo box 1`] = `
   >
     <div
       aria-controls="id_listbox"
+      aria-readonly="true"
       class="dropdown__combobox"
       id="id"
       role="combobox"
@@ -266,7 +313,9 @@ exports[`options options as array of numbers renders a closed drop down 1`] = `
     class="dropdown"
   >
     <div
+      aria-activedescendant="id_option_1"
       aria-controls="id_listbox"
+      aria-readonly="true"
       class="dropdown__combobox"
       id="id"
       role="combobox"
@@ -282,12 +331,15 @@ exports[`options options as array of numbers renders a closed drop down 1`] = `
       tabindex="-1"
     >
       <li
-        class="dropdown__option"
+        aria-selected="true"
+        class="dropdown__option dropdown__option--focused"
         id="id_option_1"
         role="option"
         tabindex="-1"
       >
-        1
+        <div>
+          1
+        </div>
       </li>
       <li
         class="dropdown__option"
@@ -295,7 +347,9 @@ exports[`options options as array of numbers renders a closed drop down 1`] = `
         role="option"
         tabindex="-1"
       >
-        2
+        <div>
+          2
+        </div>
       </li>
       <li
         class="dropdown__option"
@@ -303,7 +357,9 @@ exports[`options options as array of numbers renders a closed drop down 1`] = `
         role="option"
         tabindex="-1"
       >
-        3
+        <div>
+          3
+        </div>
       </li>
     </ul>
   </div>
@@ -316,7 +372,9 @@ exports[`options options as array of strings renders a closed drop down 1`] = `
     class="dropdown"
   >
     <div
+      aria-activedescendant="id_option_apple"
       aria-controls="id_listbox"
+      aria-readonly="true"
       class="dropdown__combobox"
       id="id"
       role="combobox"
@@ -332,12 +390,15 @@ exports[`options options as array of strings renders a closed drop down 1`] = `
       tabindex="-1"
     >
       <li
-        class="dropdown__option"
+        aria-selected="true"
+        class="dropdown__option dropdown__option--focused"
         id="id_option_apple"
         role="option"
         tabindex="-1"
       >
-        Apple
+        <div>
+          Apple
+        </div>
       </li>
       <li
         class="dropdown__option"
@@ -345,7 +406,9 @@ exports[`options options as array of strings renders a closed drop down 1`] = `
         role="option"
         tabindex="-1"
       >
-        Banana
+        <div>
+          Banana
+        </div>
       </li>
       <li
         class="dropdown__option"
@@ -353,7 +416,9 @@ exports[`options options as array of strings renders a closed drop down 1`] = `
         role="option"
         tabindex="-1"
       >
-        Orange
+        <div>
+          Orange
+        </div>
       </li>
     </ul>
   </div>
@@ -369,6 +434,7 @@ exports[`options updating options updates the options 1`] = `
       aria-activedescendant="id_option_strawberry"
       aria-controls="id_listbox"
       aria-expanded="true"
+      aria-readonly="true"
       class="dropdown__combobox"
       id="id"
       role="combobox"
@@ -389,7 +455,9 @@ exports[`options updating options updates the options 1`] = `
         role="option"
         tabindex="-1"
       >
-        Strawberry
+        <div>
+          Strawberry
+        </div>
       </li>
       <li
         class="dropdown__option"
@@ -397,7 +465,9 @@ exports[`options updating options updates the options 1`] = `
         role="option"
         tabindex="-1"
       >
-        Raspberry
+        <div>
+          Raspberry
+        </div>
       </li>
       <li
         class="dropdown__option"
@@ -405,7 +475,9 @@ exports[`options updating options updates the options 1`] = `
         role="option"
         tabindex="-1"
       >
-        Banana
+        <div>
+          Banana
+        </div>
       </li>
     </ul>
   </div>

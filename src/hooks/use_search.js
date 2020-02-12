@@ -1,16 +1,12 @@
 import { useMemo, useState } from 'react';
 import { makeSearch } from '../helpers/make_search.js';
-import { optionise } from '../helpers/optionise.js';
 
-export const useSearch = (rawOptions) => {
-  const options = useMemo(() => (
-    rawOptions.map((o) => optionise(o))
-  ), [rawOptions]);
-  const [filteredOptions, setFilteredOptions] = useState(rawOptions);
+export const useSearch = (options, index) => {
+  const [filteredOptions, setFilteredOptions] = useState(options);
   const onSearch = useMemo(() => {
-    const search = makeSearch(options);
+    const search = makeSearch(options, index);
     return (query) => setFilteredOptions(search(query));
-  }, [options]);
+  }, [options, index]);
 
   return [filteredOptions, onSearch];
 };

@@ -75,6 +75,11 @@ expect.extend({
   },
 });
 
+afterEach(async () => {
+  // Fix act warning due to the focus event triggering after a timeout
+  await wait();
+});
+
 describe('options', () => {
   describe('as array of objects', () => {
     describe('label', () => {
@@ -113,18 +118,6 @@ describe('options', () => {
               fireEvent.keyDown(getByRole('combobox'), { key: 'Enter' });
               expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[0]);
             });
-
-            it('does nothing if the meta key is pressed', () => {
-              const { getByRole } = render(<DropDownWrapper options={options} />);
-              fireEvent.keyDown(getByRole('combobox'), { key: 'Enter', metaKey: true });
-              expect(getByRole('listbox', { hidden: true })).not.toBeVisible();
-            });
-
-            it('does nothing if the ctrl key is pressed', () => {
-              const { getByRole } = render(<DropDownWrapper options={options} />);
-              fireEvent.keyDown(getByRole('combobox'), { key: 'Enter', ctrlKey: true });
-              expect(getByRole('listbox', { hidden: true })).not.toBeVisible();
-            });
           });
 
           describe('pressing space', () => {
@@ -132,18 +125,6 @@ describe('options', () => {
               const { getByRole, getAllByRole } = render(<DropDownWrapper options={options} />);
               fireEvent.keyDown(getByRole('combobox'), { key: ' ' });
               expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[0]);
-            });
-
-            it('does nothing if the meta key is pressed', () => {
-              const { getByRole } = render(<DropDownWrapper options={options} />);
-              fireEvent.keyDown(getByRole('combobox'), { key: 'Space', metaKey: true });
-              expect(getByRole('listbox', { hidden: true })).not.toBeVisible();
-            });
-
-            it('does nothing if the ctrl key is pressed', () => {
-              const { getByRole } = render(<DropDownWrapper options={options} />);
-              fireEvent.keyDown(getByRole('combobox'), { key: 'Space', ctrlKey: true });
-              expect(getByRole('listbox', { hidden: true })).not.toBeVisible();
             });
           });
 
@@ -159,18 +140,6 @@ describe('options', () => {
               fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown', altKey: true });
               expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[0]);
             });
-
-            it('does nothing if the meta key is pressed', () => {
-              const { getByRole } = render(<DropDownWrapper options={options} />);
-              fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown', metaKey: true });
-              expect(getByRole('listbox', { hidden: true })).not.toBeVisible();
-            });
-
-            it('does nothing if the ctrl key is pressed', () => {
-              const { getByRole } = render(<DropDownWrapper options={options} />);
-              fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown', ctrlKey: true });
-              expect(getByRole('listbox', { hidden: true })).not.toBeVisible();
-            });
           });
 
           describe('pressing up arrow', () => {
@@ -183,18 +152,6 @@ describe('options', () => {
             it('does not open the drop down with the up arrow + alt', () => {
               const { getByRole } = render(<DropDownWrapper options={options} />);
               fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowUp', altKey: true });
-              expect(getByRole('listbox', { hidden: true })).not.toBeVisible();
-            });
-
-            it('does nothing if the meta key is pressed', () => {
-              const { getByRole } = render(<DropDownWrapper options={options} />);
-              fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowUp', metaKey: true });
-              expect(getByRole('listbox', { hidden: true })).not.toBeVisible();
-            });
-
-            it('does nothing if the ctrl key is pressed', () => {
-              const { getByRole } = render(<DropDownWrapper options={options} />);
-              fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowUp', ctrlKey: true });
               expect(getByRole('listbox', { hidden: true })).not.toBeVisible();
             });
           });
@@ -285,28 +242,6 @@ describe('options', () => {
             expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[0]);
             expect(spy).not.toHaveBeenCalled();
           });
-
-          it('does nothing with the meta key pressed', () => {
-            const spy = jest.fn();
-            const { getByRole, getAllByRole } = render((
-              <DropDownWrapper options={options} onValue={spy} />
-            ));
-            fireEvent.click(getByRole('combobox'));
-            fireEvent.keyDown(document.activeElement, { key: 'ArrowDown', metaKey: true });
-            expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[0]);
-            expect(spy).not.toHaveBeenCalled();
-          });
-
-          it('does nothing with the control key pressed', () => {
-            const spy = jest.fn();
-            const { getByRole, getAllByRole } = render((
-              <DropDownWrapper options={options} onValue={spy} />
-            ));
-            fireEvent.click(getByRole('combobox'));
-            fireEvent.keyDown(document.activeElement, { key: 'ArrowDown', ctrlKey: true });
-            expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[0]);
-            expect(spy).not.toHaveBeenCalled();
-          });
         });
 
         describe('pressing the up arrow', () => {
@@ -331,28 +266,6 @@ describe('options', () => {
             expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[2]);
             expect(spy).not.toHaveBeenCalled();
           });
-
-          it('does nothing with the meta key pressed', () => {
-            const spy = jest.fn();
-            const { getByRole, getAllByRole } = render((
-              <DropDownWrapper options={options} onValue={spy} />
-            ));
-            fireEvent.click(getByRole('combobox'));
-            fireEvent.keyDown(document.activeElement, { key: 'ArrowUp', metaKey: true });
-            expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[0]);
-            expect(spy).not.toHaveBeenCalled();
-          });
-
-          it('does nothing with the control key pressed', () => {
-            const spy = jest.fn();
-            const { getByRole, getAllByRole } = render((
-              <DropDownWrapper options={options} onValue={spy} />
-            ));
-            fireEvent.click(getByRole('combobox'));
-            fireEvent.keyDown(document.activeElement, { key: 'ArrowUp', ctrlKey: true });
-            expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[0]);
-            expect(spy).not.toHaveBeenCalled();
-          });
         });
 
         describe('pressing the home key', () => {
@@ -366,28 +279,6 @@ describe('options', () => {
             expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[0]);
             expect(spy).not.toHaveBeenCalled();
           });
-
-          it('does nothing with the meta key pressed', () => {
-            const spy = jest.fn();
-            const { getByRole, getAllByRole } = render((
-              <DropDownWrapper options={options} onValue={spy} value="Banana" />
-            ));
-            fireEvent.click(getByRole('combobox'));
-            fireEvent.keyDown(document.activeElement, { key: 'Home', metaKey: true });
-            expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[1]);
-            expect(spy).not.toHaveBeenCalled();
-          });
-
-          it('does nothing with the control key pressed', () => {
-            const spy = jest.fn();
-            const { getByRole, getAllByRole } = render((
-              <DropDownWrapper options={options} onValue={spy} value="Banana" />
-            ));
-            fireEvent.click(getByRole('combobox'));
-            fireEvent.keyDown(document.activeElement, { key: 'Home', ctrlKey: true });
-            expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[1]);
-            expect(spy).not.toHaveBeenCalled();
-          });
         });
 
         describe('pressing the end key', () => {
@@ -399,28 +290,6 @@ describe('options', () => {
             fireEvent.click(getByRole('combobox'));
             fireEvent.keyDown(document.activeElement, { key: 'End' });
             expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[2]);
-            expect(spy).not.toHaveBeenCalled();
-          });
-
-          it('does nothing with the meta key pressed', () => {
-            const spy = jest.fn();
-            const { getByRole, getAllByRole } = render((
-              <DropDownWrapper options={options} onValue={spy} value="Banana" />
-            ));
-            fireEvent.click(getByRole('combobox'));
-            fireEvent.keyDown(document.activeElement, { key: 'End', metaKey: true });
-            expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[1]);
-            expect(spy).not.toHaveBeenCalled();
-          });
-
-          it('does nothing with the control key pressed', () => {
-            const spy = jest.fn();
-            const { getByRole, getAllByRole } = render((
-              <DropDownWrapper options={options} onValue={spy} value="Banana" />
-            ));
-            fireEvent.click(getByRole('combobox'));
-            fireEvent.keyDown(document.activeElement, { key: 'End', ctrlKey: true });
-            expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[1]);
             expect(spy).not.toHaveBeenCalled();
           });
         });
@@ -484,6 +353,13 @@ describe('options', () => {
             const { getByRole, getAllByRole } = render(<DropDownWrapper options={options} />);
             fireEvent.click(getByRole('combobox'));
             fireEvent.keyDown(document.activeElement, { key: 'b', ctrlKey: true });
+            expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[0]);
+          });
+
+          it('does nothing if the alt key is pressed', () => {
+            const { getByRole, getAllByRole } = render(<DropDownWrapper options={options} />);
+            fireEvent.click(getByRole('combobox'));
+            fireEvent.keyDown(document.activeElement, { key: 'b', altKey: true });
             expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[0]);
           });
         });
@@ -570,28 +446,6 @@ describe('options', () => {
               fireEvent.keyDown(document.activeElement, { key: 'Enter' });
               expect(getByRole('combobox')).toHaveTextContent('Banana');
             });
-
-            it('does nothing if the meta key is pressed', () => {
-              const spy = jest.fn();
-              const { getByRole, getAllByRole } = render((
-                <DropDownWrapper options={options} onValue={spy} />
-              ));
-              fireEvent.click(getByRole('combobox'));
-              fireEvent.keyDown(document.activeElement, { key: 'Enter', metaKey: true });
-              expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[0]);
-              expect(spy).not.toHaveBeenCalled();
-            });
-
-            it('does nothing if the ctrl key is pressed', () => {
-              const spy = jest.fn();
-              const { getByRole, getAllByRole } = render((
-                <DropDownWrapper options={options} onValue={spy} />
-              ));
-              fireEvent.click(getByRole('combobox'));
-              fireEvent.keyDown(document.activeElement, { key: 'Enter', ctrlKey: true });
-              expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[0]);
-              expect(spy).not.toHaveBeenCalled();
-            });
           });
 
           describe('when the value is the current value', () => {
@@ -633,28 +487,6 @@ describe('options', () => {
               fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
               fireEvent.keyDown(document.activeElement, { key: 'Escape' });
               expect(getByRole('combobox')).toHaveTextContent('Banana');
-            });
-
-            it('does nothing if the meta key is pressed', () => {
-              const spy = jest.fn();
-              const { getByRole, getAllByRole } = render((
-                <DropDownWrapper options={options} onValue={spy} />
-              ));
-              fireEvent.click(getByRole('combobox'));
-              fireEvent.keyDown(document.activeElement, { key: 'Escape', metaKey: true });
-              expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[0]);
-              expect(spy).not.toHaveBeenCalled();
-            });
-
-            it('does nothing if the ctrl key is pressed', () => {
-              const spy = jest.fn();
-              const { getByRole, getAllByRole } = render((
-                <DropDownWrapper options={options} onValue={spy} />
-              ));
-              fireEvent.click(getByRole('combobox'));
-              fireEvent.keyDown(document.activeElement, { key: 'Escape', ctrlKey: true });
-              expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[0]);
-              expect(spy).not.toHaveBeenCalled();
             });
           });
 
@@ -698,28 +530,6 @@ describe('options', () => {
               fireEvent.keyDown(document.activeElement, { key: 'Tab' });
               expect(getByRole('combobox')).toHaveTextContent('Banana');
             });
-
-            it('does nothing if the meta key is pressed', () => {
-              const spy = jest.fn();
-              const { getByRole, getAllByRole } = render((
-                <DropDownWrapper options={options} onValue={spy} />
-              ));
-              fireEvent.click(getByRole('combobox'));
-              fireEvent.keyDown(document.activeElement, { key: 'Tab', metaKey: true });
-              expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[0]);
-              expect(spy).not.toHaveBeenCalled();
-            });
-
-            it('does nothing if the ctrl key is pressed', () => {
-              const spy = jest.fn();
-              const { getByRole, getAllByRole } = render((
-                <DropDownWrapper options={options} onValue={spy} />
-              ));
-              fireEvent.click(getByRole('combobox'));
-              fireEvent.keyDown(document.activeElement, { key: 'Tab', ctrlKey: true });
-              expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[0]);
-              expect(spy).not.toHaveBeenCalled();
-            });
           });
 
           describe('when the value is the current value', () => {
@@ -762,28 +572,6 @@ describe('options', () => {
               fireEvent.keyDown(document.activeElement, { key: 'Tab', shiftKey: true });
               expect(getByRole('combobox')).toHaveTextContent('Banana');
             });
-
-            it('does nothing if the meta key is pressed', () => {
-              const spy = jest.fn();
-              const { getByRole, getAllByRole } = render((
-                <DropDownWrapper options={options} onValue={spy} />
-              ));
-              fireEvent.click(getByRole('combobox'));
-              fireEvent.keyDown(document.activeElement, { key: 'Tab', metaKey: true, shiftKey: true });
-              expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[0]);
-              expect(spy).not.toHaveBeenCalled();
-            });
-
-            it('does nothing if the ctrl key is pressed', () => {
-              const spy = jest.fn();
-              const { getByRole, getAllByRole } = render((
-                <DropDownWrapper options={options} onValue={spy} />
-              ));
-              fireEvent.click(getByRole('combobox'));
-              fireEvent.keyDown(document.activeElement, { key: 'Tab', ctrlKey: true, shiftKey: true });
-              expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[0]);
-              expect(spy).not.toHaveBeenCalled();
-            });
           });
 
           describe('when the value is the current value', () => {
@@ -825,28 +613,6 @@ describe('options', () => {
               fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
               fireEvent.keyDown(document.activeElement, { key: 'ArrowUp', altKey: true });
               expect(getByRole('combobox')).toHaveTextContent('Banana');
-            });
-
-            it('does nothing if the meta key is pressed', () => {
-              const spy = jest.fn();
-              const { getByRole, getAllByRole } = render((
-                <DropDownWrapper options={options} onValue={spy} />
-              ));
-              fireEvent.click(getByRole('combobox'));
-              fireEvent.keyDown(document.activeElement, { key: 'ArrowUp', metaKey: true, altKey: true });
-              expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[0]);
-              expect(spy).not.toHaveBeenCalled();
-            });
-
-            it('does nothing if the ctrl key is pressed', () => {
-              const spy = jest.fn();
-              const { getByRole, getAllByRole } = render((
-                <DropDownWrapper options={options} onValue={spy} />
-              ));
-              fireEvent.click(getByRole('combobox'));
-              fireEvent.keyDown(document.activeElement, { key: 'ArrowUp', ctrlKey: true, altKey: true });
-              expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[0]);
-              expect(spy).not.toHaveBeenCalled();
             });
           });
 
@@ -924,6 +690,14 @@ describe('options', () => {
             const { getByRole } = render(<DropDownWrapper options={options} onValue={spy} />);
             getByRole('combobox').focus();
             fireEvent.keyDown(document.activeElement, { key: 'b', ctrlKey: true });
+            expect(spy).not.toHaveBeenCalled();
+          });
+
+          it('does nothing if the altKey is pressed', () => {
+            const spy = jest.fn();
+            const { getByRole } = render(<DropDownWrapper options={options} onValue={spy} />);
+            getByRole('combobox').focus();
+            fireEvent.keyDown(document.activeElement, { key: 'b', altKey: true });
             expect(spy).not.toHaveBeenCalled();
           });
         });

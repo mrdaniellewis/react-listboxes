@@ -1,5 +1,4 @@
-import { useCallback, useMemo, useReducer, useRef } from 'react';
-import { optionise } from '../helpers/optionise.js';
+import { useCallback, useReducer, useRef } from 'react';
 
 export const useAsyncSearch = (fn, initialOptions) => {
   const [{ options, busy }, dispatch] = useReducer(
@@ -23,9 +22,5 @@ export const useAsyncSearch = (fn, initialOptions) => {
     dispatch({ options: results, busy: false });
   }, [fn, initialOptions]);
 
-  const foundOptions = useMemo(() => (
-    options.map((o) => optionise(o))
-  ), [options]);
-
-  return [foundOptions, onSearch, busy];
+  return [options, onSearch, busy];
 };

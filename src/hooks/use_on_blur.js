@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 
 /**
  * This generates blur and focus
@@ -6,9 +6,16 @@ import { useCallback, useEffect, useState } from 'react';
  */
 export function useOnBlur(fn, ref) {
   const [focus, setFocus] = useState(false);
+  const timeoutRef = useRef();
+
+  // Ensure the timeout does not run after unmounting
+  useEffect(() => {
+    clearTimeout(timeoutRef.current);
+  }, []);
 
   const onBlur = useCallback(() => {
-    setTimeout(() => {
+    clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
       if (ref.current && !ref.current.contains(document.activeElement)) {
         fn();
         setFocus(false);
