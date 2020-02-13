@@ -22,7 +22,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
     options, value, selectedOption, id, className, classGenerator,
     notFoundMessage, layoutListBox, managedFocus, busy, onValue: _2, onSearch,
     autoComplete, showSelectedLabel, findAutoComplete: _3, tabAutoComplete: _4,
-    onBlur, onFocus,
+    onBlur: passedOnBlur, onFocus: passedOnFocus,
     ClearButtonComponent, ClearButtonProps,
     ComboBoxComponent, ComboBoxProps,
     GroupComponent, GroupProps,
@@ -162,9 +162,9 @@ export const ComboBox = forwardRef((rawProps, ref) => {
           id={id}
           type="text"
           role="combobox"
+          // aria-haspopup="listbox" is implicit
           aria-autocomplete={ariaAutocomplete}
-          aria-haspopup="true"
-          aria-controls={`${id}_listbox`}
+          aria-controls={`${id}_listbox`} // ARIA 1.2 pattern
           aria-expanded={showListBox ? 'true' : 'false'}
           aria-activedescendant={(showListBox && focusListBox && focusedOption?.key) || null}
           value={inputLabel || ''}
@@ -172,9 +172,9 @@ export const ComboBox = forwardRef((rawProps, ref) => {
           onChange={(e) => dispatch(onChange(e))}
           onFocus={(e) => {
             dispatch(onFocus(e));
-            onFocus?.(e);
+            passedOnFocus?.(e);
           }}
-          onBlur={onBlur ? (e) => onBlur(e) : null}
+          onBlur={passedOnBlur ? (e) => passedOnBlur(e) : null}
           aria-describedby={joinTokens(showNotFound && `${id}_not_found`, ariaDescribedBy)}
           ref={combinedRef}
           className={classes('input', expanded && 'focused')}

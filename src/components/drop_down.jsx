@@ -25,13 +25,13 @@ export const DropDown = forwardRef((rawProps, ref) => {
     options, value, onValue: _1, id, className,
     children, managedFocus, layoutListBox,
     classGenerator, skipOption: _2, selectedOption, findOption: currentFindOption,
-    DropDownComponent, DropDownProps,
-    ComboBoxComponent, ComboBoxProps,
-    ListBoxComponent, ListBoxProps,
-    OptionComponent, OptionProps,
-    GroupComponent, GroupProps,
-    GroupWrapperComponent, GroupWrapperProps,
-    ValueComponent, ValueProps,
+    DropDownComponent, dropDownProps,
+    ComboBoxComponent, comboBoxProps,
+    ListBoxComponent, listBoxProps,
+    OptionComponent, optionProps,
+    GroupComponent, groupProps,
+    GroupWrapperComponent, groupWrapperProps,
+    ValueComponent, valueProps,
     ...componentProps
   } = optionisedProps;
   const comboBoxRef = useRef();
@@ -104,7 +104,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
     <Context.Provider value={{ dispatch, props: optionisedProps, state }}>
       <DropDownComponent
         {...(DropDownComponent === Fragment ? undefined : { className })}
-        {...DropDownProps}
+        {...dropDownProps}
         {...componentProps}
       >
         <ComboBoxComponent
@@ -122,7 +122,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
           onKeyDown={(e) => dispatch(onButtonKeyDown(e))}
           onMouseDown={(e) => e.preventDefault()}
           className={classes('combobox')}
-          {...ComboBoxProps}
+          {...comboBoxProps}
         >
           {(children ?? value?.label ?? selectedOption?.label) || null}
         </ComboBoxComponent>
@@ -139,7 +139,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
           onBlur={handleBlur}
           onKeyDown={(e) => dispatch(onKeyDown(e))}
           className={joinTokens(classes('listbox'), listClassName)}
-          {...ListBoxProps}
+          {...listBoxProps}
           style={listStyle}
         >
           {renderGroupedOptions({
@@ -152,13 +152,13 @@ export const DropDown = forwardRef((rawProps, ref) => {
                   value={{ dispatch, props: optionisedProps, state, group }}
                 >
                   <GroupWrapperComponent
-                    {...GroupWrapperProps}
+                    {...groupWrapperProps}
                   >
                     <GroupComponent
                       id={key}
                       className={classes('group')}
                       aria-hidden="true" // Prevent screen readers reading the wrong number of options
-                      {...GroupProps}
+                      {...groupProps}
                       {...html}
                     >
                       {label}
@@ -185,7 +185,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
                     aria-disabled={disabled ? 'true' : null}
                     ref={selected ? focusedRef : null}
                     className={classes('option', selected && 'focused', group && 'grouped')}
-                    {...OptionProps}
+                    {...optionProps}
                     {...html}
                     onClick={disabled ? null : (e) => dispatch(onClick(e, option))}
                   >
@@ -197,7 +197,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
                     <ValueComponent
                       aria-labelledby={group ? `${group?.key} ${key}_label` : null}
                       id={group ? `${key}_label` : null}
-                      {...ValueProps}
+                      {...valueProps}
                     >
                       {label}
                     </ValueComponent>
@@ -229,19 +229,19 @@ DropDown.propTypes = {
   findOption: PropTypes.func,
 
   ListBoxComponent: componentValidator,
-  ListBoxProps: PropTypes.object,
+  listBoxProps: PropTypes.object,
   ComboBoxComponent: componentValidator,
-  ComboBoxProps: PropTypes.object,
+  comboBoxProps: PropTypes.object,
   GroupComponent: componentValidator,
-  GroupProps: PropTypes.object,
+  groupProps: PropTypes.object,
   GroupWrapperComponent: componentValidator,
-  GroupWrapperProps: PropTypes.object,
+  groupWrapperProps: PropTypes.object,
   OptionComponent: componentValidator,
-  OptionProps: PropTypes.object,
+  optionProps: PropTypes.object,
   ValueComponent: componentValidator,
-  ValueProps: PropTypes.object,
+  valueProps: PropTypes.object,
   DropDownComponent: componentValidator,
-  DropDownProps: PropTypes.object,
+  dropDownProps: PropTypes.object,
 };
 
 DropDown.defaultProps = {
@@ -258,19 +258,19 @@ DropDown.defaultProps = {
   required: false,
   findOption,
   ListBoxComponent: 'ul',
-  ListBoxProps: null,
+  listBoxProps: null,
   ComboBoxComponent: 'div',
-  ComboBoxProps: null,
+  comboBoxProps: null,
   GroupComponent: 'li',
-  GroupProps: null,
+  groupProps: null,
   GroupWrapperComponent: Fragment,
-  GroupWrapperProps: null,
+  groupWrapperProps: null,
   OptionComponent: 'li',
-  OptionProps: null,
+  optionProps: null,
   ValueComponent: 'div',
-  ValueProps: null,
+  valueProps: null,
   DropDownComponent: 'div',
-  DropDownProps: null,
+  dropDownProps: null,
 };
 
 DropDown.displayName = 'DropDown';
