@@ -45,8 +45,8 @@ exports[`options as array of objects disabled sets the aria-disabled attribute 1
     <input
       aria-autocomplete="none"
       aria-controls="id_listbox"
-      aria-expanded="false"
-      class="combobox__input"
+      aria-expanded="true"
+      class="combobox__input combobox__input--focused"
       id="id"
       role="combobox"
       tabindex="0"
@@ -62,7 +62,6 @@ exports[`options as array of objects disabled sets the aria-disabled attribute 1
     />
     <ul
       class="combobox__listbox"
-      hidden=""
       id="id_listbox"
       role="listbox"
       tabindex="-1"
