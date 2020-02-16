@@ -100,6 +100,22 @@ function Example() {
           { label: 'Orange', disabled: true },
         ]}
       />
+      <DropDownField
+        label="With first option disabled"
+        options={[
+          { label: 'Apple', disabled: true },
+          { label: 'Banana' },
+          { label: 'Orange' },
+        ]}
+      />
+      <DropDownField
+        label="With all options disabled"
+        options={[
+          { label: 'Apple', disabled: true },
+          { label: 'Banana', disabled: true },
+          { label: 'Orange', disabled: true },
+        ]}
+      />
       <pre>
         <code className="language-js">
           {unindent`
@@ -138,6 +154,12 @@ function Example() {
         options={countries}
       />
       <DropDownField
+        label="Large number of options - without managed focus"
+        blank="Please choose…"
+        options={countries}
+        managedFocus={false}
+      />
+      <DropDownField
         label="Extremely long options"
         blank="Please choose..."
         options={[
@@ -147,6 +169,16 @@ function Example() {
           'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
           'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
         ]}
+      />
+      <DropDownField
+        label="Disabled"
+        blank="Please choose…"
+        options={countries}
+        disabled
+      />
+      <DropDownField
+        label="No options"
+        options={[]}
       />
     </>
   );

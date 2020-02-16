@@ -134,6 +134,10 @@ function Example() {
         blank="Please choose…"
         options={countries}
       />
+      <SelectField
+        label="No options"
+        options={[]}
+      />
     </>
   );
 }

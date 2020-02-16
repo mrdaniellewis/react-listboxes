@@ -17,22 +17,23 @@ import { bemClassGenerator } from '../helpers/bem_class_generator.js';
 import { joinTokens } from '../helpers/join_tokens.js';
 import { useCombineRefs } from '../hooks/use_combine_refs.js';
 import { findOption } from '../helpers/find_option.js';
+import { extractProps } from '../helpers/extract_props.js';
 
 export const DropDown = forwardRef((rawProps, ref) => {
   const optionisedProps = useNormalisedOptions(rawProps, { mustHaveSelection: true });
   const {
-    'aria-labelledby': ariaLabelledBy, required,
-    options, value, onValue: _1, id, className,
+    'aria-labelledby': ariaLabelledBy,
+    required, disabled,
+    options, value, id, className,
     children, managedFocus, layoutListBox,
-    classGenerator, skipOption: _2, selectedOption, findOption: currentFindOption,
-    DropDownComponent, dropDownProps,
+    classGenerator, selectedOption, findOption: currentFindOption,
+    WrapperComponent, wrapperProps,
     ComboBoxComponent, comboBoxProps,
     ListBoxComponent, listBoxProps,
     OptionComponent, optionProps,
-    GroupComponent, groupProps,
+    GroupLabelComponent, groupLabelProps,
     GroupWrapperComponent, groupWrapperProps,
     ValueComponent, valueProps,
-    ...componentProps
   } = optionisedProps;
   const comboBoxRef = useRef();
   const listRef = useRef();
@@ -100,12 +101,13 @@ export const DropDown = forwardRef((rawProps, ref) => {
 
   const classes = classGenerator(className);
 
+  const contextValue = { props: optionisedProps, state };
+
   return (
-    <Context.Provider value={{ dispatch, props: optionisedProps, state }}>
-      <DropDownComponent
-        {...(DropDownComponent === Fragment ? undefined : { className })}
-        {...dropDownProps}
-        {...componentProps}
+    <Context.Provider value={contextValue}>
+      <WrapperComponent
+        {...(WrapperComponent === Fragment ? undefined : { className })}
+        {...wrapperProps}
       >
         <ComboBoxComponent
           role="combobox"
@@ -116,21 +118,24 @@ export const DropDown = forwardRef((rawProps, ref) => {
           aria-labelledby={ariaLabelledBy}
           aria-readonly="true"
           aria-required={required ? 'true' : null}
-          tabIndex={0}
+          aria-disabled={disabled ? 'true' : null}
+          tabIndex={disabled ? null : 0}
           ref={combinedRef}
           onClick={(e) => dispatch(onToggleOpen(e))}
           onKeyDown={(e) => dispatch(onButtonKeyDown(e))}
           onMouseDown={(e) => e.preventDefault()}
           className={classes('combobox')}
+          {...extractProps(optionisedProps, 'aria-*', 'data-*')}
           {...comboBoxProps}
         >
-          {(children ?? value?.label ?? selectedOption?.label) || null}
+          {(children ?? value?.label ?? selectedOption?.label) || '\u00A0'}
         </ComboBoxComponent>
         <ListBoxComponent
           ref={listRef}
           id={`${id}_listbox`}
           role="listbox"
           hidden={!expanded}
+          aria-activedescendant={focusedOption?.key || null}
           tabIndex={-1}
           onFocus={(e) => {
             handleFocus();
@@ -149,20 +154,20 @@ export const DropDown = forwardRef((rawProps, ref) => {
               return (
                 <Context.Provider
                   key={key}
-                  value={{ dispatch, props: optionisedProps, state, group }}
+                  value={{ ...contextValue, group }}
                 >
                   <GroupWrapperComponent
                     {...groupWrapperProps}
                   >
-                    <GroupComponent
+                    <GroupLabelComponent
                       id={key}
                       className={classes('group')}
                       aria-hidden="true" // Prevent screen readers reading the wrong number of options
-                      {...groupProps}
+                      {...groupLabelProps}
                       {...html}
                     >
                       {label}
-                    </GroupComponent>
+                    </GroupLabelComponent>
                     {groupChildren}
                   </GroupWrapperComponent>
                 </Context.Provider>
@@ -170,24 +175,24 @@ export const DropDown = forwardRef((rawProps, ref) => {
             },
             // eslint-disable-next-line react/prop-types
             renderOption(option) {
-              const { label, key, html, disabled, group } = option;
+              const { label, key, html, disabled: optionDisabled, group } = option;
               const selected = focusedOption?.key === key;
               return (
                 <Context.Provider
                   key={key}
-                  value={{ dispatch, props: optionisedProps, state, option }}
+                  value={{ ...contextValue, group, option }}
                 >
                   <OptionComponent
                     id={key}
                     role="option"
                     tabIndex={-1}
                     aria-selected={selected ? 'true' : null}
-                    aria-disabled={disabled ? 'true' : null}
+                    aria-disabled={optionDisabled ? 'true' : null}
                     ref={selected ? focusedRef : null}
                     className={classes('option', selected && 'focused', group && 'grouped')}
                     {...optionProps}
                     {...html}
-                    onClick={disabled ? null : (e) => dispatch(onClick(e, option))}
+                    onClick={optionDisabled ? null : (e) => dispatch(onClick(e, option))}
                   >
                     {/*
                         Prefix the label with the group
@@ -207,13 +212,14 @@ export const DropDown = forwardRef((rawProps, ref) => {
             },
           })}
         </ListBoxComponent>
-      </DropDownComponent>
+      </WrapperComponent>
     </Context.Provider>
   );
 });
 
 DropDown.propTypes = {
   'aria-labelledby': PropTypes.string,
+  'aria-invalid': PropTypes.string,
   blank: PropTypes.string,
   children: PropTypes.node,
   id: PropTypes.string.isRequired,
@@ -226,26 +232,28 @@ DropDown.propTypes = {
   skipOption: PropTypes.func,
   classGenerator: PropTypes.func,
   required: PropTypes.bool,
+  disabled: PropTypes.bool,
   findOption: PropTypes.func,
 
+  WrapperComponent: componentValidator,
+  wrapperProps: PropTypes.object,
   ListBoxComponent: componentValidator,
   listBoxProps: PropTypes.object,
   ComboBoxComponent: componentValidator,
   comboBoxProps: PropTypes.object,
-  GroupComponent: componentValidator,
-  groupProps: PropTypes.object,
+  GroupLabelComponent: componentValidator,
+  groupLabelProps: PropTypes.object,
   GroupWrapperComponent: componentValidator,
   groupWrapperProps: PropTypes.object,
   OptionComponent: componentValidator,
   optionProps: PropTypes.object,
   ValueComponent: componentValidator,
   valueProps: PropTypes.object,
-  DropDownComponent: componentValidator,
-  dropDownProps: PropTypes.object,
 };
 
 DropDown.defaultProps = {
   'aria-labelledby': null,
+  'aria-invalid': null,
   blank: '',
   children: null,
   layoutListBox: null,
@@ -256,21 +264,22 @@ DropDown.defaultProps = {
   skipOption: undefined,
   classGenerator: bemClassGenerator,
   required: false,
+  disabled: false,
   findOption,
+  WrapperComponent: 'div',
+  wrapperProps: null,
   ListBoxComponent: 'ul',
   listBoxProps: null,
   ComboBoxComponent: 'div',
   comboBoxProps: null,
-  GroupComponent: 'li',
-  groupProps: null,
+  GroupLabelComponent: 'li',
+  groupLabelProps: null,
   GroupWrapperComponent: Fragment,
   groupWrapperProps: null,
   OptionComponent: 'li',
   optionProps: null,
   ValueComponent: 'div',
   valueProps: null,
-  DropDownComponent: 'div',
-  dropDownProps: null,
 };
 
 DropDown.displayName = 'DropDown';

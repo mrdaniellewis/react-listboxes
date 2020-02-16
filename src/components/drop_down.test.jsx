@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { Fragment, useState, useContext, forwardRef } from 'react';
 import { render, fireEvent, wait, act } from '@testing-library/react';
 import { DropDown } from './drop_down.jsx';
+import { Context } from '../context.js';
 
 class PropUpdater {
   setUpdater(fn) {
@@ -59,7 +60,13 @@ expect.extend({
     if (combobox.getAttribute('aria-activedescendant') !== node.id) {
       return {
         pass: false,
-        message: () => `expected ${document.activeElement.outerHTML} to eq ${node.outerHTML}`,
+        message: () => `expected combobox aria-activedescendant to eq ${node.id}`,
+      };
+    }
+    if (listbox.getAttribute('aria-activedescendant') !== node.id) {
+      return {
+        pass: false,
+        message: () => `expected listbox aria-activedescendant to eq ${node.id}`,
       };
     }
     if (node.getAttribute('aria-selected') !== 'true') {
@@ -800,6 +807,34 @@ describe('options', () => {
         expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[0]);
       });
 
+      describe('first option is disabled', () => {
+        const disabledFirstOptions = [{ label: 'Apple', disabled: true }, 'Banana'];
+
+        it('defaults selection to the first non-disabled option', () => {
+          const { getByRole, getAllByRole } = render((
+            <DropDownWrapper options={disabledFirstOptions} />
+          ));
+          fireEvent.click(getByRole('combobox'));
+          expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[1]);
+        });
+      });
+
+      describe('only disabled options', () => {
+        const onlyDisabledOptions = [
+          { label: 'Apple', disabled: true },
+          { label: 'Banana', disabled: true },
+        ];
+
+        it('defaults selection to the first non-disabled option', () => {
+          const { getByRole } = render((
+            <DropDownWrapper options={onlyDisabledOptions} />
+          ));
+          fireEvent.click(getByRole('combobox'));
+          expect(document.activeElement).toEqual(getByRole('listbox'));
+          expect(getByRole('combobox')).not.toHaveAttribute('aria-activedescendant');
+        });
+      });
+
       describe('selecting a disabled option', () => {
         describe('when clicking on an option', () => {
           it('does not close the listbox or select the item', () => {
@@ -947,6 +982,30 @@ describe('options', () => {
         expect(getByRole('option')).toHaveAttribute('data-foo', 'bar');
         expect(getByRole('option')).toHaveAttribute('class', 'class');
       });
+
+      describe('html id', () => {
+        it('is used as the options id', () => {
+          const options = [{ label: 'foo', html: { id: 'xxx' } }];
+          const { getByRole } = render(
+            <DropDownWrapper options={options} />,
+          );
+          fireEvent.click(getByRole('combobox'));
+          expect(getByRole('option')).toHaveAttribute('id', 'xxx');
+          expect(getByRole('combobox')).toHaveActiveOption(getByRole('option'));
+        });
+
+        it('will not use duplicate ids', () => {
+          const options = [{ label: 'foo', html: { id: 'xxx' } }, { label: 'bar', html: { id: 'xxx' } }];
+          const { getByRole, getAllByRole } = render(
+            <DropDownWrapper options={options} />,
+          );
+          fireEvent.click(getByRole('combobox'));
+          fireEvent.keyDown(document.activeElement, { key: 'ArrowUp' });
+          expect(getAllByRole('option')[0]).toHaveAttribute('id', 'xxx');
+          expect(getAllByRole('option')[1]).toHaveAttribute('id', 'xxx_1');
+          expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[1]);
+        });
+      });
     });
 
     describe('group', () => {
@@ -1060,6 +1119,31 @@ describe('options', () => {
     });
   });
 
+  describe('no options', () => {
+    it('does not open the listbox of click', () => {
+      const { getByRole } = render(
+        <DropDownWrapper options={[]} />,
+      );
+      fireEvent.click(getByRole('combobox'));
+      expect(getByRole('listbox', { hidden: true })).not.toBeVisible();
+    });
+
+    it('does not open the listbox on arrow down', () => {
+      const { getByRole } = render(
+        <DropDownWrapper options={[]} />,
+      );
+      fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' });
+      expect(getByRole('listbox', { hidden: true })).not.toBeVisible();
+    });
+
+    it('displays a none breaking space as the current selection', () => {
+      const { getByRole } = render(
+        <DropDownWrapper options={[]} />,
+      );
+      expect(getByRole('combobox').textContent).toEqual('\u00A0');
+    });
+  });
+
   describe('mapOption', () => {
     const options = [{ name: 'Apple' }, { name: 'Banana' }, { name: 'Orange' }];
 
@@ -1131,62 +1215,6 @@ describe('options', () => {
       });
     });
   });
-
-  describe('empty options', () => {
-    it('renders an empty combo box', () => {
-      const { container } = render(<DropDownWrapper options={[]} />);
-      expect(container).toMatchSnapshot();
-    });
-
-    describe('with an open listbox', () => {
-      it('closes the list box on enter', () => {
-        const { getByRole } = render(<DropDownWrapper options={[]} />);
-        fireEvent.click(getByRole('combobox'));
-        expect(getByRole('listbox')).toBeVisible();
-        fireEvent.keyDown(document.activeElement, { key: 'Enter' });
-        expect(getByRole('listbox', { hidden: true })).not.toBeVisible();
-      });
-
-      it('closes the list box on escape', () => {
-        const { getByRole } = render(<DropDownWrapper options={[]} />);
-        fireEvent.click(getByRole('combobox'));
-        expect(getByRole('listbox')).toBeVisible();
-        fireEvent.keyDown(document.activeElement, { key: 'Escape' });
-        expect(getByRole('listbox', { hidden: true })).not.toBeVisible();
-      });
-
-      it('closes the list box on tab', () => {
-        const { getByRole } = render(<DropDownWrapper options={[]} />);
-        fireEvent.click(getByRole('combobox'));
-        expect(getByRole('listbox')).toBeVisible();
-        fireEvent.keyDown(document.activeElement, { key: 'Tab' });
-        expect(getByRole('listbox', { hidden: true })).not.toBeVisible();
-      });
-
-      it('closes the list box on ArrowUp + alt', () => {
-        const { getByRole } = render(<DropDownWrapper options={[]} />);
-        fireEvent.click(getByRole('combobox'));
-        expect(getByRole('listbox')).toBeVisible();
-        fireEvent.keyDown(document.activeElement, { key: 'ArrowUp', altKey: true });
-        expect(getByRole('listbox', { hidden: true })).not.toBeVisible();
-      });
-
-      it('closes the list box on blur', async () => {
-        const { getByRole } = render((
-          <>
-            <DropDownWrapper options={[]} />
-            <input />
-          </>
-        ));
-        fireEvent.click(getByRole('combobox'));
-        expect(getByRole('listbox')).toBeVisible();
-        getByRole('textbox').focus();
-        await wait(() => {
-          expect(getByRole('listbox', { hidden: true })).not.toBeVisible();
-        });
-      });
-    });
-  });
 });
 
 describe('value', () => {
@@ -1200,13 +1228,20 @@ describe('value', () => {
     expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[1]);
   });
 
-  describe('value is not in the list', () => {
+  describe('value is not in options', () => {
     it('sets the initial focused option to the first option', () => {
       const { getAllByRole, getByRole } = render((
         <DropDownWrapper options={options} value="Strawberry" />
       ));
       fireEvent.click(getByRole('combobox'));
       expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[0]);
+    });
+
+    it('displays value as the combo box label', () => {
+      const { getByRole } = render((
+        <DropDownWrapper options={options} value="Strawberry" />
+      ));
+      expect(getByRole('combobox')).toHaveTextContent('Strawberry');
     });
   });
 
@@ -1450,6 +1485,51 @@ describe('required', () => {
   });
 });
 
+describe('disabled', () => {
+  describe('when false', () => {
+    it('does not set aria-disabld on the combobox', () => {
+      const { getByRole } = render(
+        <DropDownWrapper options={['one', 'two']} disabled={false} />,
+      );
+      expect(getByRole('combobox')).not.toHaveAttribute('aria-disabled');
+    });
+  });
+
+  describe('when true', () => {
+    it('it sets aria-disabled on the combobox', () => {
+      const { getByRole } = render(
+        <DropDownWrapper options={['one', 'two']} disabled />,
+      );
+      expect(getByRole('combobox')).toHaveAttribute('aria-disabled', 'true');
+    });
+
+    it('does not open the listbox of click', () => {
+      const { getByRole } = render(
+        <DropDownWrapper options={['one', 'two']} disabled />,
+      );
+      fireEvent.click(getByRole('combobox'));
+      expect(getByRole('listbox', { hidden: true })).not.toBeVisible();
+    });
+
+    it('does not open the listbox on arrow down', () => {
+      const { getByRole } = render(
+        <DropDownWrapper options={['one', 'two']} disabled />,
+      );
+      fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' });
+      expect(getByRole('listbox', { hidden: true })).not.toBeVisible();
+    });
+
+    it('does not change the value when pressing a key', () => {
+      const spy = jest.fn();
+      const { getByRole } = render(
+        <DropDownWrapper options={['one', 'two']} disabled onValue={spy} />,
+      );
+      fireEvent.keyDown(getByRole('combobox'), { key: 't' });
+      expect(spy).not.toHaveBeenCalled();
+    });
+  });
+});
+
 describe('skipOption', () => {
   const options = ['Apple', 'Pear', 'Orange'];
 
@@ -1492,6 +1572,102 @@ describe('findOption', () => {
   });
 });
 
+describe('WrapperComponent', () => {
+  it('allows the wrapper to be replaced', () => {
+    const { container } = render(
+      <DropDownWrapper options={['foo']} WrapperComponent="dl" />,
+    );
+    const wrapper = container.firstChild;
+    expect(wrapper.tagName).toEqual('DL');
+  });
+
+  it('allows the wrapper to be a fragment', () => {
+    const { container, getByRole } = render(
+      <DropDownWrapper options={['foo']} WrapperComponent={Fragment} />,
+    );
+    expect(getByRole('combobox')).toEqual(container.firstChild);
+  });
+
+  it('allows access to the context', () => {
+    const spy = jest.fn();
+
+    function WrapperComponent(props) {
+      const context = useContext(Context);
+      spy(context);
+      return (
+        <div {...props} />
+      );
+    }
+
+    render(
+      <DropDownWrapper foo="bar" options={['foo']} WrapperComponent={WrapperComponent} />,
+    );
+
+    expect(spy).toHaveBeenCalledWith({
+      state: {
+        focusedOption: expect.any(Object),
+        search: '',
+        expanded: false,
+      },
+      props: expect.objectContaining({
+        foo: 'bar',
+        options: expect.any(Array),
+        value: null,
+      }),
+    });
+  });
+
+  it('allows custom layouts', () => {
+    function WrapperComponent(props) {
+      const { children: [comboBox, listBox] } = props;
+
+      return (
+        <div {...props}>
+          <div className="combobox-wrapper">
+            {comboBox}
+          </div>
+          <div className="listbox-wrapper">
+            {listBox}
+          </div>
+        </div>
+      );
+    }
+
+    const { container } = render(
+      <DropDownWrapper options={['foo']} WrapperComponent={WrapperComponent} />,
+    );
+
+    expect(container).toMatchSnapshot();
+  });
+});
+
+describe('wrapperProps', () => {
+  it('allows custom props to be added to the wrapper', () => {
+    const { container } = render(
+      <DropDownWrapper options={['foo']} wrapperProps={{ 'data-foo': 'bar' }} />,
+    );
+    expect(container.firstChild).toHaveAttribute('data-foo', 'bar');
+  });
+});
+
+describe('ComboBoxComponent', () => {
+  it('allows the combobox to be replaced', () => {
+    const { getByRole } = render(
+      <DropDownWrapper options={['foo']} ComboBoxComponent="dl" />,
+    );
+    expect(getByRole('combobox').tagName).toEqual('DL');
+  });
+});
+
+describe('comboBoxProps', () => {
+  it('allows custom props to be added to the wrapper', () => {
+    const { getByRole } = render(
+      <DropDownWrapper options={['foo']} comboBoxProps={{ 'data-foo': 'bar' }} />,
+    );
+    expect(getByRole('combobox')).toHaveAttribute('data-foo', 'bar');
+  });
+});
+
 describe('ListBoxComponent', () => {
   it('allows the listbox to be replaced', () => {
     const { getByRole } = render(
@@ -1500,69 +1676,262 @@ describe('ListBoxComponent', () => {
     expect(getByRole('listbox', { hidden: true }).tagName).toEqual('DL');
   });
 
-  it.todo('allows access to the context');
+  it('allows access to the context', () => {
+    const spy = jest.fn();
+
+    const ListBoxComponent = forwardRef((props, _) => {
+      const context = useContext(Context);
+      spy(context);
+      return (
+        <div {...props} />
+      );
+    });
+
+    render(
+      <DropDownWrapper foo="bar" options={['foo']} ListBoxComponent={ListBoxComponent} />,
+    );
+
+    expect(spy).toHaveBeenCalledWith({
+      state: {
+        focusedOption: expect.any(Object),
+        search: '',
+        expanded: false,
+      },
+      props: expect.objectContaining({
+        foo: 'bar',
+        options: expect.any(Array),
+        value: null,
+      }),
+    });
+  });
 });
 
-describe('ListBoxProps', () => {
-  it.todo('allows custom props to be added to the listbox');
+describe('listBoxProps', () => {
+  it('allows custom props to be added to the listbox', () => {
+    const { getByRole } = render(
+      <DropDownWrapper options={['foo']} listBoxProps={{ 'data-foo': 'bar' }} />,
+    );
+    expect(getByRole('listbox', { hidden: true })).toHaveAttribute('data-foo', 'bar');
+  });
 });
 
-describe('comboboxComponent', () => {
-  it.todo('allows the combobox to be replaced');
-  it.todo('allows access to the context');
+describe('GroupWrapperComponent', () => {
+  it('allows the group wrapper to be replaced', () => {
+    const { container } = render(
+      <DropDownWrapper options={[{ label: 'foo', group: 'bar' }]} GroupWrapperComponent="dl" />,
+    );
+    expect(container.querySelector('dl').firstChild).toHaveClass('dropdown__group');
+  });
+
+  it('allows access to the context with group properties', () => {
+    const spy = jest.fn();
+
+    function GroupWrapperComponent(props) {
+      const context = useContext(Context);
+      spy(context);
+      return (
+        <div {...props} />
+      );
+    }
+
+    render(
+      <DropDownWrapper foo="bar" options={[{ label: 'foo', group: 'bar' }]} GroupWrapperComponent={GroupWrapperComponent} />,
+    );
+
+    expect(spy).toHaveBeenCalledWith({
+      state: {
+        focusedOption: expect.any(Object),
+        search: '',
+        expanded: false,
+      },
+      props: expect.objectContaining({
+        foo: 'bar',
+        options: expect.any(Array),
+        value: null,
+      }),
+      group: expect.objectContaining({
+        label: 'bar',
+        options: expect.any(Array),
+      }),
+    });
+  });
 });
 
-describe('comboboxProps', () => {
-  it.todo('allows custom props to be added to the combobox');
+describe('groupWrapperProps', () => {
+  it('allows custom props', () => {
+    const { container } = render(
+      <DropDownWrapper
+        options={[{ label: 'foo', group: 'bar' }]}
+        GroupWrapperComponent="dl"
+        groupWrapperProps={{ 'data-foo': 'bar' }}
+      />,
+    );
+    expect(container.querySelector('dl')).toHaveAttribute('data-foo', 'bar');
+  });
 });
 
-describe('GroupComponent', () => {
-  it.todo('allows the group to be replaced');
-  it.todo('allows access to the context with group properties');
+describe('GroupLabelComponent', () => {
+  it('allows the group to be replaced', () => {
+    const { container } = render(
+      <DropDownWrapper options={[{ label: 'foo', group: 'bar' }]} GroupLabelComponent="dl" />,
+    );
+    expect(container.querySelector('dl')).toHaveTextContent('bar');
+  });
+
+  it('allows access to the context with group properties', () => {
+    const spy = jest.fn();
+
+    function GroupLabelComponent(props) {
+      const context = useContext(Context);
+      spy(context);
+      return (
+        <div {...props} />
+      );
+    }
+
+    render(
+      <DropDownWrapper foo="bar" options={[{ label: 'foo', group: 'bar' }]} GroupLabelComponent={GroupLabelComponent} />,
+    );
+
+    expect(spy).toHaveBeenCalledWith({
+      state: {
+        focusedOption: expect.any(Object),
+        search: '',
+        expanded: false,
+      },
+      props: expect.objectContaining({
+        foo: 'bar',
+        options: expect.any(Array),
+        value: null,
+      }),
+      group: expect.objectContaining({
+        label: 'bar',
+        options: expect.any(Array),
+      }),
+    });
+  });
 });
 
-describe('GroupProps', () => {
-  it.todo('allows custom props to be added to a group');
+describe('groupLabelProps', () => {
+  it('allows custom props', () => {
+    const { container } = render(
+      <DropDownWrapper
+        options={[{ label: 'foo', group: 'bar' }]}
+        GroupLabelComponent="dl"
+        groupLabelProps={{ 'data-foo': 'bar' }}
+      />,
+    );
+    expect(container.querySelector('dl')).toHaveAttribute('data-foo', 'bar');
+  });
 });
 
 describe('OptionComponent', () => {
-  it.todo('allows the option to be replaced');
-  it.todo('allows access to the context with option properties');
+  it('allows the option to be replaced', () => {
+    const { getByRole } = render(
+      <DropDownWrapper options={['foo']} OptionComponent="dl" />,
+    );
+    fireEvent.click(getByRole('combobox'));
+    expect(getByRole('option').tagName).toEqual('DL');
+  });
+
+  it('allows access to the context with option and group properties', () => {
+    const spy = jest.fn();
+
+    const OptionComponent = forwardRef((props, _) => {
+      const context = useContext(Context);
+      spy(context);
+      return (
+        <div {...props} />
+      );
+    });
+
+    render(
+      <DropDownWrapper foo="bar" options={[{ label: 'foo', group: 'bar' }]} OptionComponent={OptionComponent} />,
+    );
+
+    expect(spy).toHaveBeenCalledWith({
+      state: {
+        focusedOption: expect.any(Object),
+        search: '',
+        expanded: false,
+      },
+      props: expect.objectContaining({
+        foo: 'bar',
+        options: expect.any(Array),
+        value: null,
+      }),
+      group: expect.objectContaining({
+        label: 'bar',
+        options: expect.any(Array),
+      }),
+      option: expect.objectContaining({
+        label: 'foo',
+        group: expect.objectContaining({
+          label: 'bar',
+        }),
+      }),
+    });
+  });
 });
 
-describe('OptionProps', () => {
-  it.todo('allows custom props to be added to an option');
+describe('optionProps', () => {
+  it('allows custom props', () => {
+    const { getByRole } = render(
+      <DropDownWrapper
+        options={[{ label: 'foo', group: 'bar' }]}
+        optionProps={{ 'data-foo': 'bar' }}
+      />,
+    );
+    fireEvent.click(getByRole('combobox'));
+    expect(getByRole('option')).toHaveAttribute('data-foo', 'bar');
+  });
 });
 
 describe('ValueComponent', () => {
-  it.todo('allows the option value to be replaced');
-  it.todo('allows access to the context with option properties');
+  it('allows the component to be replaced', () => {
+    const { getByRole } = render(
+      <DropDownWrapper options={['foo']} ValueComponent="dl" />,
+    );
+    fireEvent.click(getByRole('combobox'));
+    expect(getByRole('option').firstChild.tagName).toEqual('DL');
+  });
 });
 
-describe('ValueProps', () => {
-  it.todo('allows custom props to be added to a value');
-});
-
-describe('DropDownComponent', () => {
-  it.todo('allows the wrapper to be replaced');
-  it.todo('adds the className if the wrapper is not a Fragment');
-  it.todo('allows access to the context');
-  it.todo('allows custom layouts');
-});
-
-describe('DropDownProps', () => {
-  it.todo('allows custom props to be added to the dropdown');
+describe('valueProps', () => {
+  it('allows custom props', () => {
+    const { getByRole } = render(
+      <DropDownWrapper
+        options={['foo']}
+        valueProps={{ 'data-foo': 'bar' }}
+      />,
+    );
+    fireEvent.click(getByRole('combobox'));
+    expect(getByRole('option').firstChild).toHaveAttribute('data-foo', 'bar');
+  });
 });
 
 describe('additional props', () => {
   const options = ['Apple', 'Banana', 'Orange'];
 
-  it('includes them on the drop down wrapper', () => {
+  it('does not include arbitrary props', () => {
     const { container } = render(
+      <DropDownWrapper options={options} foo="bar" />,
+    );
+    expect(container.querySelector('[foo="bar"]')).toEqual(null);
+  });
+
+  it('includes all data attributes on the combo box', () => {
+    const { getByRole } = render(
       <DropDownWrapper options={options} data-foo="bar" />,
     );
-    const dropDown = container.querySelector('div');
-    expect(dropDown).toHaveAttribute('data-foo', 'bar');
+    expect(getByRole('combobox')).toHaveAttribute('data-foo', 'bar');
+  });
+
+  it('includes all aria attributes on the combo box', () => {
+    const { getByRole } = render(
+      <DropDownWrapper options={options} aria-invalid="true" />,
+    );
+    expect(getByRole('combobox')).toHaveAttribute('aria-invalid', 'true');
   });
 });
 

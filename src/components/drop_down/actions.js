@@ -32,7 +32,8 @@ export function onSelectValue(newValue) {
 
 export function onToggleOpen(event) {
   return (dispatch, getState, getProps) => {
-    if (event?.button > 0) {
+    const { disabled, options } = getProps();
+    if (event?.button > 0 || disabled || !options.length) {
       return;
     }
     const { expanded } = getState();
@@ -47,8 +48,12 @@ export function onToggleOpen(event) {
 
 export function onButtonKeyDown(event) {
   return (dispatch, getState, getProps) => {
-    const { selectedOption } = getProps();
+    const { selectedOption, disabled, options } = getProps();
     const { altKey, ctrlKey, metaKey, key } = event;
+
+    if (disabled || !options.length) {
+      return;
+    }
 
     switch (key) {
       case ' ':
