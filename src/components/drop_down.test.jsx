@@ -1728,10 +1728,10 @@ describe('listBoxProps', () => {
   });
 });
 
-describe('GroupWrapperComponent', () => {
+describe('GroupComponent', () => {
   it('allows the group wrapper to be replaced', () => {
     const { container } = render(
-      <DropDownWrapper options={[{ label: 'foo', group: 'bar' }]} GroupWrapperComponent="dl" />,
+      <DropDownWrapper options={[{ label: 'foo', group: 'bar' }]} GroupComponent="dl" />,
     );
     expect(container.querySelector('dl').firstChild).toHaveClass('dropdown__group');
   });
@@ -1739,7 +1739,7 @@ describe('GroupWrapperComponent', () => {
   it('allows access to the context with group properties', () => {
     const spy = jest.fn();
 
-    function GroupWrapperComponent(props) {
+    function GroupComponent(props) {
       const context = useContext(Context);
       spy(context);
       return (
@@ -1748,7 +1748,7 @@ describe('GroupWrapperComponent', () => {
     }
 
     render(
-      <DropDownWrapper foo="bar" options={[{ label: 'foo', group: 'bar' }]} GroupWrapperComponent={GroupWrapperComponent} />,
+      <DropDownWrapper foo="bar" options={[{ label: 'foo', group: 'bar' }]} GroupComponent={GroupComponent} />,
     );
 
     expect(spy).toHaveBeenCalledWith({
@@ -1770,13 +1770,13 @@ describe('GroupWrapperComponent', () => {
   });
 });
 
-describe('groupWrapperProps', () => {
+describe('groupProps', () => {
   it('allows custom props', () => {
     const { container } = render(
       <DropDownWrapper
         options={[{ label: 'foo', group: 'bar' }]}
-        GroupWrapperComponent="dl"
-        groupWrapperProps={{ 'data-foo': 'bar' }}
+        GroupComponent="dl"
+        groupProps={{ 'data-foo': 'bar' }}
       />,
     );
     expect(container.querySelector('dl')).toHaveAttribute('data-foo', 'bar');

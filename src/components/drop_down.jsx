@@ -30,9 +30,9 @@ export const DropDown = forwardRef((rawProps, ref) => {
     WrapperComponent, wrapperProps,
     ComboBoxComponent, comboBoxProps,
     ListBoxComponent, listBoxProps,
-    OptionComponent, optionProps,
+    GroupComponent, groupProps,
     GroupLabelComponent, groupLabelProps,
-    GroupWrapperComponent, groupWrapperProps,
+    OptionComponent, optionProps,
     ValueComponent, valueProps,
   } = optionisedProps;
   const comboBoxRef = useRef();
@@ -156,8 +156,8 @@ export const DropDown = forwardRef((rawProps, ref) => {
                   key={key}
                   value={{ ...contextValue, group }}
                 >
-                  <GroupWrapperComponent
-                    {...groupWrapperProps}
+                  <GroupComponent
+                    {...groupProps}
                   >
                     <GroupLabelComponent
                       id={key}
@@ -169,7 +169,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
                       {label}
                     </GroupLabelComponent>
                     {groupChildren}
-                  </GroupWrapperComponent>
+                  </GroupComponent>
                 </Context.Provider>
               );
             },
@@ -241,10 +241,10 @@ DropDown.propTypes = {
   listBoxProps: PropTypes.object,
   ComboBoxComponent: componentValidator,
   comboBoxProps: PropTypes.object,
+  GroupComponent: componentValidator,
+  groupProps: PropTypes.object,
   GroupLabelComponent: componentValidator,
   groupLabelProps: PropTypes.object,
-  GroupWrapperComponent: componentValidator,
-  groupWrapperProps: PropTypes.object,
   OptionComponent: componentValidator,
   optionProps: PropTypes.object,
   ValueComponent: componentValidator,
@@ -272,10 +272,10 @@ DropDown.defaultProps = {
   listBoxProps: null,
   ComboBoxComponent: 'div',
   comboBoxProps: null,
+  GroupComponent: Fragment,
+  groupProps: null,
   GroupLabelComponent: 'li',
   groupLabelProps: null,
-  GroupWrapperComponent: Fragment,
-  groupWrapperProps: null,
   OptionComponent: 'li',
   optionProps: null,
   ValueComponent: 'div',
