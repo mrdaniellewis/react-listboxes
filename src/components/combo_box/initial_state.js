@@ -3,7 +3,7 @@ export function initialState({ selectedOption }) {
     inlineAutoComplete: false,
     expanded: false,
     focusListBox: false,
-    search: '',
+    search: null,
     focusedOption: selectedOption,
   };
 }

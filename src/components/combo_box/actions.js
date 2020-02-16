@@ -9,6 +9,7 @@ export const SET_EXPANDED = 'SET_EXPANDED';
 export const SET_CLOSED = 'SET_CLOSED';
 export const SET_FOCUSED_OPTION = 'SET_FOCUSED_OPTION';
 export const SET_LIST_PROPS = 'SET_LIST_PROPS';
+export const SET_FOCUS_LIST_BOX = 'SET_FOCUS_LIST_BOX';
 
 export function setFocusedOption({ focusedOption, focusListBox, autoComplete }) {
   return { type: SET_FOCUSED_OPTION, focusedOption, focusListBox, autoComplete };
@@ -83,6 +84,7 @@ export function onKeyDown(event) {
       // If the user is manipulating text or moving the cursor
       // return focus to the input
       // Mostly this works, but sadly it doesn't work with composition events (Dead key)
+      dispatch({ type: SET_FOCUS_LIST_BOX, focusListBox: false });
       inputRef.current.focus();
       return;
     }
@@ -196,10 +198,11 @@ export function onFocus() {
 }
 
 export function onBlur() {
-  return (dispatch, getState) => {
+  return (dispatch, getState, getProps) => {
     const { focusedOption } = getState();
+    const { value } = getProps();
 
-    if (focusedOption) {
+    if (focusedOption && value?.identify !== focusedOption?.identity) {
       dispatch(onSelectValue(focusedOption));
       return;
     }

@@ -1,4 +1,4 @@
-import { SET_SEARCH, SET_EXPANDED, SET_CLOSED, SET_FOCUSED_OPTION } from './actions.js';
+import { SET_SEARCH, SET_EXPANDED, SET_CLOSED, SET_FOCUSED_OPTION, SET_FOCUS_LIST_BOX } from './actions.js';
 
 // AT RISK: It is debatable autocomplete in this form is actually useful
 function applyAutocomplete(state, { type, ...params }, props) {
@@ -106,6 +106,16 @@ function reduce(state, props, { type, ...params }) {
         expanded: true,
         focusListBox: focusedOption ? focusListBox : false,
         focusedOption,
+      };
+    }
+    case SET_FOCUS_LIST_BOX: {
+      const {
+        focusListBox
+      } = params;
+
+      return {
+        ...state,
+        focusListBox,
       };
     }
     /* istanbul ignore next */

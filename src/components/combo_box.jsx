@@ -23,16 +23,15 @@ export const ComboBox = forwardRef((rawProps, ref) => {
     notFoundMessage, layoutListBox, managedFocus, busy, onValue: _2, onSearch,
     autoComplete, showSelectedLabel, findAutoComplete: _3, tabAutoComplete: _4,
     onBlur: passedOnBlur, onFocus: passedOnFocus,
-    ClearButtonComponent, ClearButtonProps,
-    ComboBoxComponent, ComboBoxProps,
-    GroupComponent, GroupProps,
-    GroupWrapperComponent, GroupWrapperProps,
-    InputComponent, InputProps,
-    ListBoxComponent, ListBoxProps,
-    NotFoundComponent, NotFoundProps,
-    OptionComponent, OptionProps,
-    ValueComponent, ValueProps,
-    ...componentProps
+    WrapperComponent, wrapperProps,
+    InputComponent, inputProps,
+    ListBoxComponent, listBoxProps,
+    GroupComponent, groupProps,
+    GroupLabelComponent, groupLabelProps,
+    OptionComponent, optionProps,
+    ValueComponent, valueProps,
+    ClearButtonComponent, clearButtonProps,
+    NotFoundComponent, notFoundProps,
   } = optionisedProps;
 
   const comboRef = useRef();
@@ -150,13 +149,13 @@ export const ComboBox = forwardRef((rawProps, ref) => {
 
   return (
     <Context.Provider value={context}>
-      <ComboBoxComponent
+      <WrapperComponent
         aria-busy={ariaBusy ? 'true' : 'false'}
         className={className}
         onBlur={handleBlur}
         onFocus={handleFocus}
         ref={comboRef}
-        {...ComboBoxProps}
+        {...wrapperProps}
       >
         <InputComponent
           id={id}
@@ -179,7 +178,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
           ref={combinedRef}
           className={classes('input', expanded && 'focused')}
           tabIndex={managedFocus && showListBox && focusListBox ? -1 : 0}
-          {...InputProps}
+          {...inputProps}
         />
         <ClearButtonComponent
           onMouseDown={(e) => e.preventDefault()}
@@ -189,7 +188,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
           id={`${id}_clear_button`}
           aria-labelledby={joinTokens(`${id}_clear_button`, id)}
           className={classes('clear-button')}
-          {...ClearButtonProps}
+          {...clearButtonProps}
         />
         <ListBoxComponent
           ref={listRef}
@@ -201,7 +200,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
           onKeyDown={(e) => dispatch(onKeyDown(e))}
           onMouseDown={(e) => e.preventDefault()}
           className={joinTokens(classes('listbox'), listClassName)}
-          {...ListBoxProps}
+          {...listBoxProps}
           style={listStyle}
         >
           {renderGroupedOptions({
@@ -213,20 +212,20 @@ export const ComboBox = forwardRef((rawProps, ref) => {
                   key={key}
                   value={{ ...context, group }}
                 >
-                  <GroupWrapperComponent
-                    {...GroupWrapperProps}
+                  <GroupComponent
+                    {...groupProps}
                   >
-                    <GroupComponent
+                    <GroupLabelComponent
                       id={key}
                       className={classes('group')}
                       aria-hidden="true" // Prevent screen readers reading the wrong number of options
-                      {...GroupProps}
+                      {...groupLabelProps}
                       {...html}
                     >
                       {label}
-                    </GroupComponent>
+                    </GroupLabelComponent>
                     {groupChildren}
-                  </GroupWrapperComponent>
+                  </GroupComponent>
                 </Context.Provider>
               );
             },
@@ -247,7 +246,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
                     aria-disabled={disabled ? 'true' : null}
                     ref={selected ? focusedRef : null}
                     className={classes('option', selected && 'focused', group && 'grouped')}
-                    {...OptionProps}
+                    {...optionProps}
                     {...html}
                     onClick={disabled ? null : (e) => dispatch(onClick(e, option))}
                   >
@@ -259,7 +258,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
                     <ValueComponent
                       aria-labelledby={group ? `${group?.key} ${key}_label` : null}
                       id={group ? `${key}_label` : null}
-                      {...ValueProps}
+                      {...valueProps}
                     >
                       {label}
                     </ValueComponent>
@@ -275,11 +274,11 @@ export const ComboBox = forwardRef((rawProps, ref) => {
           role="alert"
           aria-live="polite"
           className={classes('not-found')}
-          {...NotFoundProps}
+          {...notFoundProps}
         >
           {showNotFound ? notFoundMessage : null}
         </NotFoundComponent>
-      </ComboBoxComponent>
+      </WrapperComponent>
     </Context.Provider>
   );
 });
@@ -310,24 +309,24 @@ ComboBox.propTypes = {
   onBlur: PropTypes.func,
   onFocus: PropTypes.func,
 
-  ClearButtonComponent: componentValidator,
-  ClearButtonProps: PropTypes.object,
-  ComboBoxComponent: componentValidator,
-  ComboBoxProps: PropTypes.object,
-  GroupComponent: componentValidator,
-  GroupProps: PropTypes.object,
-  GroupWrapperComponent: componentValidator,
-  GroupWrapperProps: PropTypes.object,
+  WrapperComponent: componentValidator,
+  wrapperProps: PropTypes.object,
   InputComponent: componentValidator,
-  InputProps: PropTypes.object,
+  inputProps: PropTypes.object,
   ListBoxComponent: componentValidator,
-  ListBoxProps: PropTypes.object,
-  NotFoundComponent: componentValidator,
-  NotFoundProps: PropTypes.object,
+  listBoxProps: PropTypes.object,
+  GroupComponent: componentValidator,
+  groupProps: PropTypes.object,
+  GroupLabelComponent: componentValidator,
+  groupLabelProps: PropTypes.object,
   OptionComponent: componentValidator,
-  OptionProps: PropTypes.object,
+  optionProps: PropTypes.object,
   ValueComponent: componentValidator,
-  ValueProps: PropTypes.object,
+  valueProps: PropTypes.object,
+  ClearButtonComponent: componentValidator,
+  clearButtonProps: PropTypes.object,
+  NotFoundComponent: componentValidator,
+  notFoundProps: PropTypes.object,
 };
 
 ComboBox.defaultProps = {
@@ -351,24 +350,24 @@ ComboBox.defaultProps = {
   onBlur: null,
   onFocus: null,
 
-  ClearButtonComponent: 'span',
-  ClearButtonProps: null,
-  ComboBoxComponent: 'div',
-  ComboBoxProps: null,
-  GroupComponent: 'li',
-  GroupProps: null,
-  GroupWrapperComponent: Fragment,
-  GroupWrapperProps: null,
+  WrapperComponent: 'div',
+  wrapperProps: null,
   InputComponent: 'input',
-  InputProps: null,
+  inputProps: null,
   ListBoxComponent: 'ul',
-  ListBoxProps: null,
-  NotFoundComponent: 'div',
-  NotFoundProps: null,
+  listBoxProps: null,
+  GroupComponent: Fragment,
+  groupProps: null,
+  GroupLabelComponent: 'li',
+  groupLabelProps: null,
   OptionComponent: 'li',
-  OptionProps: null,
+  optionProps: null,
   ValueComponent: 'div',
-  ValueProps: null,
+  valueProps: null,
+  ClearButtonComponent: 'span',
+  clearButtonProps: null,
+  NotFoundComponent: 'div',
+  notFoundProps: null,
 };
 
 ComboBox.displayName = 'ComboBox';

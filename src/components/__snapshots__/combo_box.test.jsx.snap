@@ -1,0 +1,512 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`WrapperComponent allows custom layouts 1`] = `
+<div>
+  <div
+    aria-busy="false"
+    class="combobox"
+  >
+    <div
+      class="combobox-wrapper"
+    >
+      <input
+        aria-autocomplete="none"
+        aria-controls="id_listbox"
+        aria-expanded="false"
+        class="combobox__input"
+        id="id"
+        role="combobox"
+        tabindex="0"
+        type="text"
+        value=""
+      />
+    </div>
+    <div
+      class="listbox-wrapper"
+    >
+      <span
+        aria-label="Clear"
+        aria-labelledby="id_clear_button id"
+        class="combobox__clear-button"
+        hidden=""
+        id="id_clear_button"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`options as array of objects disabled sets the aria-disabled attribute 1`] = `
+<div>
+  <div
+    aria-busy="false"
+    class="combobox"
+  >
+    <input
+      aria-autocomplete="none"
+      aria-controls="id_listbox"
+      aria-expanded="false"
+      class="combobox__input"
+      id="id"
+      role="combobox"
+      tabindex="0"
+      type="text"
+      value=""
+    />
+    <span
+      aria-label="Clear"
+      aria-labelledby="id_clear_button id"
+      class="combobox__clear-button"
+      hidden=""
+      id="id_clear_button"
+    />
+    <ul
+      class="combobox__listbox"
+      hidden=""
+      id="id_listbox"
+      role="listbox"
+      tabindex="-1"
+    >
+      <li
+        class="combobox__option"
+        id="id_option_apple"
+        role="option"
+        tabindex="-1"
+      >
+        <div>
+          Apple
+        </div>
+      </li>
+      <li
+        aria-disabled="true"
+        class="combobox__option"
+        id="id_option_banana"
+        role="option"
+        tabindex="-1"
+      >
+        <div>
+          Banana
+        </div>
+      </li>
+    </ul>
+    <div
+      aria-live="polite"
+      class="combobox__not-found"
+      hidden=""
+      id="id_not_found"
+      role="alert"
+    />
+  </div>
+</div>
+`;
+
+exports[`options as array of objects group renders grouped options 1`] = `
+<div>
+  <div
+    aria-busy="false"
+    class="combobox"
+  >
+    <input
+      aria-autocomplete="none"
+      aria-controls="id_listbox"
+      aria-expanded="false"
+      class="combobox__input"
+      id="id"
+      role="combobox"
+      tabindex="0"
+      type="text"
+      value=""
+    />
+    <span
+      aria-label="Clear"
+      aria-labelledby="id_clear_button id"
+      class="combobox__clear-button"
+      hidden=""
+      id="id_clear_button"
+    />
+    <ul
+      class="combobox__listbox"
+      hidden=""
+      id="id_listbox"
+      role="listbox"
+      tabindex="-1"
+    >
+      <li
+        class="combobox__option"
+        id="id_option_apple"
+        role="option"
+        tabindex="-1"
+      >
+        <div>
+          Apple
+        </div>
+      </li>
+      <li
+        aria-hidden="true"
+        class="combobox__group"
+        id="id_group_citrus"
+      >
+        Citrus
+      </li>
+      <li
+        class="combobox__option combobox__option--grouped"
+        id="id_option_orange"
+        role="option"
+        tabindex="-1"
+      >
+        <div
+          aria-labelledby="id_group_citrus id_option_orange_label"
+          id="id_option_orange_label"
+        >
+          Orange
+        </div>
+      </li>
+      <li
+        class="combobox__option combobox__option--grouped"
+        id="id_option_lemon"
+        role="option"
+        tabindex="-1"
+      >
+        <div
+          aria-labelledby="id_group_citrus id_option_lemon_label"
+          id="id_option_lemon_label"
+        >
+          Lemon
+        </div>
+      </li>
+      <li
+        aria-hidden="true"
+        class="combobox__group"
+        id="id_group_berry"
+      >
+        Berry
+      </li>
+      <li
+        class="combobox__option combobox__option--grouped"
+        id="id_option_raspberry"
+        role="option"
+        tabindex="-1"
+      >
+        <div
+          aria-labelledby="id_group_berry id_option_raspberry_label"
+          id="id_option_raspberry_label"
+        >
+          Raspberry
+        </div>
+      </li>
+      <li
+        class="combobox__option combobox__option--grouped"
+        id="id_option_strawberry"
+        role="option"
+        tabindex="-1"
+      >
+        <div
+          aria-labelledby="id_group_berry id_option_strawberry_label"
+          id="id_option_strawberry_label"
+        >
+          Strawberry
+        </div>
+      </li>
+    </ul>
+    <div
+      aria-live="polite"
+      class="combobox__not-found"
+      hidden=""
+      id="id_not_found"
+      role="alert"
+    />
+  </div>
+</div>
+`;
+
+exports[`options as array of objects label renders a closed combo box 1`] = `
+<div>
+  <div
+    aria-busy="false"
+    class="combobox"
+  >
+    <input
+      aria-autocomplete="none"
+      aria-controls="id_listbox"
+      aria-expanded="false"
+      class="combobox__input"
+      id="id"
+      role="combobox"
+      tabindex="0"
+      type="text"
+      value=""
+    />
+    <span
+      aria-label="Clear"
+      aria-labelledby="id_clear_button id"
+      class="combobox__clear-button"
+      hidden=""
+      id="id_clear_button"
+    />
+    <ul
+      class="combobox__listbox"
+      hidden=""
+      id="id_listbox"
+      role="listbox"
+      tabindex="-1"
+    >
+      <li
+        class="combobox__option"
+        id="id_option_apple"
+        role="option"
+        tabindex="-1"
+      >
+        <div>
+          Apple
+        </div>
+      </li>
+      <li
+        class="combobox__option"
+        id="id_option_banana"
+        role="option"
+        tabindex="-1"
+      >
+        <div>
+          Banana
+        </div>
+      </li>
+      <li
+        class="combobox__option"
+        id="id_option_orange"
+        role="option"
+        tabindex="-1"
+      >
+        <div>
+          Orange
+        </div>
+      </li>
+    </ul>
+    <div
+      aria-live="polite"
+      class="combobox__not-found"
+      hidden=""
+      id="id_not_found"
+      role="alert"
+    />
+  </div>
+</div>
+`;
+
+exports[`options options as array of numbers renders a closed combo box 1`] = `
+<div>
+  <div
+    aria-busy="false"
+    class="combobox"
+  >
+    <input
+      aria-autocomplete="none"
+      aria-controls="id_listbox"
+      aria-expanded="false"
+      class="combobox__input"
+      id="id"
+      role="combobox"
+      tabindex="0"
+      type="text"
+      value=""
+    />
+    <span
+      aria-label="Clear"
+      aria-labelledby="id_clear_button id"
+      class="combobox__clear-button"
+      hidden=""
+      id="id_clear_button"
+    />
+    <ul
+      class="combobox__listbox"
+      hidden=""
+      id="id_listbox"
+      role="listbox"
+      tabindex="-1"
+    >
+      <li
+        class="combobox__option"
+        id="id_option_1"
+        role="option"
+        tabindex="-1"
+      >
+        <div>
+          1
+        </div>
+      </li>
+      <li
+        class="combobox__option"
+        id="id_option_2"
+        role="option"
+        tabindex="-1"
+      >
+        <div>
+          2
+        </div>
+      </li>
+      <li
+        class="combobox__option"
+        id="id_option_3"
+        role="option"
+        tabindex="-1"
+      >
+        <div>
+          3
+        </div>
+      </li>
+    </ul>
+    <div
+      aria-live="polite"
+      class="combobox__not-found"
+      hidden=""
+      id="id_not_found"
+      role="alert"
+    />
+  </div>
+</div>
+`;
+
+exports[`options options as array of strings renders a closed combo box 1`] = `
+<div>
+  <div
+    aria-busy="false"
+    class="combobox"
+  >
+    <input
+      aria-autocomplete="none"
+      aria-controls="id_listbox"
+      aria-expanded="false"
+      class="combobox__input"
+      id="id"
+      role="combobox"
+      tabindex="0"
+      type="text"
+      value=""
+    />
+    <span
+      aria-label="Clear"
+      aria-labelledby="id_clear_button id"
+      class="combobox__clear-button"
+      hidden=""
+      id="id_clear_button"
+    />
+    <ul
+      class="combobox__listbox"
+      hidden=""
+      id="id_listbox"
+      role="listbox"
+      tabindex="-1"
+    >
+      <li
+        class="combobox__option"
+        id="id_option_apple"
+        role="option"
+        tabindex="-1"
+      >
+        <div>
+          Apple
+        </div>
+      </li>
+      <li
+        class="combobox__option"
+        id="id_option_banana"
+        role="option"
+        tabindex="-1"
+      >
+        <div>
+          Banana
+        </div>
+      </li>
+      <li
+        class="combobox__option"
+        id="id_option_orange"
+        role="option"
+        tabindex="-1"
+      >
+        <div>
+          Orange
+        </div>
+      </li>
+    </ul>
+    <div
+      aria-live="polite"
+      class="combobox__not-found"
+      hidden=""
+      id="id_not_found"
+      role="alert"
+    />
+  </div>
+</div>
+`;
+
+exports[`options updating options updates the options 1`] = `
+<div>
+  <div
+    aria-busy="false"
+    class="combobox"
+  >
+    <input
+      aria-autocomplete="none"
+      aria-controls="id_listbox"
+      aria-expanded="false"
+      class="combobox__input"
+      id="id"
+      role="combobox"
+      tabindex="0"
+      type="text"
+      value=""
+    />
+    <span
+      aria-label="Clear"
+      aria-labelledby="id_clear_button id"
+      class="combobox__clear-button"
+      hidden=""
+      id="id_clear_button"
+    />
+    <ul
+      class="combobox__listbox"
+      hidden=""
+      id="id_listbox"
+      role="listbox"
+      tabindex="-1"
+    >
+      <li
+        class="combobox__option"
+        id="id_option_strawberry"
+        role="option"
+        tabindex="-1"
+      >
+        <div>
+          Strawberry
+        </div>
+      </li>
+      <li
+        class="combobox__option"
+        id="id_option_raspberry"
+        role="option"
+        tabindex="-1"
+      >
+        <div>
+          Raspberry
+        </div>
+      </li>
+      <li
+        class="combobox__option"
+        id="id_option_banana"
+        role="option"
+        tabindex="-1"
+      >
+        <div>
+          Banana
+        </div>
+      </li>
+    </ul>
+    <div
+      aria-live="polite"
+      class="combobox__not-found"
+      hidden=""
+      id="id_not_found"
+      role="alert"
+    />
+  </div>
+</div>
+`;
