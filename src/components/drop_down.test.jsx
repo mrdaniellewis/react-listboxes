@@ -328,6 +328,19 @@ describe('options', () => {
             expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[1]);
           });
 
+          it('does not moves the option if pressing space', () => {
+            const { getByRole, getAllByRole } = render((
+              <DropDownWrapper
+                options={options}
+                value="Banana"
+                blank="Please choose"
+              />
+            ));
+            fireEvent.click(getByRole('combobox'));
+            fireEvent.keyDown(document.activeElement, { key: ' ' });
+            expect(getByRole('combobox')).toHaveActiveOption(getAllByRole('option')[2]);
+          });
+
           it('moves the option when typing multiple letters', () => {
             const similarOptions = [{ label: 'Banana' }, { label: 'Blackberry' }];
             const { getByRole, getAllByRole } = render((

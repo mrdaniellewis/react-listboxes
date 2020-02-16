@@ -74,6 +74,7 @@ export function onButtonKeyDown(event) {
 
       default:
         if (!rNonPrintableKey.test(key) && !altKey && !ctrlKey && !metaKey) {
+          event.preventDefault();
           dispatch({ type: SET_SEARCH_KEY, key });
         }
     }

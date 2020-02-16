@@ -53,7 +53,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
   const [handleBlur, handleFocus] = useOnBlur(() => dispatch(onBlur()), listRef);
 
   useEffect(() => {
-    if (!search) {
+    if (!search?.trim?.()) {
       return undefined;
     }
     const found = options.find((o) => currentFindOption(o, search));
