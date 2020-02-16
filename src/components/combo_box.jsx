@@ -180,7 +180,6 @@ export const ComboBox = forwardRef((rawProps, ref) => {
           className={classes('input', expanded && 'focused')}
           tabIndex={managedFocus && showListBox && focusListBox ? -1 : 0}
           {...InputProps}
-          {...componentProps}
         />
         <ClearButtonComponent
           onMouseDown={(e) => e.preventDefault()}
