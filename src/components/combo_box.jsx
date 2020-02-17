@@ -5,7 +5,6 @@ import { useThunkReducer as useReducer } from '../hooks/use_thunk_reducer.js';
 import { reducer } from './combo_box/reducer.js';
 import { initialState } from './combo_box/initial_state.js';
 import { onKeyDown, onChange, onFocus, onClearValue, onBlur, onClick, onOptionsChanged } from './combo_box/actions.js';
-import { options as validateOptions } from '../validators/options.js';
 import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
 import { useOnBlur } from '../hooks/use_on_blur.js';
 import { joinTokens } from '../helpers/join_tokens.js';
@@ -295,7 +294,7 @@ ComboBox.propTypes = {
   managedFocus: PropTypes.bool,
   notFoundMessage: PropTypes.node,
   onSearch: PropTypes.func,
-  options: validateOptions.isRequired,
+  options: PropTypes.arrayOf(PropTypes.any).isRequired,
   onValue: PropTypes.func,
   onChange: PropTypes.func,
   value: PropTypes.any,
