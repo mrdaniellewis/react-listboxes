@@ -128,7 +128,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
 
   useEffect(() => {
     clearTimeout(busyTimeoutRef.current);
-    if (busy && busyDebounce === null) {
+    if (busy && !busyDebounce) {
       setShowBusy(true);
     } else if (busy) {
       busyTimeoutRef.current = setTimeout(() => {
@@ -141,7 +141,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
 
   const classes = classGenerator(className);
   const showNotFound = !busy && expanded && !options.length && search?.trim();
-  const ariaBusy = showBusy && search?.trim() && search !== (value?.label);
+  const ariaBusy = showBusy && search?.trim();
   const combinedRef = useCombineRefs(inputRef, ref);
 
   const context = { props: optionisedProps, state };

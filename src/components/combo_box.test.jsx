@@ -1044,7 +1044,7 @@ describe('value', () => {
 
   it('sets the combo box value', () => {
     const options = ['Apple', 'Banana', 'Orange'];
-    const { getAllByRole, getByRole } = render((
+    const { getByRole } = render((
       <ComboBoxWrapper options={options} value="Banana" />
     ));
     getByRole('combobox').focus();
@@ -1092,7 +1092,7 @@ describe('value', () => {
     });
   });
 
-  describe.only('updating the value', () => {
+  describe('updating the value', () => {
     const options = ['Apple', 'Banana', 'Orange'];
 
     it('does not update the aria-selected value of an open listbox', () => {
@@ -1119,7 +1119,7 @@ describe('value', () => {
       expect(getByRole('combobox')).toHaveFocusedOption(getAllByRole('option')[0]);
     });
 
-    it.todo('changes the value of a closed listboxfocused value of an open listbox', () => {
+    it('changes the value of a closed listbox', () => {
       const propUpdater = new PropUpdater();
       const { getByRole, getAllByRole } = render(<ComboBoxWrapper
         options={options}
@@ -1127,22 +1127,122 @@ describe('value', () => {
       />);
       getByRole('combobox').focus();
       fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+      fireEvent.keyDown(document.activeElement, { key: 'Enter' });
       propUpdater.update((props) => ({ ...props, value: 'Banana' }));
-      expect(getByRole('combobox')).toHaveFocusedOption(getAllByRole('option')[0]);
+      expect(document.activeElement).toHaveValue('Banana');
+      fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+      expect(getByRole('combobox')).toHaveSelectedOption(getAllByRole('option')[1]);
     });
   });
 });
 
 describe('busy', () => {
-  it.todo('sets aria-busy');
+  describe('busyDebounce is null', () => {
+    describe('when false', () => {
+      it('sets aria-busy=false on the wrapper', () => {
+        const { container } = render((
+          <ComboBoxWrapper options={['foo']} busyDebounce={null} />
+        ));
+        expect(container.firstChild).toHaveAttribute('aria-busy', 'false');
+      });
+    });
+
+    describe('when true', () => {
+      describe('with no search', () => {
+        it('sets aria-busy=false on the wrapper', () => {
+          const { container } = render((
+            <ComboBoxWrapper options={['foo']} busy busyDebounce={null} />
+          ));
+          expect(container.firstChild).toHaveAttribute('aria-busy', 'false');
+        });
+      });
+
+      describe('with a search', () => {
+        it('sets aria-busy=true on the wrapper', () => {
+          const { container, getByRole } = render((
+            <ComboBoxWrapper options={['foo']} busy busyDebounce={null} />
+          ));
+          getByRole('combobox').focus();
+          userEvent.type(getByRole('combobox'), 'foo');
+          expect(container.firstChild).toHaveAttribute('aria-busy', 'true');
+        });
+      });
+    });
+  });
+
+  describe('busyDebounce is the default', () => {
+    describe('when true', () => {
+      it('sets aria-busy=true on the wrapper after 200ms', () => {
+        jest.useFakeTimers();
+        const { container, getByRole } = render((
+          <ComboBoxWrapper options={['foo']} busy />
+        ));
+        getByRole('combobox').focus();
+        userEvent.type(getByRole('combobox'), 'foo');
+        expect(container.firstChild).toHaveAttribute('aria-busy', 'false');
+        act(() => {
+          jest.advanceTimersByTime(200);
+        });
+        expect(container.firstChild).toHaveAttribute('aria-busy', 'true');
+      });
+    });
+  });
+
+  describe('busyDebounce is custom', () => {
+    describe('when true', () => {
+      it('sets aria-busy=true on the wrapper after delay', () => {
+        jest.useFakeTimers();
+        const { container, getByRole } = render((
+          <ComboBoxWrapper options={['foo']} busy busyDebounce={500} />
+        ));
+        getByRole('combobox').focus();
+        userEvent.type(getByRole('combobox'), 'foo');
+        expect(container.firstChild).toHaveAttribute('aria-busy', 'false');
+        act(() => {
+          jest.advanceTimersByTime(499);
+        });
+        expect(container.firstChild).toHaveAttribute('aria-busy', 'false');
+        act(() => {
+          jest.advanceTimersByTime(1);
+        });
+        expect(container.firstChild).toHaveAttribute('aria-busy', 'true');
+      });
+    });
+  });
 });
 
 describe('onSearch', () => {
+  describe('without onSearch', () => {
+    it('sets aria-autocomplete to none', () => {
+      const { getByRole } = render(<ComboBoxWrapper options={['foo']} />);
+      expect(getByRole('comboxbox')).toHaveAttribute('aria-autocomplete', 'none');
+    });
+  });
+
+  describe('when provided', () => {
+    it('sets aria-autocomplete to list', () => {
+      const { getByRole } = render(<ComboBoxWrapper options={['foo']} onSearch={() => {}} />);
+      expect(getByRole('combobox')).toHaveAttribute('aria-autocomplete', 'list');
+    });
+
+    describe('on focus', () => {
+      it.todo('calls onSearch');
+    });
+
+    describe('typing', () => {
+      it.todo('calls onSearch');
+    });
+
+    describe('on selecting a value', () => {
+      it.todo('calls onSearch');
+    });
+  });
+
   describe('updating options', () => {
     const options = ['Apple', 'Banana', 'Orange'];
     const newOptions = ['Strawberry', 'Raspberry', 'Banana'];
 
-    it('updates the options', () => {
+    it('updates the displayed options', () => {
       const propUpdater = new PropUpdater();
       const { container, getByRole } = render(<ComboBoxWrapper
         options={options}
@@ -1151,6 +1251,14 @@ describe('onSearch', () => {
       fireEvent.click(getByRole('combobox'));
       propUpdater.update((props) => ({ ...props, options: newOptions }));
       expect(container).toMatchSnapshot();
+    });
+
+    describe('update contains the focused option', () => {
+      it.todo('keeps the currently focused option');
+    });
+
+    describe('update does not contain the focused option', () => {
+      it.todo('removes the focused option');
     });
 
     describe('update contains the selected option', () => {
@@ -1169,7 +1277,7 @@ describe('onSearch', () => {
     });
 
     describe('update does not contain the selected option', () => {
-      it('resets the currently selected option', () => {
+      it('removes the selected option', () => {
         const propUpdater = new PropUpdater();
         const { getByRole, getAllByRole } = render(<ComboBoxWrapper
           options={options}

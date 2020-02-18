@@ -81,10 +81,12 @@ function reduce(state, props, { type, ...params }) {
     }
     case SET_EXPANDED: {
       const { expanded } = params;
+      const { selectedOption } = props;
 
       return {
         ...state,
         expanded,
+        focusedOption: expanded ? selectedOption : state.focusedOption,
       };
     }
     case SET_CLOSED:
