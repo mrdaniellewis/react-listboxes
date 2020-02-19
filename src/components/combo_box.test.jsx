@@ -1225,8 +1225,24 @@ describe('onSearch', () => {
       expect(getByRole('combobox')).toHaveAttribute('aria-autocomplete', 'list');
     });
 
-    describe('on focus', () => {
-      it.todo('calls onSearch');
+    describe.only('on focus', () => {
+      it('calls onSearch without a value', () => {
+        const spy = jest.fn();
+        const { getByRole } = render((
+          <ComboBoxWrapper options={['foo']} onSearch={spy} />
+        ));
+        getByRole('combobox').focus();
+        expect(spy).toHaveBeenCalledWith('');
+      });
+
+      it('calls onSearch with a value', () => {
+        const spy = jest.fn();
+        const { getByRole } = render((
+          <ComboBoxWrapper options={['foo']} onSearch={spy} value="foo" />
+        ));
+        getByRole('combobox').focus();
+        expect(spy).toHaveBeenCalledWith('foo');
+      });
     });
 
     describe('typing', () => {

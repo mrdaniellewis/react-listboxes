@@ -141,7 +141,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
 
   const classes = classGenerator(className);
   const showNotFound = !busy && expanded && !options.length && search?.trim();
-  const ariaBusy = showBusy && search?.trim();
+  const ariaBusy = showBusy && search?.trim() && search !== (value?.label);
   const combinedRef = useCombineRefs(inputRef, ref);
 
   const context = { props: optionisedProps, state };
