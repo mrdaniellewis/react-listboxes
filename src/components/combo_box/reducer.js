@@ -1,28 +1,28 @@
 import { SET_SEARCH, SET_EXPANDED, SET_CLOSED, SET_FOCUSED_OPTION, SET_FOCUS_LIST_BOX } from './actions.js';
 
-// AT RISK: It is debatable autocomplete in this form is actually useful
-function applyAutocomplete(state, { type, ...params }, props) {
-  const { autoComplete } = props;
+// AT RISK: It is debatable autoselect in this form is actually useful
+function applyAutoselect(state, { type, ...params }, props) {
+  const { autoselect } = props;
 
-  if (!autoComplete) {
+  if (!autoselect) {
     return state;
   }
 
   switch (type) {
     case SET_FOCUSED_OPTION:
     case SET_SEARCH: {
-      const { options, lastKeyRef: { current: key }, findAutoComplete } = props;
-      const { focusListBox, search, inlineAutoComplete } = state;
+      const { options, lastKeyRef: { current: key }, findAutoselect } = props;
+      const { focusListBox, search, inlineAutoselect } = state;
 
-      if (focusListBox || !search || !params.autoComplete) {
+      if (focusListBox || !search || !params.autoselect) {
         break;
       }
 
-      if (type === SET_SEARCH && key === 'Backspace' && inlineAutoComplete) {
+      if (type === SET_SEARCH && key === 'Backspace' && inlineAutoselect) {
         return {
           ...state,
           focusedOption: null,
-          inlineAutoComplete: false,
+          inlineAutoselect: false,
           search: search.slice(0, -1),
         };
       }
@@ -31,14 +31,14 @@ function applyAutocomplete(state, { type, ...params }, props) {
         return {
           ...state,
           focusedOption: null,
-          inlineAutoComplete: false,
+          inlineAutoselect: false,
         };
       }
 
       let focusedOption;
       for (let i = 0; i < options.length; i += 1) {
-        const result = findAutoComplete(options[i], search);
-        if (result === true) {
+        const result = findAutoselect(options[i], search);
+        if (result) {
           focusedOption = options[i];
           break;
         }
@@ -46,6 +46,7 @@ function applyAutocomplete(state, { type, ...params }, props) {
           break;
         }
       }
+
       if (!focusedOption) {
         break;
       }
@@ -55,14 +56,14 @@ function applyAutocomplete(state, { type, ...params }, props) {
       return {
         ...state,
         focusedOption,
-        inlineAutoComplete: autoComplete === 'inline' && selectionStart === search.length,
+        inlineAutoselect: autoselect === 'inline' && selectionStart === search.length,
       };
     }
     default:
   }
   return {
     ...state,
-    inlineAutoComplete: false,
+    inlineAutoselect: false,
   };
 }
 
@@ -81,12 +82,13 @@ function reduce(state, props, { type, ...params }) {
     }
     case SET_EXPANDED: {
       const { expanded } = params;
+      const { focusedOption } = state;
       const { selectedOption } = props;
 
       return {
         ...state,
         expanded,
-        focusedOption: expanded ? selectedOption : state.focusedOption,
+        focusedOption: focusedOption ?? (expanded ? selectedOption : null),
       };
     }
     case SET_CLOSED:
@@ -112,7 +114,7 @@ function reduce(state, props, { type, ...params }) {
     }
     case SET_FOCUS_LIST_BOX: {
       const {
-        focusListBox
+        focusListBox,
       } = params;
 
       return {
@@ -127,6 +129,6 @@ function reduce(state, props, { type, ...params }) {
 }
 
 export function reducer(state, action, props) {
-  const result = applyAutocomplete(reduce(state, props, action), action, props);
+  const result = applyAutoselect(reduce(state, props, action), action, props);
   return result;
 }

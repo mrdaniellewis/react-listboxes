@@ -36,6 +36,78 @@ exports[`WrapperComponent allows custom layouts 1`] = `
 </div>
 `;
 
+exports[`onSearch updating options updates the displayed options 1`] = `
+<div>
+  <div
+    aria-busy="false"
+    class="combobox"
+  >
+    <input
+      aria-autocomplete="none"
+      aria-controls="id_listbox"
+      aria-expanded="true"
+      class="combobox__input combobox__input--focused"
+      id="id"
+      role="combobox"
+      tabindex="0"
+      type="text"
+      value=""
+    />
+    <span
+      aria-label="Clear"
+      aria-labelledby="id_clear_button id"
+      class="combobox__clear-button"
+      hidden=""
+      id="id_clear_button"
+    />
+    <ul
+      class="combobox__listbox"
+      id="id_listbox"
+      role="listbox"
+      tabindex="-1"
+    >
+      <li
+        class="combobox__option"
+        id="id_option_strawberry"
+        role="option"
+        tabindex="-1"
+      >
+        <div>
+          Strawberry
+        </div>
+      </li>
+      <li
+        class="combobox__option"
+        id="id_option_raspberry"
+        role="option"
+        tabindex="-1"
+      >
+        <div>
+          Raspberry
+        </div>
+      </li>
+      <li
+        class="combobox__option"
+        id="id_option_banana"
+        role="option"
+        tabindex="-1"
+      >
+        <div>
+          Banana
+        </div>
+      </li>
+    </ul>
+    <div
+      aria-live="polite"
+      class="combobox__not-found"
+      hidden=""
+      id="id_not_found"
+      role="alert"
+    />
+  </div>
+</div>
+`;
+
 exports[`options as array of objects disabled sets the aria-disabled attribute 1`] = `
 <div>
   <div

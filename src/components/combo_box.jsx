@@ -20,7 +20,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
     'aria-describedby': ariaDescribedBy, busyDebounce,
     options, value, selectedOption, id, className, classGenerator,
     notFoundMessage, layoutListBox, managedFocus, busy, onValue: _2, onSearch,
-    autoComplete, showSelectedLabel, findAutoComplete: _3, tabAutoComplete: _4,
+    autoselect, showSelectedLabel, findAutoselect: _3, tabAutocomplete: _4,
     onBlur: passedOnBlur, onFocus: passedOnFocus,
     WrapperComponent, wrapperProps,
     InputComponent, inputProps,
@@ -53,7 +53,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
 
   const {
     expanded, focusedOption, search,
-    focusListBox, inlineAutoComplete,
+    focusListBox, inlineAutoselect,
   } = state;
   const [handleBlur, handleFocus] = useOnBlur(() => dispatch(onBlur()), comboRef);
 
@@ -81,32 +81,35 @@ export const ComboBox = forwardRef((rawProps, ref) => {
   }, [onSearch, searchValue]);
 
   const inputLabel = useMemo(() => {
-    if (inlineAutoComplete
-      || (((showSelectedLabel && !focusedOption?.unselectable) ?? autoComplete === 'inline') && focusListBox)
+    if (inlineAutoselect
+      || (((showSelectedLabel && !focusedOption?.unselectable) ?? autoselect === 'inline') && focusListBox)
     ) {
       return focusedOption?.label;
     }
     return search ?? value?.label;
   }, [
-    inlineAutoComplete, showSelectedLabel, autoComplete,
+    inlineAutoselect, showSelectedLabel, autoselect,
     focusListBox, focusedOption, search, value,
   ]);
 
   useLayoutEffect(() => {
-    if (search && autoComplete === 'inline' && inlineAutoComplete && focusedOption && document.activeElement === inputRef.current) {
+    if (search && autoselect === 'inline' && inlineAutoselect && focusedOption && document.activeElement === inputRef.current) {
       inputRef.current.setSelectionRange(search.length, focusedOption.label.length, 'backwards');
     }
-  }, [inlineAutoComplete, focusedOption, search, autoComplete]);
+  }, [inlineAutoselect, focusedOption, search, autoselect]);
 
   const ariaAutocomplete = useMemo(() => {
+    if (autoselect === 'inline') {
+      if (!onSearch) {
+        return 'inline';
+      }
+      return 'both';
+    }
     if (!onSearch) {
       return 'none';
     }
-    if (autoComplete === 'inline') {
-      return 'both';
-    }
     return 'list';
-  }, [onSearch, autoComplete]);
+  }, [onSearch, autoselect]);
 
   useLayoutEffect(() => {
     dispatch(onOptionsChanged());
@@ -127,7 +130,6 @@ export const ComboBox = forwardRef((rawProps, ref) => {
   }, [expanded, managedFocus, focusedOption, focusListBox, showListBox]);
 
   useEffect(() => {
-    clearTimeout(busyTimeoutRef.current);
     if (busy && !busyDebounce) {
       setShowBusy(true);
     } else if (busy) {
@@ -137,10 +139,14 @@ export const ComboBox = forwardRef((rawProps, ref) => {
     } else {
       setShowBusy(false);
     }
+    return () => {
+      clearTimeout(busyTimeoutRef.current);
+    };
   }, [busy, busyDebounce, busyTimeoutRef]);
 
   const classes = classGenerator(className);
-  const showNotFound = !busy && expanded && !options.length && search?.trim();
+  const showNotFound = notFoundMessage && !busy && expanded && !options.length
+    && search?.trim() && search !== value?.label;
   const ariaBusy = showBusy && search?.trim() && search !== (value?.label);
   const combinedRef = useCombineRefs(inputRef, ref);
 
@@ -299,9 +305,9 @@ ComboBox.propTypes = {
   onChange: PropTypes.func,
   value: PropTypes.any,
   showSelectedLabel: PropTypes.bool,
-  tabAutoComplete: PropTypes.bool,
-  findAutoComplete: PropTypes.func,
-  autoComplete: PropTypes.oneOf([false, true, 'inline']),
+  tabAutocomplete: PropTypes.bool,
+  findAutoselect: PropTypes.func,
+  autoselect: PropTypes.oneOf([false, true, 'inline']),
   classGenerator: PropTypes.func,
   busyDebounce: PropTypes.number,
 
@@ -339,15 +345,16 @@ ComboBox.defaultProps = {
   onSearch: null,
   onValue: () => {},
   onChange: () => {},
-  autoComplete: false,
-  showSelectedLabel: undefined,
-  tabAutoComplete: false,
-  findAutoComplete: findOption,
-  classGenerator: bemClassGenerator,
-  busyDebounce: 200,
-
   onBlur: null,
   onFocus: null,
+
+  autoselect: false,
+  tabAutocomplete: false,
+  findAutoselect: findOption,
+  showSelectedLabel: undefined,
+
+  classGenerator: bemClassGenerator,
+  busyDebounce: 200,
 
   WrapperComponent: 'div',
   wrapperProps: null,

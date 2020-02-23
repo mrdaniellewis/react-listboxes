@@ -8,15 +8,10 @@ export const SET_SEARCH = 'SET_SEARCH';
 export const SET_EXPANDED = 'SET_EXPANDED';
 export const SET_CLOSED = 'SET_CLOSED';
 export const SET_FOCUSED_OPTION = 'SET_FOCUSED_OPTION';
-export const SET_LIST_PROPS = 'SET_LIST_PROPS';
 export const SET_FOCUS_LIST_BOX = 'SET_FOCUS_LIST_BOX';
 
-export function setFocusedOption({ focusedOption, focusListBox, autoComplete }) {
-  return { type: SET_FOCUSED_OPTION, focusedOption, focusListBox, autoComplete };
-}
-
-export function setListProps({ className, style }) {
-  return { type: SET_LIST_PROPS, listClassName: className, listStyle: style };
+export function setFocusedOption({ focusedOption, focusListBox, autoselect }) {
+  return { type: SET_FOCUSED_OPTION, focusedOption, focusListBox, autoselect };
 }
 
 export function onSelectValue(newValue) {
@@ -158,10 +153,9 @@ export function onKeyDown(event) {
         }
         break;
       case 'Tab': {
-        const { tabAutoComplete, value } = getProps();
-        if (tabAutoComplete && focusedOption && expanded && !focusListBox
-          && !focusedOption.unselectable
-          && focusedOption.identity !== value?.indentity
+        const { tabAutocomplete, value } = getProps();
+        if (tabAutocomplete && focusedOption && expanded && !focusListBox
+          && focusedOption.identity !== value?.identity
           && !shiftKey && !altKey && !ctrlKey && !metaKey
         ) {
           event.preventDefault();
@@ -178,7 +172,7 @@ export function onChange(event) {
   return (dispatch, getState, getProps) => {
     const { onChange: passedOnChange } = getProps();
     const { target: { value: search } } = event;
-    dispatch({ type: SET_SEARCH, search, autoComplete: true });
+    dispatch({ type: SET_SEARCH, search, autoselect: true });
     if (!search) {
       dispatch(onSelectValue(null));
     }
@@ -241,7 +235,7 @@ export function onOptionsChanged() {
     const { options } = getProps();
     dispatch(setFocusedOption({
       focusedOption: options.find((o) => o.identity === focusedOption?.identity) || null,
-      autoComplete: true,
+      autoselect: true,
     }));
   };
 }

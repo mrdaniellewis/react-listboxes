@@ -16,8 +16,11 @@ export const useAsyncSearch = (fn, initialOptions) => {
     dispatch({ busy: true });
     const results = await fn(query);
     // Prevent out of sync returns clobbering the results
-    if (results === null || lastSearchRef.current !== query) {
+    if (lastSearchRef.current !== query) {
       return;
+    }
+    if (results === null) {
+      dispatch({ busy: false });
     }
     dispatch({ options: results, busy: false });
   }, [fn, initialOptions]);

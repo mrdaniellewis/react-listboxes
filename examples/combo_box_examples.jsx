@@ -191,29 +191,43 @@ function Example() {
       <ComboBoxField
         label="Autocomplete"
         options={countries}
-        autoComplete
+        autoselect
       />
       <ComboBoxField
         label="Inline autocomplete"
         options={countries}
-        autoComplete="inline"
+        autoselect="inline"
       />
       <ComboBoxField
         label="Inline tab autocomplete"
         options={countries}
-        autoComplete="inline"
-        tabAutoComplete
+        autoselect="inline"
+        tabAutocomplete
+      />
+      <ComboBoxField
+        label="Inline tab autocomplete without managed focus"
+        options={countries}
+        autoselect="inline"
+        tabAutocomplete
+        managedFocus={false}
       />
       <ComboBoxField
         label="Inline autocomplete without managed focus"
         options={countries}
-        autoComplete="inline"
+        autoselect="inline"
         managedFocus={false}
+      />
+      <ComboBoxField
+        label="Inline autocomplete without managed focus or showing selected label"
+        options={countries}
+        autoselect="inline"
+        managedFocus={false}
+        showSelectedLabel={false}
       />
       <AsyncComboBoxField
         label="Async search"
         options={countries}
-        autoComplete="inline"
+        autoselect="inline"
         managedFocus={false}
       />
     </>

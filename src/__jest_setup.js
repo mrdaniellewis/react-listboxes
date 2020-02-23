@@ -1,5 +1,9 @@
 import '@testing-library/jest-dom/extend-expect.js';
 
+beforeEach(() => {
+  expect.hasAssertions();
+});
+
 afterEach(() => {
   jest.restoreAllMocks();
   jest.useRealTimers();
@@ -14,9 +18,9 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  expect(errorSpy).not.toHaveBeenCalled(); // eslint-disable-line jest/no-standalone-expect
+  expect(errorSpy).not.toHaveBeenCalled();
   errorSpy = null;
 
-  expect(warnSpy).not.toHaveBeenCalled(); // eslint-disable-line jest/no-standalone-expect
+  expect(warnSpy).not.toHaveBeenCalled();
   warnSpy = null;
 });

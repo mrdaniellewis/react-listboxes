@@ -1,6 +1,6 @@
 export function initialState({ selectedOption }) {
   return {
-    inlineAutoComplete: false,
+    inlineAutoselect: false,
     expanded: false,
     focusListBox: false,
     search: null,
