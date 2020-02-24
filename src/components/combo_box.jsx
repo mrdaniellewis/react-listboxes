@@ -13,6 +13,13 @@ import { renderGroupedOptions } from '../helpers/render_grouped_options.js';
 import { bemClassGenerator } from '../helpers/bem_class_generator.js';
 import { findOption } from '../helpers/find_option.js';
 import { useCombineRefs } from '../hooks/use_combine_refs.js';
+import { extractProps } from '../helpers/extract_props.js';
+
+const allowAttributes = [
+  'autocapitalize', 'data-*', 'disabled', 'inputmode',
+  'maxLength', 'minLength', 'pattern', 'placeholder', 'readOnly',
+  'required', 'size', 'spellcheck',
+];
 
 export const ComboBox = forwardRef((rawProps, ref) => {
   const optionisedProps = useNormalisedOptions(rawProps);
@@ -156,7 +163,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
     <Context.Provider value={context}>
       <WrapperComponent
         aria-busy={ariaBusy ? 'true' : 'false'}
-        className={className}
+        className={classes()}
         onBlur={handleBlur}
         onFocus={handleFocus}
         ref={comboRef}
@@ -184,6 +191,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
           className={classes('input', expanded && 'focused')}
           tabIndex={managedFocus && showListBox && focusListBox ? -1 : 0}
           {...inputProps}
+          {...extractProps(optionisedProps, ...allowAttributes)}
         />
         <ClearButtonComponent
           onMouseDown={(e) => e.preventDefault()}
@@ -310,6 +318,7 @@ ComboBox.propTypes = {
   autoselect: PropTypes.oneOf([false, true, 'inline']),
   classGenerator: PropTypes.func,
   busyDebounce: PropTypes.number,
+  skipOption: PropTypes.func,
 
   onBlur: PropTypes.func,
   onFocus: PropTypes.func,
@@ -347,6 +356,7 @@ ComboBox.defaultProps = {
   onChange: () => {},
   onBlur: null,
   onFocus: null,
+  skipOption: undefined,
 
   autoselect: false,
   tabAutocomplete: false,

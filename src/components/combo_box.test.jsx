@@ -2103,7 +2103,7 @@ describe('className', () => {
   });
 });
 
-describe.skip('classGenerator', () => {
+describe('classGenerator', () => {
   const options = [
     { label: 'Apple' },
     { label: 'Pear' },
@@ -2112,7 +2112,7 @@ describe.skip('classGenerator', () => {
 
   it('allows custom class generation', () => {
     const spy = jest.fn((name) => (
-      (...names) => `${names.filter(Boolean).join('-')}-${name}`
+      (...names) => [...names, name].filter(Boolean).join('-')
     ));
 
     const { container, getByRole, getAllByRole } = render(
@@ -2121,18 +2121,27 @@ describe.skip('classGenerator', () => {
 
     expect(spy).toHaveBeenCalledWith('foo');
 
-    fireEvent.click(getByRole('combobox'));
+    getByRole('combobox').focus();
+    fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+    fireEvent.keyDown(document.activeElement, { key: 'Enter' });
+    fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
     expect(container.querySelector('div')).toHaveClass('foo');
-    expect(getByRole('combobox')).toHaveClass('combobox-foo');
+    expect(getByRole('combobox')).toHaveClass('input-focused-foo');
     expect(getByRole('listbox')).toHaveClass('listbox-foo');
     expect(getAllByRole('option')[0]).toHaveClass('option-focused-foo');
     expect(getAllByRole('option')[1]).toHaveClass('option-foo');
     expect(getAllByRole('option')[2]).toHaveClass('option-grouped-foo');
     expect(getAllByRole('option')[1].nextElementSibling).toHaveClass('group-foo');
+
+    const clearButton = document.getElementById(`${getByRole('combobox').id}_clear_button`);
+    expect(clearButton).toHaveClass('clear-button-foo');
+
+    const notFound = document.getElementById(`${getByRole('combobox').id}_not_found`);
+    expect(notFound).toHaveClass('not-found-foo');
   });
 });
 
-describe.skip('id', () => {
+describe('id', () => {
   const options = [
     { label: 'Apple' },
     { label: 'Pear' },
@@ -2143,7 +2152,7 @@ describe.skip('id', () => {
     const { container, getByRole, getAllByRole } = render(
       <ComboBoxWrapper options={options} id="foo" />,
     );
-    fireEvent.click(getByRole('combobox'));
+    getByRole('combobox').focus();
     expect(container.querySelector('div')).not.toHaveAttribute('id');
     expect(getByRole('combobox')).toHaveAttribute('id', 'foo');
     expect(getByRole('listbox')).toHaveAttribute('id', 'foo_listbox');
@@ -2151,85 +2160,90 @@ describe.skip('id', () => {
     expect(getAllByRole('option')[1]).toHaveAttribute('id', 'foo_option_pear');
     expect(getAllByRole('option')[2]).toHaveAttribute('id', 'foo_option_orange');
     expect(getAllByRole('option')[1].nextElementSibling).toHaveAttribute('id', 'foo_group_citrus');
+
+    expect(document.getElementById('foo_clear_button')).toBeInstanceOf(Element);
+    expect(document.getElementById('foo_not_found')).toBeInstanceOf(Element);
   });
 });
 
-describe.skip('required', () => {
-  it('when false it does not set aria-required on the combobox', () => {
-    const { getByRole } = render(
-      <ComboBoxWrapper options={['one', 'two']} required={false} />,
-    );
-    expect(getByRole('combobox')).not.toHaveAttribute('aria-required');
-  });
-
-  it('when true it sets aria-required on the combobox', () => {
-    const { getByRole } = render(
-      <ComboBoxWrapper options={['one', 'two']} required />,
-    );
-    expect(getByRole('combobox')).toHaveAttribute('aria-required', 'true');
-  });
-});
-
-describe.skip('disabled', () => {
-  describe('when false', () => {
-    it('does not set aria-disabld on the combobox', () => {
-      const { getByRole } = render(
-        <ComboBoxWrapper options={['one', 'two']} disabled={false} />,
-      );
-      expect(getByRole('combobox')).not.toHaveAttribute('aria-disabled');
-    });
-  });
-
-  describe('when true', () => {
-    it('it sets aria-disabled on the combobox', () => {
-      const { getByRole } = render(
-        <ComboBoxWrapper options={['one', 'two']} disabled />,
-      );
-      expect(getByRole('combobox')).toHaveAttribute('aria-disabled', 'true');
-    });
-
-    it('does not open the listbox of click', () => {
-      const { getByRole } = render(
-        <ComboBoxWrapper options={['one', 'two']} disabled />,
-      );
-      fireEvent.click(getByRole('combobox'));
-      expect(getByRole('listbox', { hidden: true })).not.toBeVisible();
-    });
-
-    it('does not open the listbox on arrow down', () => {
-      const { getByRole } = render(
-        <ComboBoxWrapper options={['one', 'two']} disabled />,
-      );
-      fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' });
-      expect(getByRole('listbox', { hidden: true })).not.toBeVisible();
-    });
-
-    it('does not change the value when pressing a key', () => {
-      const spy = jest.fn();
-      const { getByRole } = render(
-        <ComboBoxWrapper options={['one', 'two']} disabled onValue={spy} />,
-      );
-      fireEvent.keyDown(getByRole('combobox'), { key: 't' });
-      expect(spy).not.toHaveBeenCalled();
-    });
-  });
-});
-
-describe.skip('skipOption', () => {
+describe('skipOption', () => {
   const options = ['Apple', 'Pear', 'Orange'];
 
-  it('allows options to be skipped', () => {
+  it('allows options to be skipped moving forward', () => {
     function skipOption(option) {
-      return option === 'Pear';
+      return option.label === 'Pear';
     }
-    const { getByRole } = render(
+    const { getByRole, getAllByRole } = render(
       <ComboBoxWrapper options={options} skipOption={skipOption} />,
     );
-    fireEvent.click(getByRole('combobox'));
+    getByRole('combobox').focus();
     fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
     fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
-    expect(document.activeElement).toHaveTextContent('Orange');
+    expectToHaveFocusedOption(getByRole('combobox'), getAllByRole('option')[2]);
   });
+
+  it('allows options to be skipped moving backwards', () => {
+    function skipOption(option) {
+      return option.label === 'Pear';
+    }
+    const { getByRole, getAllByRole } = render(
+      <ComboBoxWrapper options={options} skipOption={skipOption} />,
+    );
+    getByRole('combobox').focus();
+    fireEvent.keyDown(document.activeElement, { key: 'ArrowUp' });
+    fireEvent.keyDown(document.activeElement, { key: 'ArrowUp' });
+    expectToHaveFocusedOption(getByRole('combobox'), getAllByRole('option')[0]);
+  });
+
+  describe('on a mac', () => {
+    it('allows options to be skipped pressing home', () => {
+      jest.spyOn(navigator, 'platform', 'get').mockImplementation(() => 'MacIntel');
+      function skipOption(option) {
+        return option.label === 'Apple';
+      }
+      const { getByRole, getAllByRole } = render(
+        <ComboBoxWrapper options={options} skipOption={skipOption} />,
+      );
+      getByRole('combobox').focus();
+      fireEvent.keyDown(document.activeElement, { key: 'Home' });
+      expectToHaveFocusedOption(getByRole('combobox'), getAllByRole('option')[1]);
+    });
+
+    it('allows options to be skipped pressing end', () => {
+      jest.spyOn(navigator, 'platform', 'get').mockImplementation(() => 'MacIntel');
+      function skipOption(option) {
+        return option.label === 'Orange';
+      }
+      const { getByRole, getAllByRole } = render(
+        <ComboBoxWrapper options={options} skipOption={skipOption} />,
+      );
+      getByRole('combobox').focus();
+      fireEvent.keyDown(document.activeElement, { key: 'End' });
+      expectToHaveFocusedOption(getByRole('combobox'), getAllByRole('option')[1]);
+    });
+  });
+});
+
+describe('onChange', () => {
+  it.todo('triggers on typing');
+  it.todo('triggers when a value is selected');
+  it.todo('triggers when a value is removed');
+});
+
+describe('onBlur', () => {
+  it.todo('is called when the input is blurred');
+});
+
+describe('onFocus', () => {
+  it.todo('is called when the input is focused');
+});
+
+describe('aria-describedby', () => {
+  it.todo('is appendeded to the input');
+});
+
+describe('other properties', () => {
+  it.todo('are added to the input');
 });
 
 describe.skip('WrapperComponent', () => {

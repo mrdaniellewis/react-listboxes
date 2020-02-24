@@ -125,8 +125,8 @@ export const DropDown = forwardRef((rawProps, ref) => {
           onKeyDown={(e) => dispatch(onButtonKeyDown(e))}
           onMouseDown={(e) => e.preventDefault()}
           className={classes('combobox')}
-          {...extractProps(optionisedProps, 'aria-*', 'data-*')}
           {...comboBoxProps}
+          {...extractProps(optionisedProps, 'aria-*', 'data-*')}
         >
           {(children ?? value?.label ?? selectedOption?.label) || '\u00A0'}
         </ComboBoxComponent>
