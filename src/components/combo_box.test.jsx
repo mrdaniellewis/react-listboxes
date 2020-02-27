@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useContext, forwardRef } from 'react';
+import React, { useState, useContext, forwardRef } from 'react';
 import { render, fireEvent, wait, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ComboBox } from './combo_box.jsx';
@@ -14,16 +14,16 @@ class PropUpdater {
   }
 }
 
-function ComboBoxWrapper({ value: initialValue, propUpdater, ...props }) {
+const ComboBoxWrapper = forwardRef(({ value: initialValue, propUpdater, ...props }, ref) => {
   const [value, onValue] = useState(initialValue);
   const [newProps, setProps] = useState(props);
   if (propUpdater) {
     propUpdater.setUpdater(setProps);
   }
   return (
-    <ComboBox id="id" value={value} onValue={onValue} {...newProps} />
+    <ComboBox id="id" value={value} onValue={onValue} {...newProps} ref={ref} />
   );
-}
+});
 
 function expectToBeClosed(combobox) { // and focused
   expect(combobox).toHaveAttribute('role', 'combobox');
@@ -510,7 +510,23 @@ describe('options', () => {
           });
 
           describe('when no option has been selected', () => {
-            it.todo('closes the list box and clears the search');
+            it('closes the list box and clears the search', async () => {
+              const spy = jest.fn();
+              const { getByRole } = render((
+                <>
+                  <ComboBoxWrapper options={options} onValue={spy} />
+                  <input />
+                </>
+              ));
+              getByRole('combobox').focus();
+              await userEvent.type(document.activeElement, 'app');
+              userEvent.tab();
+              await wait(() => {
+                expect(getByRole('listbox', { hidden: true })).not.toBeVisible();
+              });
+              expect(spy).not.toHaveBeenCalled();
+              expect(getByRole('combobox')).toHaveValue('');
+            });
           });
         });
       });
@@ -579,15 +595,39 @@ describe('options', () => {
         });
       });
 
-      describe('setting the search to an emtpy string', () => {
+      describe('setting the search to an empty string', () => {
         describe('without an existing value', () => {
-          it.todo('does not call onValue');
+          it('does not call onValue', async () => {
+            const spy = jest.fn();
+            const { getByRole } = render(<ComboBoxWrapper options={options} onValue={spy} />);
+            getByRole('combobox').focus();
+            await userEvent.type(document.activeElement, 'foo');
+            fireEvent.change(document.activeElement, { target: { value: '' } });
+            expect(spy).not.toHaveBeenCalled();
+          });
         });
 
         describe('with an existing value', () => {
-          it.todo('calls onValue with null');
-          it.todo('clears the existing option');
+          it('calls onValue with null', () => {
+            const spy = jest.fn();
+            const { getByRole } = render(<ComboBoxWrapper options={options} onValue={spy} value="Apple" />);
+            getByRole('combobox').focus();
+            fireEvent.change(document.activeElement, { target: { value: '' } });
+            expect(spy).toHaveBeenCalledWith(null);
+          });
+
+          it('clears the existing option', () => {
+            const { getByRole } = render(<ComboBoxWrapper options={options} value="Apple" />);
+            getByRole('combobox').focus();
+            fireEvent.change(document.activeElement, { target: { value: '' } });
+            expect(document.activeElement).toHaveValue('');
+          });
         });
+      });
+
+      describe('remove button', () => {
+        it.todo('is not present without a value');
+        it.todo('pressing the button removes the value');
       });
     });
 
@@ -2277,22 +2317,129 @@ describe('onChange', () => {
 });
 
 describe('onBlur', () => {
-  it.todo('is called when the input is blurred');
+  it('is called when the input is blurred', async () => {
+    const spy = jest.fn();
+    const { getByRole } = render((
+      <>
+        <ComboBoxWrapper options={['foo']} onBlur={spy} />
+        <input />
+      </>
+    ));
+    getByRole('combobox').focus();
+    fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+    expect(spy).not.toHaveBeenCalled();
+    userEvent.tab();
+
+    await wait(() => {
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+  });
 });
 
 describe('onFocus', () => {
-  it.todo('is called when the input is focused');
+  it('is called when the input is focused', async () => {
+    const spy = jest.fn();
+    const { getByRole } = render((
+      <>
+        <ComboBoxWrapper options={['foo']} onFocus={spy} />
+        <input />
+      </>
+    ));
+    getByRole('combobox').focus();
+    expect(spy).toHaveBeenCalledTimes(1);
+    fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+    userEvent.tab();
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('aria-describedby', () => {
-  it.todo('is appendeded to the input');
+  it('is appended to the input', () => {
+    const { getByRole } = render((
+      <ComboBoxWrapper options={['foo']} aria-describedby="foo" />
+    ));
+    getByRole('combobox').focus();
+    expect(getByRole('combobox')).toHaveAttribute('aria-describedby', 'foo');
+  });
+
+  it('is appended to the input when not found is showing', async () => {
+    const { getByRole } = render((
+      <ComboBoxWrapper options={[]} aria-describedby="foo" />
+    ));
+    getByRole('combobox').focus();
+    await userEvent.type(document.activeElement, 'foo');
+    expect(getByRole('combobox')).toHaveAttribute('aria-describedby', 'id_not_found foo');
+  });
 });
 
-describe('other properties', () => {
-  it.todo('are added to the input');
+['disabled', 'readOnly', 'required'].forEach((name) => {
+  describe(name, () => {
+    it('is added to the input', () => {
+      const props = { [name]: true };
+      const { getByRole } = render((
+        <ComboBoxWrapper options={['foo']} {...props} />
+      ));
+      expect(getByRole('combobox')).toHaveAttribute(name);
+    });
+  });
 });
 
-describe.skip('WrapperComponent', () => {
+[
+  'autoCapitalize', 'inputMode',
+  'maxLength', 'minLength', 'pattern', 'placeholder',
+  'spellCheck',
+].forEach((name) => {
+  describe(name, () => {
+    it('is added to the input', () => {
+      const props = { [name]: 'foo' };
+      const { getByRole } = render((
+        <ComboBoxWrapper options={['foo']} {...props} />
+      ));
+      expect(getByRole('combobox')).toHaveAttribute(name, 'foo');
+    });
+  });
+});
+
+describe('size', () => {
+  it('is added to the input', () => {
+    const { getByRole } = render((
+      <ComboBoxWrapper options={['foo']} size={2} />
+    ));
+    expect(getByRole('combobox')).toHaveAttribute('size', '2');
+  });
+});
+
+describe('data-*', () => {
+  it('is added to the input', () => {
+    const { getByRole } = render((
+      <ComboBoxWrapper options={['foo']} data-foo="bar" />
+    ));
+    expect(getByRole('combobox')).toHaveAttribute('data-foo', 'bar');
+  });
+});
+
+describe('ref', () => {
+  it('references the input for an object ref', () => {
+    const ref = { current: null };
+    const { getByRole } = render((
+      <ComboBoxWrapper options={['foo']} ref={ref} />
+    ));
+    expect(ref.current).toEqual(getByRole('combobox'));
+  });
+
+  it('references the input for a function ref', () => {
+    let value;
+    const ref = (node) => {
+      value = node;
+    };
+    const { getByRole } = render((
+      <ComboBoxWrapper options={['foo']} ref={ref} />
+    ));
+    expect(value).toEqual(getByRole('combobox'));
+  });
+});
+
+describe('WrapperComponent', () => {
   it('allows the wrapper to be replaced', () => {
     const { container } = render(
       <ComboBoxWrapper options={['foo']} WrapperComponent="dl" />,
@@ -2301,23 +2448,16 @@ describe.skip('WrapperComponent', () => {
     expect(wrapper.tagName).toEqual('DL');
   });
 
-  it('allows the wrapper to be a fragment', () => {
-    const { container, getByRole } = render(
-      <ComboBoxWrapper options={['foo']} WrapperComponent={Fragment} />,
-    );
-    expect(getByRole('combobox')).toEqual(container.firstChild);
-  });
-
   it('allows access to the context', () => {
     const spy = jest.fn();
 
-    function WrapperComponent(props) {
+    const WrapperComponent = forwardRef((props, ref) => {
       const context = useContext(Context);
       spy(context);
       return (
-        <div {...props} />
+        <div {...props} ref={ref} />
       );
-    }
+    });
 
     render(
       <ComboBoxWrapper foo="bar" options={['foo']} WrapperComponent={WrapperComponent} />,
@@ -2325,9 +2465,11 @@ describe.skip('WrapperComponent', () => {
 
     expect(spy).toHaveBeenCalledWith({
       state: {
-        focusedOption: expect.any(Object),
-        search: '',
+        inlineAutoselect: false,
+        focusedOption: null,
+        search: null,
         expanded: false,
+        focusListBox: false,
       },
       props: expect.objectContaining({
         foo: 'bar',
@@ -2338,20 +2480,26 @@ describe.skip('WrapperComponent', () => {
   });
 
   it('allows custom layouts', () => {
-    function WrapperComponent(props) {
-      const { children: [comboBox, listBox] } = props;
+    const WrapperComponent = forwardRef((props, ref) => {
+      const { children: [comboBox, clearButton, listBox, notFound] } = props;
 
       return (
-        <div {...props}>
+        <div {...props} ref={ref}>
           <div className="combobox-wrapper">
             {comboBox}
+          </div>
+          <div className="clear-button-wrapper">
+            {clearButton}
           </div>
           <div className="listbox-wrapper">
             {listBox}
           </div>
+          <div className="not-found-wrapper">
+            {notFound}
+          </div>
         </div>
       );
-    }
+    });
 
     const { container } = render(
       <ComboBoxWrapper options={['foo']} WrapperComponent={WrapperComponent} />,
@@ -2361,7 +2509,7 @@ describe.skip('WrapperComponent', () => {
   });
 });
 
-describe.skip('wrapperProps', () => {
+describe('wrapperProps', () => {
   it('allows custom props to be added to the wrapper', () => {
     const { container } = render(
       <ComboBoxWrapper options={['foo']} wrapperProps={{ 'data-foo': 'bar' }} />,
@@ -2370,25 +2518,25 @@ describe.skip('wrapperProps', () => {
   });
 });
 
-describe.skip('ComboBoxComponent', () => {
-  it('allows the combobox to be replaced', () => {
+describe('InputComponent', () => {
+  it('allows the input to be replaced', () => {
     const { getByRole } = render(
-      <ComboBoxWrapper options={['foo']} ComboBoxComponent="dl" />,
+      <ComboBoxWrapper options={['foo']} InputComponent="dl" />,
     );
     expect(getByRole('combobox').tagName).toEqual('DL');
   });
 });
 
-describe.skip('comboBoxProps', () => {
+describe('inputProps', () => {
   it('allows custom props to be added to the wrapper', () => {
     const { getByRole } = render(
-      <ComboBoxWrapper options={['foo']} comboBoxProps={{ 'data-foo': 'bar' }} />,
+      <ComboBoxWrapper options={['foo']} inputProps={{ 'data-foo': 'bar' }} />,
     );
     expect(getByRole('combobox')).toHaveAttribute('data-foo', 'bar');
   });
 });
 
-describe.skip('ListBoxComponent', () => {
+describe('ListBoxComponent', () => {
   it('allows the listbox to be replaced', () => {
     const { getByRole } = render(
       <ComboBoxWrapper options={['foo']} ListBoxComponent="dl" />,
@@ -2413,9 +2561,11 @@ describe.skip('ListBoxComponent', () => {
 
     expect(spy).toHaveBeenCalledWith({
       state: {
-        focusedOption: expect.any(Object),
-        search: '',
+        inlineAutoselect: false,
+        focusedOption: null,
+        search: null,
         expanded: false,
+        focusListBox: false,
       },
       props: expect.objectContaining({
         foo: 'bar',
@@ -2426,7 +2576,7 @@ describe.skip('ListBoxComponent', () => {
   });
 });
 
-describe.skip('listBoxProps', () => {
+describe('listBoxProps', () => {
   it('allows custom props to be added to the listbox', () => {
     const { getByRole } = render(
       <ComboBoxWrapper options={['foo']} listBoxProps={{ 'data-foo': 'bar' }} />,
@@ -2435,12 +2585,12 @@ describe.skip('listBoxProps', () => {
   });
 });
 
-describe.skip('GroupComponent', () => {
+describe('GroupComponent', () => {
   it('allows the group wrapper to be replaced', () => {
     const { container } = render(
       <ComboBoxWrapper options={[{ label: 'foo', group: 'bar' }]} GroupComponent="dl" />,
     );
-    expect(container.querySelector('dl').firstChild).toHaveClass('dropdown__group');
+    expect(container.querySelector('dl').firstChild).toHaveClass('combobox__group');
   });
 
   it('allows access to the context with group properties', () => {
@@ -2460,9 +2610,11 @@ describe.skip('GroupComponent', () => {
 
     expect(spy).toHaveBeenCalledWith({
       state: {
-        focusedOption: expect.any(Object),
-        search: '',
+        inlineAutoselect: false,
+        focusedOption: null,
+        search: null,
         expanded: false,
+        focusListBox: false,
       },
       props: expect.objectContaining({
         foo: 'bar',
@@ -2477,20 +2629,20 @@ describe.skip('GroupComponent', () => {
   });
 });
 
-describe.skip('groupWrapperProps', () => {
+describe('groupProps', () => {
   it('allows custom props', () => {
     const { container } = render(
       <ComboBoxWrapper
         options={[{ label: 'foo', group: 'bar' }]}
         GroupComponent="dl"
-        groupWrapperProps={{ 'data-foo': 'bar' }}
+        groupProps={{ 'data-foo': 'bar' }}
       />,
     );
     expect(container.querySelector('dl')).toHaveAttribute('data-foo', 'bar');
   });
 });
 
-describe.skip('GroupLabelComponent', () => {
+describe('GroupLabelComponent', () => {
   it('allows the group to be replaced', () => {
     const { container } = render(
       <ComboBoxWrapper options={[{ label: 'foo', group: 'bar' }]} GroupLabelComponent="dl" />,
@@ -2515,9 +2667,11 @@ describe.skip('GroupLabelComponent', () => {
 
     expect(spy).toHaveBeenCalledWith({
       state: {
-        focusedOption: expect.any(Object),
-        search: '',
+        inlineAutoselect: false,
+        focusedOption: null,
+        search: null,
         expanded: false,
+        focusListBox: false,
       },
       props: expect.objectContaining({
         foo: 'bar',
@@ -2532,7 +2686,7 @@ describe.skip('GroupLabelComponent', () => {
   });
 });
 
-describe.skip('groupLabelProps', () => {
+describe('groupLabelProps', () => {
   it('allows custom props', () => {
     const { container } = render(
       <ComboBoxWrapper
@@ -2545,12 +2699,12 @@ describe.skip('groupLabelProps', () => {
   });
 });
 
-describe.skip('OptionComponent', () => {
+describe('OptionComponent', () => {
   it('allows the option to be replaced', () => {
     const { getByRole } = render(
       <ComboBoxWrapper options={['foo']} OptionComponent="dl" />,
     );
-    fireEvent.click(getByRole('combobox'));
+    getByRole('combobox').focus();
     expect(getByRole('option').tagName).toEqual('DL');
   });
 
@@ -2571,9 +2725,11 @@ describe.skip('OptionComponent', () => {
 
     expect(spy).toHaveBeenCalledWith({
       state: {
-        focusedOption: expect.any(Object),
-        search: '',
+        inlineAutoselect: false,
+        focusedOption: null,
+        search: null,
         expanded: false,
+        focusListBox: false,
       },
       props: expect.objectContaining({
         foo: 'bar',
@@ -2594,7 +2750,7 @@ describe.skip('OptionComponent', () => {
   });
 });
 
-describe.skip('optionProps', () => {
+describe('optionProps', () => {
   it('allows custom props', () => {
     const { getByRole } = render(
       <ComboBoxWrapper
@@ -2602,22 +2758,22 @@ describe.skip('optionProps', () => {
         optionProps={{ 'data-foo': 'bar' }}
       />,
     );
-    fireEvent.click(getByRole('combobox'));
+    getByRole('combobox').focus();
     expect(getByRole('option')).toHaveAttribute('data-foo', 'bar');
   });
 });
 
-describe.skip('ValueComponent', () => {
+describe('ValueComponent', () => {
   it('allows the component to be replaced', () => {
     const { getByRole } = render(
       <ComboBoxWrapper options={['foo']} ValueComponent="dl" />,
     );
-    fireEvent.click(getByRole('combobox'));
+    getByRole('combobox').focus();
     expect(getByRole('option').firstChild.tagName).toEqual('DL');
   });
 });
 
-describe.skip('valueProps', () => {
+describe('valueProps', () => {
   it('allows custom props', () => {
     const { getByRole } = render(
       <ComboBoxWrapper
@@ -2625,37 +2781,28 @@ describe.skip('valueProps', () => {
         valueProps={{ 'data-foo': 'bar' }}
       />,
     );
-    fireEvent.click(getByRole('combobox'));
+    getByRole('combobox').focus();
     expect(getByRole('option').firstChild).toHaveAttribute('data-foo', 'bar');
   });
 });
 
-describe.skip('additional props', () => {
-  const options = ['Apple', 'Banana', 'Orange'];
-
-  it('does not include arbitrary props', () => {
-    const { container } = render(
-      <ComboBoxWrapper options={options} foo="bar" />,
-    );
-    expect(container.querySelector('[foo="bar"]')).toEqual(null);
-  });
-
-  it('includes all data attributes on the combo box', () => {
-    const { getByRole } = render(
-      <ComboBoxWrapper options={options} data-foo="bar" />,
-    );
-    expect(getByRole('combobox')).toHaveAttribute('data-foo', 'bar');
-  });
-
-  it('includes all aria attributes on the combo box', () => {
-    const { getByRole } = render(
-      <ComboBoxWrapper options={options} aria-invalid="true" />,
-    );
-    expect(getByRole('combobox')).toHaveAttribute('aria-invalid', 'true');
-  });
+describe('ClearButtonComponent', () => {
+  it.todo('allows the component to be replaced');
 });
 
-describe.skip('layoutListBox', () => {
+describe('clearButtonProps', () => {
+  it.todo('allows custom props');
+});
+
+describe('NotFoundComponent', () => {
+  it.todo('allows the component to be replaced');
+});
+
+describe('notFoundProps', () => {
+  it.todo('allows custom props');
+});
+
+describe('layoutListBox', () => {
   const options = ['Apple', 'Banana', 'Orange'];
 
   it('is called when the listbox is displayed', () => {
@@ -2664,11 +2811,11 @@ describe.skip('layoutListBox', () => {
       <ComboBoxWrapper options={options} layoutListBox={layoutListBox} />,
     );
     expect(layoutListBox).not.toHaveBeenCalled();
-    fireEvent.click(getByRole('combobox'));
+    getByRole('combobox').focus();
     expect(layoutListBox).toHaveBeenCalledWith({
       listBox: getByRole('listbox'),
       comboBox: getByRole('combobox'),
-      option: document.activeElement,
+      option: undefined,
     });
   });
 
@@ -2682,13 +2829,13 @@ describe.skip('layoutListBox', () => {
         propUpdater={propUpdater}
       />
     ));
-    fireEvent.click(getByRole('combobox'));
+    getByRole('combobox').focus();
     propUpdater.update((props) => ({ ...props, options: ['strawberry'] }));
     expect(layoutListBox).toHaveBeenCalledTimes(2);
     expect(layoutListBox).toHaveBeenLastCalledWith({
       listBox: getByRole('listbox'),
       comboBox: getByRole('combobox'),
-      option: document.activeElement,
+      option: undefined,
     });
   });
 
@@ -2700,7 +2847,7 @@ describe.skip('layoutListBox', () => {
         layoutListBox={layoutListBox}
       />
     ));
-    fireEvent.click(getByRole('combobox'));
+    getByRole('combobox').focus();
     fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
     expect(layoutListBox).toHaveBeenCalledTimes(2);
     expect(layoutListBox).toHaveBeenLastCalledWith({
@@ -2718,7 +2865,7 @@ describe.skip('layoutListBox', () => {
         layoutListBox={layoutListBox}
       />
     ));
-    fireEvent.click(getByRole('combobox'));
+    getByRole('combobox').focus();
     fireEvent.keyDown(document.activeElement, { key: 'Escape' });
     expect(layoutListBox).toHaveBeenCalledTimes(1);
   });
@@ -2731,8 +2878,17 @@ describe.skip('layoutListBox', () => {
         layoutListBox={layoutListBox}
       />
     ));
-    fireEvent.click(getByRole('combobox'));
+    getByRole('combobox').focus();
     expect(getByRole('listbox')).toHaveStyle('color: red');
-    expect(getByRole('listbox')).toHaveAttribute('class', 'dropdown__listbox foo');
+    expect(getByRole('listbox')).toHaveAttribute('class', 'combobox__listbox foo');
+  });
+});
+
+describe('other props', () => {
+  it('are discarded', () => {
+    const { getByRole } = render((
+      <ComboBoxWrapper options={['foo']} foo="bar" />
+    ));
+    expect(getByRole('combobox')).not.toHaveAttribute('foo');
   });
 });

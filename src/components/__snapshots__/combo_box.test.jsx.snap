@@ -22,14 +22,46 @@ exports[`WrapperComponent allows custom layouts 1`] = `
       />
     </div>
     <div
-      class="listbox-wrapper"
+      class="clear-button-wrapper"
     >
       <span
-        aria-label="Clear"
-        aria-labelledby="id_clear_button id"
+        aria-hidden="true"
         class="combobox__clear-button"
         hidden=""
         id="id_clear_button"
+      />
+    </div>
+    <div
+      class="listbox-wrapper"
+    >
+      <ul
+        class="combobox__listbox"
+        hidden=""
+        id="id_listbox"
+        role="listbox"
+        tabindex="-1"
+      >
+        <li
+          class="combobox__option"
+          id="id_option_foo"
+          role="option"
+          tabindex="-1"
+        >
+          <div>
+            foo
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div
+      class="not-found-wrapper"
+    >
+      <div
+        aria-live="polite"
+        class="combobox__not-found"
+        hidden=""
+        id="id_not_found"
+        role="alert"
       />
     </div>
   </div>
@@ -54,8 +86,7 @@ exports[`onSearch updating options updates the displayed options 1`] = `
       value=""
     />
     <span
-      aria-label="Clear"
-      aria-labelledby="id_clear_button id"
+      aria-hidden="true"
       class="combobox__clear-button"
       hidden=""
       id="id_clear_button"
@@ -126,8 +157,7 @@ exports[`options as array of objects disabled sets the aria-disabled attribute 1
       value=""
     />
     <span
-      aria-label="Clear"
-      aria-labelledby="id_clear_button id"
+      aria-hidden="true"
       class="combobox__clear-button"
       hidden=""
       id="id_clear_button"
@@ -189,8 +219,7 @@ exports[`options as array of objects group renders grouped options 1`] = `
       value=""
     />
     <span
-      aria-label="Clear"
-      aria-labelledby="id_clear_button id"
+      aria-hidden="true"
       class="combobox__clear-button"
       hidden=""
       id="id_clear_button"
@@ -308,8 +337,7 @@ exports[`options as array of objects label renders a closed combo box 1`] = `
       value=""
     />
     <span
-      aria-label="Clear"
-      aria-labelledby="id_clear_button id"
+      aria-hidden="true"
       class="combobox__clear-button"
       hidden=""
       id="id_clear_button"
@@ -381,8 +409,7 @@ exports[`options options as array of numbers renders a closed combo box 1`] = `
       value=""
     />
     <span
-      aria-label="Clear"
-      aria-labelledby="id_clear_button id"
+      aria-hidden="true"
       class="combobox__clear-button"
       hidden=""
       id="id_clear_button"
@@ -454,8 +481,7 @@ exports[`options options as array of strings renders a closed combo box 1`] = `
       value=""
     />
     <span
-      aria-label="Clear"
-      aria-labelledby="id_clear_button id"
+      aria-hidden="true"
       class="combobox__clear-button"
       hidden=""
       id="id_clear_button"

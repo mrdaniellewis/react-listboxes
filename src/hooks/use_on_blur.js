@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState, useRef } from 'react';
  * This generates blur and focus
  * handlers that fire if the focus moves from within an element and does not return
  */
-export function useOnBlur(fn, ref) {
+export function useOnBlur(ref, blurFn, focusFn) {
   const [focus, setFocus] = useState(false);
   const timeoutRef = useRef();
 
@@ -17,15 +17,18 @@ export function useOnBlur(fn, ref) {
     clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
       if (ref.current && !ref.current.contains(document.activeElement)) {
-        fn();
+        blurFn();
         setFocus(false);
       }
     }, 0);
-  }, [fn, ref]);
+  }, [blurFn, ref]);
 
   const onFocus = useCallback(() => {
-    setFocus(true);
-  }, []);
+    if (!focus) {
+      focusFn();
+      setFocus(true);
+    }
+  }, [focusFn, focus]);
 
   useEffect(() => {
     if (!focus) {

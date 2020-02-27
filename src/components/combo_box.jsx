@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useLayoutEffect, Fragment, useMemo, forwardRef, useState } from 'react';
+import React, { useRef, useEffect, useLayoutEffect, Fragment, useMemo, forwardRef, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Context } from '../context.js';
 import { useThunkReducer as useReducer } from '../hooks/use_thunk_reducer.js';
@@ -16,9 +16,9 @@ import { useCombineRefs } from '../hooks/use_combine_refs.js';
 import { extractProps } from '../helpers/extract_props.js';
 
 const allowAttributes = [
-  'autocapitalize', 'data-*', 'disabled', 'inputmode',
+  'autoCapitalize', 'disabled', 'inputMode',
   'maxLength', 'minLength', 'pattern', 'placeholder', 'readOnly',
-  'required', 'size', 'spellcheck',
+  'required', 'size', 'spellCheck',
 ];
 
 export const ComboBox = forwardRef((rawProps, ref) => {
@@ -62,13 +62,24 @@ export const ComboBox = forwardRef((rawProps, ref) => {
     expanded, focusedOption, search,
     focusListBox, inlineAutoselect,
   } = state;
-  const [handleBlur, handleFocus] = useOnBlur(() => dispatch(onBlur()), comboRef);
+
+  const [handleBlur, handleFocus] = useOnBlur(
+    comboRef,
+    useCallback(() => {
+      dispatch(onBlur());
+      passedOnBlur?.();
+    }, [passedOnBlur]),
+    useCallback(() => {
+      dispatch(onFocus());
+      passedOnFocus?.();
+    }, [passedOnFocus]),
+  );
 
   useLayoutEffect(() => {
     if (layoutListBox && expanded) {
       const listProps = layoutListBox({
-        listbox: listRef.current,
-        input: inputRef.current,
+        listBox: listRef.current,
+        comboBox: inputRef.current,
         option: focusedRef.current,
       });
       if (listProps) {
@@ -78,7 +89,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
         });
       }
     }
-  }, [layoutListBox, expanded, focusedOption]);
+  }, [layoutListBox, expanded, focusedOption, options]);
 
   const searchValue = (search ?? value?.label) || '';
   useEffect(() => {
@@ -181,11 +192,6 @@ export const ComboBox = forwardRef((rawProps, ref) => {
           value={inputLabel || ''}
           onKeyDown={(e) => dispatch(onKeyDown(e))}
           onChange={(e) => dispatch(onChange(e))}
-          onFocus={(e) => {
-            dispatch(onFocus(e));
-            passedOnFocus?.(e);
-          }}
-          onBlur={passedOnBlur ? (e) => passedOnBlur(e) : null}
           aria-describedby={joinTokens(showNotFound && `${id}_not_found`, ariaDescribedBy)}
           ref={combinedRef}
           className={classes('input', expanded && 'focused')}
@@ -248,7 +254,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
               return (
                 <Context.Provider
                   key={key}
-                  value={{ ...context, option }}
+                  value={{ ...context, option, group }}
                 >
                   <OptionComponent
                     id={key}
