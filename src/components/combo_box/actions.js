@@ -16,7 +16,7 @@ export function setFocusedOption({ focusedOption, focusListBox, autoselect }) {
 
 export function onSelectValue(newValue) {
   return (dispatch, getState, getProps) => {
-    const { onValue, inputRef } = getProps();
+    const { onValue, onChange, inputRef } = getProps();
     dispatch({ type: SET_CLOSED });
     if (newValue?.unselectable) {
       return;
@@ -28,6 +28,8 @@ export function onSelectValue(newValue) {
       input.setSelectionRange(input.value.length, input.value.length, 'forward');
     }
     onValue(newValue ? newValue.value : null);
+    // It is not possible to fire a React SimulatedEvent
+    onChange({ target: inputRef.current });
   };
 }
 
@@ -169,6 +171,7 @@ export function onKeyDown(event) {
 }
 
 export function onChange(event) {
+  console.log('change');
   return (dispatch, getState, getProps) => {
     const { onChange: passedOnChange } = getProps();
     const { target: { value: search } } = event;

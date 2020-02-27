@@ -197,9 +197,8 @@ export const ComboBox = forwardRef((rawProps, ref) => {
           onMouseDown={(e) => e.preventDefault()}
           onClick={(e) => dispatch(onClearValue(e))}
           hidden={!value || search === ''}
-          aria-label="Clear"
           id={`${id}_clear_button`}
-          aria-labelledby={joinTokens(`${id}_clear_button`, id)}
+          aria-hidden="true"
           className={classes('clear-button')}
           {...clearButtonProps}
         />

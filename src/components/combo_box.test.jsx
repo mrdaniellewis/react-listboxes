@@ -2225,9 +2225,55 @@ describe('skipOption', () => {
 });
 
 describe('onChange', () => {
-  it.todo('triggers on typing');
-  it.todo('triggers when a value is selected');
-  it.todo('triggers when a value is removed');
+  const options = ['Apple', 'Pear', 'Orange'];
+
+  it('triggers on typing', async () => {
+    const spy = jest.fn((e) => e.persist());
+    const { getByRole } = render(
+      <ComboBoxWrapper options={options} onChange={spy} />,
+    );
+    getByRole('combobox').focus();
+    await userEvent.type(document.activeElement, 'foo');
+    expect(spy).toHaveBeenCalledWith(expect.objectContaining({
+      type: 'change',
+      target: expect.objectContaining({
+        value: 'foo',
+        nodeName: 'INPUT',
+      }),
+    }));
+  });
+
+  it('does not trigger when a value is selected', async () => {
+    const spy = jest.fn();
+    const { getByRole } = render(
+      <ComboBoxWrapper options={options} onChange={spy} />,
+    );
+    getByRole('combobox').focus();
+    fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+    fireEvent.keyDown(document.activeElement, { key: 'Enter' });
+    expect(spy).toHaveBeenCalledWith(expect.objectContaining({
+      target: expect.objectContaining({
+        value: 'Apple',
+        nodeName: 'INPUT',
+      }),
+    }));
+  });
+
+  it('triggers when a value is removed', async () => {
+    const spy = jest.fn();
+    const { getByRole } = render(
+      <ComboBoxWrapper options={options} value="Apple" onChange={spy} />,
+    );
+    getByRole('combobox').focus();
+    userEvent.click(document.getElementById(`${getByRole('combobox').id}_clear_button`));
+
+    expect(spy).toHaveBeenCalledWith(expect.objectContaining({
+      target: expect.objectContaining({
+        value: '',
+        nodeName: 'INPUT',
+      }),
+    }));
+  });
 });
 
 describe('onBlur', () => {

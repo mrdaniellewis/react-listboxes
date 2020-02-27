@@ -18,9 +18,14 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  expect(errorSpy).not.toHaveBeenCalled();
+  // Guard allows hasAssertions to work
+  if (errorSpy.mock.calls.length) {
+    expect(errorSpy).not.toHaveBeenCalled();
+  }
   errorSpy = null;
 
-  expect(warnSpy).not.toHaveBeenCalled();
+  if (warnSpy.mock.calls.length) {
+    expect(warnSpy).not.toHaveBeenCalled();
+  }
   warnSpy = null;
 });
