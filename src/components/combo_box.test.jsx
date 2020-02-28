@@ -626,8 +626,20 @@ describe('options', () => {
       });
 
       describe('remove button', () => {
-        it.todo('is not present without a value');
-        it.todo('pressing the button removes the value');
+        it('is not present without a value', () => {
+          render(<ComboBoxWrapper options={options} />);
+          const remove = document.getElementById('id_clear_button');
+          expect(remove).not.toBeVisible();
+        });
+
+        it('pressing the button removes the value', () => {
+          const spy = jest.fn();
+          render(<ComboBoxWrapper options={options} value="Apple" onValue={spy} />);
+          const remove = document.getElementById('id_clear_button');
+          expect(remove).toBeVisible();
+          userEvent.click(remove);
+          expect(spy).toHaveBeenCalledWith(null);
+        });
       });
     });
 
@@ -692,7 +704,7 @@ describe('options', () => {
             getByRole('combobox').focus();
             fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
             fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
-            getByRole('textbox').focus();
+            userEvent.tab();
             await wait(() => {
               expect(getByRole('listbox', { hidden: true })).not.toBeVisible();
             });
@@ -1065,7 +1077,14 @@ describe('busy', () => {
       });
 
       describe('with a search matching the current value', () => {
-        it.todo('does not set aria-busy');
+        it('does not set aria-busy', () => {
+          const { container, getByRole } = render((
+            <ComboBoxWrapper options={['foo']} value="foo" busy busyDebounce={null} />
+          ));
+          getByRole('combobox').focus();
+          fireEvent.change(document.activeElement, { target: { value: 'foo' } });
+          expect(container.firstChild).toHaveAttribute('aria-busy', 'false');
+        });
       });
     });
   });
@@ -1354,7 +1373,15 @@ describe('showSelectedLabel', () => {
       expect(comboBox).toHaveValue('a');
     });
 
-    it.todo('does not show the label of a disabled option');
+    it('does not show the label of a disabled option', () => {
+      const { getByRole } = render(
+        <ComboBoxWrapper options={[{ disabled: true, label: 'foo' }]} showSelectedLabel />,
+      );
+      const comboBox = getByRole('combobox');
+      comboBox.focus();
+      fireEvent.keyDown(comboBox, { key: 'ArrowDown' });
+      expect(comboBox).toHaveValue('');
+    });
 
     it('does not trigger a search when moving through options', () => {
       const spy = jest.fn();
@@ -1611,7 +1638,7 @@ describe('autoselect', () => {
           ));
           getByRole('combobox').focus();
           await userEvent.type(document.activeElement, 'fo');
-          getByRole('textbox').focus();
+          userEvent.tab();
           await wait(() => {
             expect(spy).toHaveBeenCalledWith('foo');
           });
@@ -2787,19 +2814,43 @@ describe('valueProps', () => {
 });
 
 describe('ClearButtonComponent', () => {
-  it.todo('allows the component to be replaced');
+  it('allows the component to be replaced', () => {
+    render(
+      <ComboBoxWrapper options={['foo']} ClearButtonComponent="dl" />,
+    );
+    const button = document.getElementById('id_clear_button');
+    expect(button.tagName).toEqual('DL');
+  });
 });
 
 describe('clearButtonProps', () => {
-  it.todo('allows custom props');
+  it('allows custom props', () => {
+    render(
+      <ComboBoxWrapper options={['foo']} clearButtonProps={{ 'data-foo': 'bar' }} />,
+    );
+    const button = document.getElementById('id_clear_button');
+    expect(button).toHaveAttribute('data-foo', 'bar');
+  });
 });
 
 describe('NotFoundComponent', () => {
-  it.todo('allows the component to be replaced');
+  it('allows the component to be replaced', () => {
+    render(
+      <ComboBoxWrapper options={['foo']} NotFoundComponent="dl" />,
+    );
+    const el = document.getElementById('id_not_found');
+    expect(el.tagName).toEqual('DL');
+  });
 });
 
 describe('notFoundProps', () => {
-  it.todo('allows custom props');
+  it('allows custom props', () => {
+    render(
+      <ComboBoxWrapper options={['foo']} notFoundProps={{ 'data-foo': 'bar' }} />,
+    );
+    const el = document.getElementById('id_not_found');
+    expect(el).toHaveAttribute('data-foo', 'bar');
+  });
 });
 
 describe('layoutListBox', () => {

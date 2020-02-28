@@ -9,7 +9,6 @@ exports[`WrapperComponent allows custom layouts 1`] = `
       class="combobox-wrapper"
     >
       <div
-        aria-activedescendant="id_option_foo"
         aria-controls="id_listbox"
         aria-readonly="true"
         class="dropdown__combobox"
@@ -24,7 +23,6 @@ exports[`WrapperComponent allows custom layouts 1`] = `
       class="listbox-wrapper"
     >
       <ul
-        aria-activedescendant="id_option_foo"
         class="dropdown__listbox"
         hidden=""
         id="id_listbox"
@@ -54,7 +52,6 @@ exports[`blank renders a blank option 1`] = `
     class="dropdown"
   >
     <div
-      aria-activedescendant="id_option_blank"
       aria-controls="id_listbox"
       aria-readonly="true"
       class="dropdown__combobox"
@@ -65,7 +62,6 @@ exports[`blank renders a blank option 1`] = `
       Please select…
     </div>
     <ul
-      aria-activedescendant="id_option_blank"
       class="dropdown__listbox"
       hidden=""
       id="id_listbox"
@@ -175,7 +171,6 @@ exports[`options as array of objects group renders grouped options 1`] = `
     class="dropdown"
   >
     <div
-      aria-activedescendant="id_option_apple"
       aria-controls="id_listbox"
       aria-readonly="true"
       class="dropdown__combobox"
@@ -186,7 +181,6 @@ exports[`options as array of objects group renders grouped options 1`] = `
       Apple
     </div>
     <ul
-      aria-activedescendant="id_option_apple"
       class="dropdown__listbox"
       hidden=""
       id="id_listbox"
@@ -281,7 +275,6 @@ exports[`options as array of objects label renders a closed drop down 1`] = `
     class="dropdown"
   >
     <div
-      aria-activedescendant="id_option_apple"
       aria-controls="id_listbox"
       aria-readonly="true"
       class="dropdown__combobox"
@@ -292,7 +285,6 @@ exports[`options as array of objects label renders a closed drop down 1`] = `
       Apple
     </div>
     <ul
-      aria-activedescendant="id_option_apple"
       class="dropdown__listbox"
       hidden=""
       id="id_listbox"
@@ -341,7 +333,6 @@ exports[`options options as array of numbers renders a closed drop down 1`] = `
     class="dropdown"
   >
     <div
-      aria-activedescendant="id_option_1"
       aria-controls="id_listbox"
       aria-readonly="true"
       class="dropdown__combobox"
@@ -352,7 +343,6 @@ exports[`options options as array of numbers renders a closed drop down 1`] = `
       1
     </div>
     <ul
-      aria-activedescendant="id_option_1"
       class="dropdown__listbox"
       hidden=""
       id="id_listbox"
@@ -401,7 +391,6 @@ exports[`options options as array of strings renders a closed drop down 1`] = `
     class="dropdown"
   >
     <div
-      aria-activedescendant="id_option_apple"
       aria-controls="id_listbox"
       aria-readonly="true"
       class="dropdown__combobox"
@@ -412,7 +401,6 @@ exports[`options options as array of strings renders a closed drop down 1`] = `
       Apple
     </div>
     <ul
-      aria-activedescendant="id_option_apple"
       class="dropdown__listbox"
       hidden=""
       id="id_listbox"

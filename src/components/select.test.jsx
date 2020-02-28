@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, forwardRef } from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { Select } from './select.jsx';
 
-function SelectWrapper({ value: initialValue, ...props }) {
+const SelectWrapper = forwardRef(({ value: initialValue, ...props }, ref) => {
   const [value, setValue] = useState(initialValue);
   return (
-    <Select value={value} onValue={setValue} {...props} />
+    <Select value={value} onValue={setValue} {...props} ref={ref} />
   );
-}
+});
 
 describe('options', () => {
   describe('as array of strings', () => {
@@ -21,36 +21,35 @@ describe('options', () => {
     });
 
     it('renders a select with a selected value', () => {
-      const { container } = render(
+      const { getByRole } = render(
         <SelectWrapper options={options} value="Orange" />,
       );
-      const select = container.querySelector('select');
-      expect(select).toHaveValue('Orange');
-      expect(select.querySelector('option:nth-child(3)')).toHaveTextContent('Orange');
+      expect(getByRole('combobox')).toHaveValue('Orange');
     });
 
     it('triggers the onValue callback with the selected value', () => {
       const spy = jest.fn();
-      const { container } = render(<SelectWrapper options={options} onValue={spy} />);
-      const select = container.querySelector('select');
-      fireEvent.change(select, { target: { value: 'Banana' } });
+      const { getByRole } = render(<SelectWrapper options={options} onValue={spy} />);
+      fireEvent.change(getByRole('combobox'), { target: { value: 'Banana' } });
       expect(spy).toHaveBeenCalledWith('Banana');
     });
 
     it('triggers the onChange callback with the selected value', () => {
       const spy = jest.fn((e) => e.persist());
-      const { container } = render(<SelectWrapper options={options} onChange={spy} />);
-      const select = container.querySelector('select');
-      fireEvent.change(select, { target: { value: 'Banana' } });
-      expect(spy).toHaveBeenCalledWith(expect.objectContaining({ target: select }));
+      const { getByRole } = render(<SelectWrapper options={options} onChange={spy} />);
+      fireEvent.change(getByRole('combobox'), { target: { value: 'Banana' } });
+      expect(spy).toHaveBeenCalledWith(expect.objectContaining({
+        target: expect.objectContaining({
+          nodeName: 'SELECT',
+          value: 'Banana',
+        }),
+      }));
     });
 
     it('updates when the value changes', () => {
-      const { container } = render(<SelectWrapper options={options} />);
-      const select = container.querySelector('select');
-      fireEvent.change(select, { target: { value: 'Apple' } });
-      expect(select).toHaveValue('Apple');
-      expect(select.querySelector('option:nth-child(2)')).toHaveTextContent('Banana');
+      const { getByRole } = render(<SelectWrapper options={options} />);
+      fireEvent.change(getByRole('combobox'), { target: { value: 'Apple' } });
+      expect(getByRole('combobox')).toHaveValue('Apple');
     });
   });
 
@@ -66,26 +65,27 @@ describe('options', () => {
 
     it('triggers the onValue callback with the selected value', () => {
       const spy = jest.fn();
-      const { container } = render(<SelectWrapper options={options} onValue={spy} />);
-      const select = container.querySelector('select');
-      fireEvent.change(select, { target: { value: '2' } });
+      const { getByRole } = render(<SelectWrapper options={options} onValue={spy} />);
+      fireEvent.change(getByRole('combobox'), { target: { value: '2' } });
       expect(spy).toHaveBeenCalledWith(2);
     });
 
     it('triggers the onChange callback with the selected value', () => {
       const spy = jest.fn((e) => e.persist());
-      const { container } = render(<SelectWrapper options={options} onChange={spy} />);
-      const select = container.querySelector('select');
-      fireEvent.change(select, { target: { value: '2' } });
-      expect(spy).toHaveBeenCalledWith(expect.objectContaining({ target: select }));
+      const { getByRole } = render(<SelectWrapper options={options} onChange={spy} />);
+      fireEvent.change(getByRole('combobox'), { target: { value: '2' } });
+      expect(spy).toHaveBeenCalledWith(expect.objectContaining({
+        target: expect.objectContaining({
+          nodeName: 'SELECT',
+          value: '2',
+        }),
+      }));
     });
 
     it('updates when the value changes', () => {
-      const { container } = render(<SelectWrapper options={options} />);
-      const select = container.querySelector('select');
-      fireEvent.change(select, { target: { value: '1' } });
-      expect(select).toHaveValue('1');
-      expect(select.querySelector('option:nth-child(2)')).toHaveTextContent('2');
+      const { getByRole } = render(<SelectWrapper options={options} />);
+      fireEvent.change(getByRole('combobox'), { target: { value: '1' } });
+      expect(getByRole('combobox')).toHaveValue('1');
     });
   });
 
@@ -102,26 +102,27 @@ describe('options', () => {
 
       it('triggers the onValue callback with the selected value', () => {
         const spy = jest.fn();
-        const { container } = render(<SelectWrapper options={options} onValue={spy} />);
-        const select = container.querySelector('select');
-        fireEvent.change(select, { target: { value: 'Banana' } });
+        const { getByRole } = render(<SelectWrapper options={options} onValue={spy} />);
+        fireEvent.change(getByRole('combobox'), { target: { value: 'Banana' } });
         expect(spy).toHaveBeenCalledWith({ label: 'Banana' });
       });
 
       it('triggers the onChange callback with the selected value', () => {
         const spy = jest.fn((e) => e.persist());
-        const { container } = render(<SelectWrapper options={options} onChange={spy} />);
-        const select = container.querySelector('select');
-        fireEvent.change(select, { target: { value: 'Banana' } });
-        expect(spy).toHaveBeenCalledWith(expect.objectContaining({ target: select }));
+        const { getByRole } = render(<SelectWrapper options={options} onChange={spy} />);
+        fireEvent.change(getByRole('combobox'), { target: { value: 'Banana' } });
+        expect(spy).toHaveBeenCalledWith(expect.objectContaining({
+          target: expect.objectContaining({
+            nodeName: 'SELECT',
+            value: 'Banana',
+          }),
+        }));
       });
 
       it('updates when the value changes', () => {
-        const { container } = render(<SelectWrapper options={options} />);
-        const select = container.querySelector('select');
-        fireEvent.change(select, { target: { value: 'Banana' } });
-        expect(select).toHaveValue('Banana');
-        expect(select.querySelector('option:nth-child(2)')).toHaveTextContent('Banana');
+        const { getByRole } = render(<SelectWrapper options={options} />);
+        fireEvent.change(getByRole('combobox'), { target: { value: 'Banana' } });
+        expect(getByRole('combobox')).toHaveValue('Banana');
       });
     });
 
@@ -129,10 +130,9 @@ describe('options', () => {
       it('is used as a options identity', () => {
         const options = [{ label: 'foo', value: 1 }, { label: 'foo', value: 2 }, { label: 'foo', value: 3 }];
         const spy = jest.fn();
-        const { container } = render(<SelectWrapper options={options} value={2} onValue={spy} />);
-        const select = container.querySelector('select');
-        expect(select).toHaveValue('2');
-        fireEvent.change(select, { target: { value: '3' } });
+        const { getByRole } = render(<SelectWrapper options={options} value={2} onValue={spy} />);
+        expect(getByRole('combobox')).toHaveValue('2');
+        fireEvent.change(getByRole('combobox'), { target: { value: '3' } });
         expect(spy).toHaveBeenCalledWith({ label: 'foo', value: 3 });
       });
     });
@@ -141,10 +141,9 @@ describe('options', () => {
       it('is used as a options identity', () => {
         const options = [{ label: 'foo', id: 1 }, { label: 'foo', id: 2 }, { label: 'foo', id: 3 }];
         const spy = jest.fn();
-        const { container } = render(<SelectWrapper options={options} value={2} onValue={spy} />);
-        const select = container.querySelector('select');
-        expect(select).toHaveValue('2');
-        fireEvent.change(select, { target: { value: '3' } });
+        const { getByRole } = render(<SelectWrapper options={options} value={2} onValue={spy} />);
+        expect(getByRole('combobox')).toHaveValue('2');
+        fireEvent.change(getByRole('combobox'), { target: { value: '3' } });
         expect(spy).toHaveBeenCalledWith({ label: 'foo', id: 3 });
       });
     });
@@ -152,19 +151,17 @@ describe('options', () => {
     describe('disabled', () => {
       it('sets the disabled attribute', () => {
         const options = [{ label: 'foo', disabled: true }];
-        const { container } = render(<SelectWrapper options={options} />);
-        const option = container.querySelector('option');
-        expect(option).toHaveAttribute('disabled', '');
+        const { getAllByRole } = render(<SelectWrapper options={options} />);
+        expect(getAllByRole('option')[0]).toHaveAttribute('disabled', '');
       });
     });
 
     describe('html', () => {
       it('sets attributes on the element', () => {
         const options = [{ label: 'foo', html: { 'data-foo': 'bar', className: 'class' } }];
-        const { container } = render(<SelectWrapper options={options} />);
-        const option = container.querySelector('option');
-        expect(option).toHaveAttribute('data-foo', 'bar');
-        expect(option).toHaveAttribute('class', 'class');
+        const { getByRole } = render(<SelectWrapper options={options} />);
+        expect(getByRole('option')).toHaveAttribute('data-foo', 'bar');
+        expect(getByRole('option')).toHaveAttribute('class', 'class');
       });
     });
 
@@ -184,35 +181,35 @@ describe('options', () => {
 
       it('triggers the onValue callback with the selected value', () => {
         const spy = jest.fn();
-        const { container } = render(<SelectWrapper options={options} onValue={spy} />);
-        const select = container.querySelector('select');
-        fireEvent.change(select, { target: { value: 'Lemon' } });
+        const { getByRole } = render(<SelectWrapper options={options} onValue={spy} />);
+        fireEvent.change(getByRole('combobox'), { target: { value: 'Lemon' } });
         expect(spy).toHaveBeenCalledWith({ label: 'Lemon', group: 'Citrus' });
       });
 
       it('triggers the onChange callback with the selected value', () => {
         const spy = jest.fn((e) => e.persist());
-        const { container } = render(<SelectWrapper options={options} onChange={spy} />);
-        const select = container.querySelector('select');
-        fireEvent.change(select, { target: { value: 'Lemon' } });
-        expect(spy).toHaveBeenCalledWith(expect.objectContaining({ target: select }));
+        const { getByRole } = render(<SelectWrapper options={options} onChange={spy} />);
+        fireEvent.change(getByRole('combobox'), { target: { value: 'Lemon' } });
+        expect(spy).toHaveBeenCalledWith(expect.objectContaining({
+          target: expect.objectContaining({
+            nodeName: 'SELECT',
+            value: 'Lemon',
+          }),
+        }));
       });
 
       it('updates when the value changes', () => {
-        const { container } = render(<SelectWrapper options={options} />);
-        const select = container.querySelector('select');
-        fireEvent.change(select, { target: { value: 'Lemon' } });
-        expect(select).toHaveValue('Lemon');
-        expect(select.querySelector('optgroup:first-of-type > option:nth-child(2)')).toHaveTextContent('Lemon');
+        const { getByRole } = render(<SelectWrapper options={options} />);
+        fireEvent.change(getByRole('combobox'), { target: { value: 'Lemon' } });
+        expect(getByRole('combobox')).toHaveValue('Lemon');
       });
     });
 
     describe('other attributes', () => {
       it('does not render them', () => {
         const options = [{ label: 'foo', 'data-foo': 'bar' }];
-        const { container } = render(<SelectWrapper options={options} />);
-        const option = container.querySelector('option');
-        expect(option).not.toHaveAttribute('data-foo', 'bar');
+        const { getByRole } = render(<SelectWrapper options={options} />);
+        expect(getByRole('combobox')).not.toHaveAttribute('data-foo', 'bar');
       });
     });
   });
@@ -222,27 +219,24 @@ describe('options', () => {
 
     it('maps options', () => {
       const spy = jest.fn();
-      const { container } = render(<SelectWrapper
+      const { getByRole } = render(<SelectWrapper
         options={options}
         onValue={spy}
         mapOption={({ name }) => ({ label: name })}
       />);
-      const select = container.querySelector('select');
-      fireEvent.change(select, { target: { value: 'Orange' } });
+      fireEvent.change(getByRole('combobox'), { target: { value: 'Orange' } });
       expect(spy).toHaveBeenCalledWith({ name: 'Orange' });
     });
 
     it('selects a mapped option', () => {
-      const { container } = render(<SelectWrapper
+      const { getByRole } = render(<SelectWrapper
         options={options}
         value={{ name: 'Banana' }}
         mapOption={({ name }) => ({ label: name })}
       />);
-      const select = container.querySelector('select');
-      expect(select).toHaveValue('Banana');
-      fireEvent.change(select, { target: { value: 'Orange' } });
-      expect(select).toHaveValue('Orange');
-      expect(select.querySelector('option:nth-child(3)')).toHaveTextContent('Orange');
+      expect(getByRole('combobox')).toHaveValue('Banana');
+      fireEvent.change(getByRole('combobox'), { target: { value: 'Orange' } });
+      expect(getByRole('combobox')).toHaveValue('Orange');
     });
   });
 });
@@ -251,17 +245,14 @@ describe('blank', () => {
   const options = ['Apple', 'Banana', 'Orange'];
 
   it('renders a blank option', () => {
-    const { container } = render(<SelectWrapper options={options} blank="Please select…" />);
-    const select = container.querySelector('select');
-    expect(select.querySelector('option')).toHaveTextContent('Please select…');
-    expect(select).toHaveValue('');
+    const { getByRole, getAllByRole } = render(<SelectWrapper options={options} blank="Please select…" />);
+    expect(getAllByRole('option')[0]).toHaveTextContent('Please select…');
+    expect(getByRole('combobox')).toHaveValue('');
   });
 
   it('renders with a selected value', () => {
-    const { container } = render(<SelectWrapper options={options} blank="Please select…" value="Orange" />);
-    const select = container.querySelector('select');
-    expect(select).toHaveValue('Orange');
-    expect(select.querySelector('option:nth-child(4)')).toHaveTextContent('Orange');
+    const { getByRole } = render(<SelectWrapper options={options} blank="Please select…" value="Orange" />);
+    expect(getByRole('combobox')).toHaveValue('Orange');
   });
 });
 
@@ -269,10 +260,10 @@ describe('optionProps', () => {
   const options = ['Apple', 'Banana', 'Orange'];
 
   it('allows additional props to be added to all options', () => {
-    const { container } = render(
+    const { getAllByRole } = render(
       <SelectWrapper options={options} optionProps={{ 'data-foo': 'bar' }} />,
     );
-    container.querySelectorAll('option').forEach((option) => {
+    getAllByRole('option').forEach((option) => {
       expect(option).toHaveAttribute('data-foo', 'bar');
     });
   });
@@ -301,11 +292,31 @@ describe('additional props', () => {
   const options = ['Apple', 'Banana', 'Orange'];
 
   it('includes them on the select', () => {
-    const { container } = render(
+    const { getByRole } = render(
       <SelectWrapper options={options} required data-foo="bar" />,
     );
-    const select = container.querySelector('select');
-    expect(select).toHaveAttribute('required', '');
-    expect(select).toHaveAttribute('data-foo', 'bar');
+    expect(getByRole('combobox')).toHaveAttribute('required', '');
+    expect(getByRole('combobox')).toHaveAttribute('data-foo', 'bar');
+  });
+});
+
+describe('ref', () => {
+  it('references the select for an object ref', () => {
+    const ref = { current: null };
+    const { getByRole } = render((
+      <SelectWrapper options={['foo']} ref={ref} />
+    ));
+    expect(ref.current).toEqual(getByRole('combobox'));
+  });
+
+  it('references the combobox for a function ref', () => {
+    let value;
+    const ref = (node) => {
+      value = node;
+    };
+    const { getByRole } = render((
+      <SelectWrapper options={['foo']} ref={ref} />
+    ));
+    expect(value).toEqual(getByRole('combobox'));
   });
 });

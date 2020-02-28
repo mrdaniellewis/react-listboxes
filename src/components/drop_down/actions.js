@@ -12,8 +12,8 @@ export function clearSearch() {
   return { type: CLEAR_SEARCH };
 }
 
-export function setFocusedOption(focusedOption) {
-  return { type: SET_FOCUSED_OPTION, focusedOption };
+export function setFocusedOption(focusedOption, expanded) {
+  return { type: SET_FOCUSED_OPTION, focusedOption, expanded };
 }
 
 export function onSelectValue(newValue) {
@@ -41,51 +41,26 @@ export function onToggleOpen(event) {
     if (expanded) {
       dispatch({ type: SET_EXPANDED, expanded: false });
     } else {
-      dispatch(setFocusedOption(selectedOption));
-    }
-  };
-}
-
-export function onButtonKeyDown(event) {
-  return (dispatch, getState, getProps) => {
-    const { selectedOption, disabled, options } = getProps();
-    const { altKey, ctrlKey, metaKey, key } = event;
-
-    if (disabled || !options.length) {
-      return;
-    }
-
-    switch (key) {
-      case ' ':
-      case 'Enter':
-        event.preventDefault();
-        dispatch(onToggleOpen());
-        break;
-
-      case 'ArrowUp':
-        if (altKey) {
-          break;
-        }
-        // fall through
-      case 'ArrowDown':
-        event.preventDefault();
-        dispatch(setFocusedOption(selectedOption));
-        break;
-
-      default:
-        if (!rNonPrintableKey.test(key) && !altKey && !ctrlKey && !metaKey) {
-          event.preventDefault();
-          dispatch({ type: SET_SEARCH_KEY, key });
-        }
+      dispatch(setFocusedOption(selectedOption, true));
     }
   };
 }
 
 export function onKeyDown(event) {
   return (dispatch, getState, getProps) => {
-    const { focusedOption } = getState();
-    const { options, comboBoxRef, skipOption: skip } = getProps();
+    const { expanded, focusedOption } = getState();
+    const { disabled, options, comboBoxRef, skipOption: skip, selectedOption } = getProps();
     const { altKey, metaKey, ctrlKey, key } = event;
+
+    if (disabled || !options.length) {
+      return;
+    }
+
+    if (!expanded && (key === 'Enter' || key === ' ')) {
+      event.preventDefault();
+      dispatch(onToggleOpen());
+      return;
+    }
 
     const index = focusedOption ? focusedOption.index : -1;
 
@@ -94,8 +69,12 @@ export function onKeyDown(event) {
         // Close if altKey, otherwise next item and show
         event.preventDefault();
         if (altKey) {
-          dispatch(onSelectValue(focusedOption));
-          comboBoxRef.current.focus();
+          if (expanded) {
+            dispatch(onSelectValue(focusedOption));
+            comboBoxRef.current.focus();
+          }
+        } else if (!expanded) {
+          dispatch(setFocusedOption(selectedOption, true));
         } else {
           dispatch(setFocusedOption(previousInList(options, index, { skip })));
         }
@@ -103,8 +82,10 @@ export function onKeyDown(event) {
       case 'ArrowDown':
         // Show, and next item unless altKey
         event.preventDefault();
-        if (!altKey) {
+        if (expanded && !altKey) {
           dispatch(setFocusedOption(nextInList(options, index, { skip })));
+        } else if (!expanded) {
+          dispatch(setFocusedOption(selectedOption, true));
         }
         break;
       case 'Home':

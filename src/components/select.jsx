@@ -1,9 +1,9 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
 import { renderGroupedOptions } from '../helpers/render_grouped_options.js';
 
-export function Select(rawProps) {
+export const Select = forwardRef((rawProps, ref) => {
   const {
     options, onChange, onValue, value: _, selectedOption,
     optionProps, optgroupProps,
@@ -19,6 +19,7 @@ export function Select(rawProps) {
     <select
       value={selectedOption?.identity ?? ''}
       onChange={handleChange}
+      ref={ref}
       {...props}
     >
       {renderGroupedOptions({
@@ -52,7 +53,7 @@ export function Select(rawProps) {
       })}
     </select>
   );
-}
+});
 
 Select.propTypes = {
   blank: PropTypes.node,
@@ -72,3 +73,5 @@ Select.defaultProps = {
   optionProps: null,
   optgroupProps: null,
 };
+
+Select.displayName = 'Select';

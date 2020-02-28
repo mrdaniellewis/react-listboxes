@@ -180,6 +180,22 @@ function Example() {
         label="No options"
         options={[]}
       />
+      <DropDownField
+        label="All options disabled"
+        options={[
+          { label: 'Apple', disabled: true },
+          { label: 'Orange', disabled: true },
+          { label: 'Lemon', disabled: true },
+        ]}
+      />
+      <DropDownField
+        label="First option disabled"
+        options={[
+          { label: 'Apple', disabled: true },
+          { label: 'Orange' },
+          { label: 'Lemon' },
+        ]}
+      />
     </>
   );
 }

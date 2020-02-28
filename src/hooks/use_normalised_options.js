@@ -28,14 +28,14 @@ export function useNormalisedOptions({
         label: blank,
         identity: '',
         value: null,
-        key: idGenerator.uniqueId(`${id}_option_blank`),
+        key: idGenerator.uniqueId(`${id || ''}_option_blank`),
         index: 0,
       });
     }
 
     rawOptions.forEach((o, index) => {
       const option = optionise(o, mapOption);
-      option.key = idGenerator.uniqueId(option.html?.id || `${id}_option_${option.label}`);
+      option.key = idGenerator.uniqueId(option.html?.id || `${id || ''}_option_${option.label}`);
       delete option?.html?.id;
       option.index = index + (blank ? 1 : 0);
       if (option.group) {
@@ -45,7 +45,7 @@ export function useNormalisedOptions({
             label: option.group,
             identity: option.group,
             options: [option],
-            key: idGenerator.uniqueId(`${id}_group_${option.group}`),
+            key: idGenerator.uniqueId(`${id || ''}_group_${option.group}`),
           };
           groups.set(option.group, group);
         } else {

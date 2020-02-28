@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useLayoutEffect, Fragment, forwardRef, useState } from 'react';
+import React, { useRef, useEffect, useLayoutEffect, Fragment, forwardRef, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Context } from '../context.js';
 import { useThunkReducer as useReducer } from '../hooks/use_thunk_reducer.js';
@@ -27,6 +27,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
     options, value, id, className,
     children, managedFocus, layoutListBox,
     classGenerator, selectedOption, findOption: currentFindOption,
+    onBlur: passedOnBlur, onFocus: passedOnFocus,
     WrapperComponent, wrapperProps,
     ComboBoxComponent, comboBoxProps,
     ListBoxComponent, listBoxProps,
@@ -50,7 +51,17 @@ export const DropDown = forwardRef((rawProps, ref) => {
   ] = useState({ className: null, style: null });
 
   const { expanded, search, focusedOption } = state;
-  const [handleBlur, handleFocus] = useOnBlur(() => dispatch(onBlur()), listRef);
+  const [handleBlur, handleFocus] = useOnBlur(
+    listRef,
+    useCallback(() => {
+      dispatch(onBlur());
+      passedOnBlur?.();
+    }, [passedOnBlur]),
+    useCallback(() => {
+      dispatch(onFocus());
+      passedOnFocus?.();
+    }, [passedOnFocus]),
+  );
 
   useEffect(() => {
     if (!search?.trim?.()) {
@@ -73,7 +84,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
     if (expanded && focusedOption && managedFocus) {
       focusedRef.current?.focus?.();
     } else if (expanded) {
-      listRef.current.focus();
+      comboBoxRef.current.focus();
     }
   }, [expanded, managedFocus, focusedOption]);
 
@@ -106,7 +117,10 @@ export const DropDown = forwardRef((rawProps, ref) => {
   return (
     <Context.Provider value={contextValue}>
       <WrapperComponent
-        {...(WrapperComponent === Fragment ? undefined : { className })}
+        className={classes()}
+        onBlur={handleBlur}
+        onFocus={handleFocus}
+        onKeyDown={(e) => dispatch(onKeyDown(e))}
         {...wrapperProps}
       >
         <ComboBoxComponent
@@ -114,7 +128,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
           id={id}
           aria-controls={`${id}_listbox`}
           aria-expanded={expanded ? 'true' : null}
-          aria-activedescendant={focusedOption?.key || null}
+          aria-activedescendant={(expanded && focusedOption?.key) || null}
           aria-labelledby={ariaLabelledBy}
           aria-readonly="true"
           aria-required={required ? 'true' : null}
@@ -122,7 +136,6 @@ export const DropDown = forwardRef((rawProps, ref) => {
           tabIndex={disabled ? null : 0}
           ref={combinedRef}
           onClick={(e) => dispatch(onToggleOpen(e))}
-          onKeyDown={(e) => dispatch(onButtonKeyDown(e))}
           onMouseDown={(e) => e.preventDefault()}
           className={classes('combobox')}
           {...comboBoxProps}
@@ -135,14 +148,8 @@ export const DropDown = forwardRef((rawProps, ref) => {
           id={`${id}_listbox`}
           role="listbox"
           hidden={!expanded}
-          aria-activedescendant={focusedOption?.key || null}
+          aria-activedescendant={(expanded && focusedOption?.key) || null}
           tabIndex={-1}
-          onFocus={(e) => {
-            handleFocus();
-            dispatch(onFocus(e));
-          }}
-          onBlur={handleBlur}
-          onKeyDown={(e) => dispatch(onKeyDown(e))}
           className={joinTokens(classes('listbox'), listClassName)}
           {...listBoxProps}
           style={listStyle}
@@ -225,7 +232,6 @@ DropDown.propTypes = {
   id: PropTypes.string.isRequired,
   layoutListBox: PropTypes.func,
   options: PropTypes.arrayOf(PropTypes.any).isRequired,
-  onValue: PropTypes.func,
   value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
   managedFocus: PropTypes.bool,
   className: PropTypes.string,
@@ -234,6 +240,10 @@ DropDown.propTypes = {
   required: PropTypes.bool,
   disabled: PropTypes.bool,
   findOption: PropTypes.func,
+
+  onBlur: PropTypes.func,
+  onFocus: PropTypes.func,
+  onValue: PropTypes.func,
 
   WrapperComponent: componentValidator,
   wrapperProps: PropTypes.object,
@@ -260,12 +270,16 @@ DropDown.defaultProps = {
   value: null,
   className: 'dropdown',
   managedFocus: true,
-  onValue: () => {},
   skipOption: undefined,
   classGenerator: bemClassGenerator,
   required: false,
   disabled: false,
   findOption,
+
+  onBlur: null,
+  onFocus: null,
+  onValue: () => {},
+
   WrapperComponent: 'div',
   wrapperProps: null,
   ListBoxComponent: 'ul',
