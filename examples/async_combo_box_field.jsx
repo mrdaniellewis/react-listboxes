@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { ComboBox } from '../src/components/combo_box.jsx';
-import { useAsyncSearch } from '../src/hooks/use_async_search.js';
+import { useSearch } from '../src/hooks/use_search.js';
 import { options as validateOptions } from '../src/validators/options.js';
 import { makeSearch } from '../src/helpers/make_search.js';
 import fruits from './fruits.json';
@@ -11,7 +11,7 @@ export function AsyncComboBoxField({ label, ...props }) {
   const { value: initialValue, options: initialOptions } = props;
   const [value, setValue] = useState(initialValue);
   const [search] = useState(() => makeSearch(fruits));
-  const { options, busy, onSearch, error } = useAsyncSearch(
+  const { options, busy, onSearch, error } = useSearch(
     async (query) => {
       if (query === 'fail') {
         throw new Error('failure');

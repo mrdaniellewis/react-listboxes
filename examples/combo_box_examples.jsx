@@ -5,13 +5,13 @@ import { ComboBox } from '../src/components/combo_box.jsx';
 import { unindent } from './lib/unindent.js';
 import { useId } from '../src/hooks/use_id.js';
 import countries from './lib/countries.json';
+import { useTokenSearch } from '../src/hooks/use_token_search.js';
 import { useSearch } from '../src/hooks/use_search.js';
-import { useAsyncSearch } from '../src/hooks/use_async_search.js';
 import { makeSearch } from '../src/helpers/make_search.js';
 
 function ComboBoxField({ label, options: originalOptions, ...props }) {
   const [value, setValue] = useState(null);
-  const [options, onSearch] = useSearch(originalOptions);
+  const [options, onSearch] = useTokenSearch(originalOptions);
   const id = useId();
   return (
     <>
@@ -48,7 +48,7 @@ function AsyncComboBoxField({ label, options: originalOptions, ...props }) {
       return fn(query);
     };
   });
-  const [options, onSearch, busy] = useAsyncSearch(search, originalOptions);
+  const [options, onSearch, busy] = useSearch(search, originalOptions);
   const id = useId();
   return (
     <>
