@@ -269,16 +269,12 @@ export const ComboBox = forwardRef((rawProps, ref) => {
                     {...html}
                     onClick={disabled ? null : (e) => dispatch(onClick(e, option))}
                   >
-                    {/*
-                        Prefix the label with the group
-                        VoiceOver will not read any label in managedFocus mode if
-                        if aria-label or aria-labelledby is applied to the option
-                    */}
-                    <ValueComponent
-                      aria-labelledby={group ? `${group?.key} ${key}_label` : null}
-                      id={group ? `${key}_label` : null}
-                      {...valueProps}
-                    >
+                    {group && (
+                      <div className="sr-only">
+                        {group.label}
+                      </div>
+                    )}
+                    <ValueComponent {...valueProps}>
                       {label}
                     </ValueComponent>
                   </OptionComponent>
@@ -384,7 +380,7 @@ ComboBox.defaultProps = {
   groupLabelProps: null,
   OptionComponent: 'li',
   optionProps: null,
-  ValueComponent: 'div',
+  ValueComponent: Fragment,
   valueProps: null,
   ClearButtonComponent: 'span',
   clearButtonProps: null,
