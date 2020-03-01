@@ -64,9 +64,9 @@ export function useNormalisedOptions({
   ), [rawValue, mapOption]);
 
   const selectedOption = useMemo(() => {
-    const option = value && options.find((o) => o.identity === value?.identity);
+    const option = options.find((o) => o.identity === (value?.identity || ''));
     if (option || !mustHaveSelection) {
-      return option;
+      return option || null;
     }
     return options.find((o) => !o.unselectable);
   }, [value, options, mustHaveSelection]);

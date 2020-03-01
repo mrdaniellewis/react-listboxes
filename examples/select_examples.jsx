@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Select } from '../src/components/select.jsx';
 import { unindent } from './lib/unindent.js';
 import countries from './lib/countries.json';
-import { useId } from '../src/hooks/use_id.js';
+import { useId } from './lib/use_id.js';
 
 function SelectField({ label, ...props }) {
   const [value, setValue] = useState(null);

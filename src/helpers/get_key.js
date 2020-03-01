@@ -7,18 +7,13 @@ export function getKey(event) {
     return key;
   }
 
-  const shortcut = [
-    altKey ? 'Alt+' : '',
-    ctrlKey ? 'Control+' : '',
-    metaKey ? 'Meta+' : '',
-    key,
-  ].join('');
-
-  if (shortcut === 'Ctrl+h') {
+  if (key === 'h' && ctrlKey && !altKey && !metaKey) {
     return 'Backspace';
   }
-  if (shortcut === 'Ctrl+d' || shortcut === 'Ctrl+k') {
+
+  if ((key === 'd' || key === 'k') && ctrlKey && !altKey && !metaKey) {
     return 'Delete';
   }
+
   return key;
 }

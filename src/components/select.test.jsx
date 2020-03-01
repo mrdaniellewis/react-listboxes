@@ -15,7 +15,7 @@ describe('options', () => {
 
     it('renders an select', () => {
       const { container } = render(
-        <SelectWrapper options={options} />,
+        <Select options={options} />,
       );
       expect(container).toMatchSnapshot();
     });
@@ -51,10 +51,17 @@ describe('options', () => {
       fireEvent.change(getByRole('combobox'), { target: { value: 'Apple' } });
       expect(getByRole('combobox')).toHaveValue('Apple');
     });
+
+    it('triggers onValue when selecting an empty string', () => {
+      const spy = jest.fn();
+      const { getByRole } = render(<SelectWrapper options={['foo', '']} onValue={spy} />);
+      fireEvent.change(getByRole('combobox'), { target: { value: '' } });
+      expect(spy).toHaveBeenCalledWith('');
+    });
   });
 
   describe('options as array of numbers', () => {
-    const options = [1, 2, 3];
+    const options = [0, 1, 2, 3];
 
     it('renders an select', () => {
       const { container } = render(
@@ -86,6 +93,85 @@ describe('options', () => {
       const { getByRole } = render(<SelectWrapper options={options} />);
       fireEvent.change(getByRole('combobox'), { target: { value: '1' } });
       expect(getByRole('combobox')).toHaveValue('1');
+    });
+
+    it('triggers onValue when selecting 0', () => {
+      const spy = jest.fn();
+      const { getByRole } = render(<SelectWrapper options={options} onValue={spy} />);
+      fireEvent.change(getByRole('combobox'), { target: { value: '0' } });
+      expect(spy).toHaveBeenCalledWith(0);
+    });
+  });
+
+  describe('options as null', () => {
+    const options = ['foo', null];
+
+    it('renders an select', () => {
+      const { container } = render(
+        <SelectWrapper options={options} />,
+      );
+      expect(container).toMatchSnapshot();
+    });
+
+    it('triggers the onValue callback with the selected value', () => {
+      const spy = jest.fn();
+      const { getByRole } = render(<SelectWrapper options={options} onValue={spy} />);
+      fireEvent.change(getByRole('combobox'), { target: { value: '' } });
+      expect(spy).toHaveBeenCalledWith(null);
+    });
+
+    it('triggers the onChange callback with the selected value', () => {
+      const spy = jest.fn((e) => e.persist());
+      const { getByRole } = render(<SelectWrapper options={options} value="foo" onChange={spy} />);
+      fireEvent.change(getByRole('combobox'), { target: { value: '' } });
+      expect(spy).toHaveBeenCalledWith(expect.objectContaining({
+        target: expect.objectContaining({
+          nodeName: 'SELECT',
+          value: '',
+        }),
+      }));
+    });
+
+    it('updates when the value changes', () => {
+      const { getByRole } = render(<SelectWrapper options={options} />);
+      fireEvent.change(getByRole('combobox'), { target: { value: '' } });
+      expect(getByRole('combobox')).toHaveValue('');
+    });
+  });
+
+  describe('options as undefined', () => {
+    const options = ['foo', undefined];
+
+    it('renders an select', () => {
+      const { container } = render(
+        <SelectWrapper options={options} />,
+      );
+      expect(container).toMatchSnapshot();
+    });
+
+    it('triggers the onValue callback with the selected value', () => {
+      const spy = jest.fn();
+      const { getByRole } = render(<SelectWrapper options={options} onValue={spy} />);
+      fireEvent.change(getByRole('combobox'), { target: { value: '' } });
+      expect(spy).toHaveBeenCalledWith(undefined);
+    });
+
+    it('triggers the onChange callback with the selected value', () => {
+      const spy = jest.fn((e) => e.persist());
+      const { getByRole } = render(<SelectWrapper options={options} onChange={spy} />);
+      fireEvent.change(getByRole('combobox'), { target: { value: '' } });
+      expect(spy).toHaveBeenCalledWith(expect.objectContaining({
+        target: expect.objectContaining({
+          nodeName: 'SELECT',
+          value: '',
+        }),
+      }));
+    });
+
+    it('updates when the value changes', () => {
+      const { getByRole } = render(<SelectWrapper options={options} />);
+      fireEvent.change(getByRole('combobox'), { target: { value: '' } });
+      expect(getByRole('combobox')).toHaveValue('');
     });
   });
 

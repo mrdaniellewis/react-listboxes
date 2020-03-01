@@ -1,7 +1,7 @@
 export function nextInList(
   options,
-  index = -1,
-  { allowEmpty = false, skip, startIndex = index } = {},
+  index,
+  { allowEmpty = false, skip, startIndex = index },
 ) {
   let i = index + 1;
   if (i >= options.length) {

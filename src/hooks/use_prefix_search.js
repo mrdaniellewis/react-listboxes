@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
-import { tokenSearcher } from '../searchers/token_searcher.js';
+import { prefixSearcher } from '../searchers/prefix_searcher.js';
 import { useSearch } from './use_search.js';
 
-export function useTokenSearch(options, { index, tokenise } = {}) {
+export function usePrefixSearch(options, { index }) {
   const search = useMemo(() => (
-    tokenSearcher(options, { index, tokenise })
-  ), [options, index, tokenise]);
+    prefixSearcher(options, { index })
+  ), [options, index]);
 
   const [filteredOptions, onSearch] = useSearch(search, { initialOptions: options });
   return [filteredOptions, onSearch, false];

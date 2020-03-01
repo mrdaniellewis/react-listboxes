@@ -27,9 +27,9 @@ export function onSelectValue(newValue) {
     if (document.activeElement === input) {
       input.setSelectionRange(input.value.length, input.value.length, 'forward');
     }
-    onValue(newValue ? newValue.value : null);
+    onValue?.(newValue ? newValue.value : null);
     // It is not possible to fire a React SimulatedEvent
-    passedOnChange({ target: inputRef.current });
+    passedOnChange?.({ target: inputRef.current });
   };
 }
 
@@ -107,6 +107,8 @@ export function onKeyDown(event) {
             focusedOption: previousInList(options, index, { skip, allowEmpty: true }),
             focusListBox: true,
           }));
+        } else {
+          dispatch({ type: SET_EXPANDED, expanded: true, focusListBox: true });
         }
         break;
       case 'ArrowDown':
@@ -118,7 +120,7 @@ export function onKeyDown(event) {
             focusListBox: true,
           }));
         } else {
-          dispatch({ type: SET_EXPANDED, expanded: true });
+          dispatch({ type: SET_EXPANDED, expanded: true, focusListBox: true });
         }
         break;
       case 'Home':
@@ -178,19 +180,25 @@ export function onChange(event) {
     dispatch({ type: SET_SEARCH, search, autoselect: true });
     if (!search && focusedOption) {
       dispatch(onSelectValue(null));
+      return;
     }
-    passedOnChange(event);
+    passedOnChange?.(event);
   };
 }
 
 export function onFocus() {
   return (dispatch, getState, getProps) => {
-    const { expanded } = getState();
-    if (expanded) {
-      return;
-    }
     const { selectedOption } = getProps();
     dispatch(setFocusedOption({ focusedOption: selectedOption }));
+  };
+}
+
+export function onFocusInput() {
+  return (dispatch, getState) => {
+    const { expanded } = getState();
+    if (expanded) {
+      dispatch({ type: SET_FOCUS_LIST_BOX, focusListBox: false });
+    }
   };
 }
 

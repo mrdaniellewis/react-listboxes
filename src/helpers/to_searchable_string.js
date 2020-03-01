@@ -4,8 +4,8 @@ import { rSpace } from '../constants/r_space.js';
 
 export function toSearchableString(text) {
   return toNormalizedString(text)
-    .trim()
     .toLowerCase()
-    .replace(rPunctuation)
-    .replace(rSpace, ' ');
+    .replace(rPunctuation, ' ')
+    .replace(rSpace, ' ')
+    .trim();
 }

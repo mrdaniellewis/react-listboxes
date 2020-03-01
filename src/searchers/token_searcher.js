@@ -1,10 +1,10 @@
-import { tokenise } from './tokenise.js';
+import { tokenise as defaultTokenise } from '../helpers/tokenise.js';
+import { indexValue } from '../helpers/index_value.js';
 
-function defaultIndex(option) {
-  return option?.label || option || '';
-}
-
-export const makeSearch = (options, index = defaultIndex) => {
+export function tokenSearcher(
+  options,
+  { index = indexValue, tokenise = defaultTokenise } = {},
+) {
   const indexed = options.map((o) => tokenise(index(o)));
 
   return (query) => {
@@ -19,6 +19,6 @@ export const makeSearch = (options, index = defaultIndex) => {
           ? options[i]
           : null
       ))
-      .filter(Boolean);
+      .filter((o) => o !== null && o !== '');
   };
-};
+}

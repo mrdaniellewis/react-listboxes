@@ -11,8 +11,8 @@ export const Select = forwardRef((rawProps, ref) => {
   } = useNormalisedOptions(rawProps, { mustHaveSelection: true });
 
   const handleChange = useCallback((e) => {
-    onValue(options.find((o) => o.identity === e.target.value)?.value ?? null);
-    onChange(e);
+    onValue?.(options.find((o) => o.identity === e.target.value)?.value);
+    onChange?.(e);
   }, [onValue, onChange, options]);
 
   return (
@@ -68,8 +68,8 @@ Select.propTypes = {
 Select.defaultProps = {
   blank: null,
   value: null,
-  onChange: () => {},
-  onValue: () => {},
+  onChange: null,
+  onValue: null,
   optionProps: null,
   optgroupProps: null,
 };

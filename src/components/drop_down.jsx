@@ -6,7 +6,7 @@ import { reducer } from './drop_down/reducer.js';
 import { initialState } from './drop_down/initial_state.js';
 import {
   clearSearch, onKeyDown, onBlur,
-  onToggleOpen, onFocus, onButtonKeyDown, onClick,
+  onToggleOpen, onFocus, onClick,
   onSelectValue, setFocusedOption, onOptionsChanged,
 } from './drop_down/actions.js';
 import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
@@ -278,7 +278,7 @@ DropDown.defaultProps = {
 
   onBlur: null,
   onFocus: null,
-  onValue: () => {},
+  onValue: null,
 
   WrapperComponent: 'div',
   wrapperProps: null,

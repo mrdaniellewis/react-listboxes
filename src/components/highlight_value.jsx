@@ -4,15 +4,20 @@ import { Highlight } from './highlight.jsx';
 import { Context } from '../context.js';
 
 export function HighlightValue({ children: value, highlight }) {
-  const state = useContext(Context);
+  const context = useContext(Context);
+  const { state: { search } } = context;
   return (
     <Highlight>
-      {highlight(value, state.search, state)}
+      {highlight(value, search, context)}
     </Highlight>
   );
 }
 
 HighlightValue.propTypes = {
-  children: PropTypes.string.isRequired,
+  children: PropTypes.string,
   highlight: PropTypes.func.isRequired,
+};
+
+HighlightValue.defaultProps = {
+  children: '',
 };

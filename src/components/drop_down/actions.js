@@ -25,7 +25,7 @@ export function onSelectValue(newValue) {
     }
     dispatch({ type: SET_SELECTED });
     if (newValue.identity !== value?.identity) {
-      onValue(newValue?.value);
+      onValue?.(newValue?.value);
     }
   };
 }
@@ -90,28 +90,34 @@ export function onKeyDown(event) {
         break;
       case 'Home':
         // First item
-        event.preventDefault();
-        dispatch(setFocusedOption(nextInList(options, -1, { skip })));
+        if (expanded) {
+          event.preventDefault();
+          dispatch(setFocusedOption(nextInList(options, -1, { skip })));
+        }
         break;
       case 'End':
         // Last item
-        event.preventDefault();
-        dispatch(setFocusedOption(previousInList(options, -1, { skip })));
+        if (expanded) {
+          event.preventDefault();
+          dispatch(setFocusedOption(previousInList(options, -1, { skip })));
+        }
         break;
       case 'Escape':
       case 'Enter':
       case 'Tab':
         // Select current item if one is selected
-        event.preventDefault();
-        if (focusedOption?.unselectable) {
-          if (key !== 'Enter') {
-            dispatch({ type: SET_EXPANDED, expanded: false });
-            comboBoxRef.current.focus();
+        if (expanded) {
+          event.preventDefault();
+          if (focusedOption?.unselectable) {
+            if (key !== 'Enter') {
+              dispatch({ type: SET_EXPANDED, expanded: false });
+              comboBoxRef.current.focus();
+            }
+            return;
           }
-          return;
+          dispatch(onSelectValue(focusedOption));
+          comboBoxRef.current.focus();
         }
-        dispatch(onSelectValue(focusedOption));
-        comboBoxRef.current.focus();
         break;
       default:
         if (!rNonPrintableKey.test(key) && !altKey && !ctrlKey && !metaKey) {

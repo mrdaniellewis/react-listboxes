@@ -26,6 +26,11 @@ exports[`options options as array of numbers renders an select 1`] = `
 <div>
   <select>
     <option
+      value="0"
+    >
+      0
+    </option>
+    <option
       value="1"
     >
       1
@@ -102,6 +107,36 @@ exports[`options options as array of objects label renders an select 1`] = `
     >
       Orange
     </option>
+  </select>
+</div>
+`;
+
+exports[`options options as null renders an select 1`] = `
+<div>
+  <select>
+    <option
+      value="foo"
+    >
+      foo
+    </option>
+    <option
+      value=""
+    />
+  </select>
+</div>
+`;
+
+exports[`options options as undefined renders an select 1`] = `
+<div>
+  <select>
+    <option
+      value="foo"
+    >
+      foo
+    </option>
+    <option
+      value=""
+    />
   </select>
 </div>
 `;

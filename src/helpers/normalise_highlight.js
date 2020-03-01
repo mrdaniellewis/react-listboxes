@@ -5,6 +5,8 @@ export function normaliseHighlight(highlight) {
   let normalised = highlight.filter(Boolean).reduce((collection, part) => {
     if (part && typeof part === 'string' && typeof collection[0] === 'string') {
       collection[0] += part; // eslint-disable-line no-param-reassign
+    } else if (Array.isArray(collection[0]) && Array.isArray(part) && part[0]) {
+      collection[0][0] += part[0]; // eslint-disable-line no-param-reassign
     } else if (part && part[0]) {
       collection.unshift(part);
     }

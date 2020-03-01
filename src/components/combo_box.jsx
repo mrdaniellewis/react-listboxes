@@ -4,7 +4,7 @@ import { Context } from '../context.js';
 import { useThunkReducer as useReducer } from '../hooks/use_thunk_reducer.js';
 import { reducer } from './combo_box/reducer.js';
 import { initialState } from './combo_box/initial_state.js';
-import { onKeyDown, onChange, onFocus, onClearValue, onBlur, onClick, onOptionsChanged } from './combo_box/actions.js';
+import { onKeyDown, onChange, onFocus, onClearValue, onBlur, onClick, onOptionsChanged, onFocusInput } from './combo_box/actions.js';
 import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
 import { useOnBlur } from '../hooks/use_on_blur.js';
 import { joinTokens } from '../helpers/join_tokens.js';
@@ -26,8 +26,8 @@ export const ComboBox = forwardRef((rawProps, ref) => {
   const {
     'aria-describedby': ariaDescribedBy, busyDebounce,
     options, value, selectedOption, id, className, classGenerator,
-    notFoundMessage, layoutListBox, managedFocus, busy, onValue: _2, onSearch,
-    autoselect, showSelectedLabel, findAutoselect: _3, tabAutocomplete: _4,
+    notFoundMessage, layoutListBox, managedFocus, busy, onSearch,
+    autoselect, showSelectedLabel,
     onBlur: passedOnBlur, onFocus: passedOnFocus,
     WrapperComponent, wrapperProps,
     InputComponent, inputProps,
@@ -163,7 +163,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
   }, [busy, busyDebounce, busyTimeoutRef]);
 
   const classes = classGenerator(className);
-  const showNotFound = notFoundMessage && !busy && expanded && !options.length
+  const showNotFound = notFoundMessage && busy === false && expanded && !options.length
     && search?.trim() && search !== value?.label;
   const ariaBusy = showBusy && search?.trim() && search !== (value?.label);
   const combinedRef = useCombineRefs(inputRef, ref);
@@ -192,6 +192,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
           value={inputLabel || ''}
           onKeyDown={(e) => dispatch(onKeyDown(e))}
           onChange={(e) => dispatch(onChange(e))}
+          onFocus={() => dispatch(onFocusInput())}
           aria-describedby={joinTokens(showNotFound && `${id}_not_found`, ariaDescribedBy)}
           ref={combinedRef}
           className={classes('input', expanded && 'focused')}
@@ -306,7 +307,7 @@ ComboBox.propTypes = {
     PropTypes.string,
     PropTypes.arrayOf(PropTypes.string),
   ]),
-  busy: PropTypes.bool,
+  busy: PropTypes.oneOf([false, true, null]),
   className: PropTypes.string,
   id: PropTypes.string.isRequired,
   layoutListBox: PropTypes.func,
@@ -350,15 +351,15 @@ ComboBox.propTypes = {
 
 ComboBox.defaultProps = {
   'aria-describedby': null,
-  busy: null,
+  busy: false,
   className: 'combobox',
   layoutListBox: null,
   managedFocus: true,
   notFoundMessage: 'No matches found',
   value: null,
   onSearch: null,
-  onValue: () => {},
-  onChange: () => {},
+  onValue: null,
+  onChange: null,
   onBlur: null,
   onFocus: null,
   skipOption: undefined,

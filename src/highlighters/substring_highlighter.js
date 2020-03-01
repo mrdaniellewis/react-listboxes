@@ -1,5 +1,7 @@
 /**
- * Highlights a term within a query
+ * Highlights the first term within a query
+ *
+ * Intended for matching an ilink database query
  *
  * substringHighlighter('foobarfoobar', 'bar')
  * = ['foo', ['bar'], 'foobar']

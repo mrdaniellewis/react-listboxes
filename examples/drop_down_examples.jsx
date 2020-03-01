@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { DropDown } from '../src/components/drop_down.jsx';
 import { unindent } from './lib/unindent.js';
-import { useId } from '../src/hooks/use_id.js';
+import { useId } from './lib/use_id.js';
 import countries from './lib/countries.json';
 
 function DropDownField({ label, ...props }) {

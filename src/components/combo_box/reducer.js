@@ -81,7 +81,7 @@ function reduce(state, props, { type, ...params }) {
       };
     }
     case SET_EXPANDED: {
-      const { expanded } = params;
+      const { expanded, focusListBox } = params;
       const { focusedOption } = state;
       const { selectedOption } = props;
 
@@ -89,6 +89,7 @@ function reduce(state, props, { type, ...params }) {
         ...state,
         expanded,
         focusedOption: focusedOption ?? (expanded ? selectedOption : null),
+        focusListBox: focusListBox || state.focusListBox,
       };
     }
     case SET_CLOSED:
@@ -124,8 +125,8 @@ function reduce(state, props, { type, ...params }) {
     }
     /* istanbul ignore next */
     default:
+      return state;
   }
-  return state;
 }
 
 export function reducer(state, action, props) {

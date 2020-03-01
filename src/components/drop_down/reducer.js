@@ -37,6 +37,6 @@ export function reducer(state, { type, ...params }) {
     }
     /* istanbul ignore next */
     default:
+      return state;
   }
-  return state;
 }
