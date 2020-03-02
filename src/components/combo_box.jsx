@@ -10,10 +10,10 @@ import { useOnBlur } from '../hooks/use_on_blur.js';
 import { joinTokens } from '../helpers/join_tokens.js';
 import { componentValidator } from '../validators/component_validator.js';
 import { renderGroupedOptions } from '../helpers/render_grouped_options.js';
-import { bemClassGenerator } from '../helpers/bem_class_generator.js';
 import { findOption } from '../helpers/find_option.js';
 import { useCombineRefs } from '../hooks/use_combine_refs.js';
 import { extractProps } from '../helpers/extract_props.js';
+import { visuallyHiddenClassName } from '../constants/visually_hidden_class_name.js';
 
 const allowAttributes = [
   'autoCapitalize', 'disabled', 'inputMode',
@@ -21,11 +21,25 @@ const allowAttributes = [
   'required', 'size', 'spellCheck',
 ];
 
+const defaultClassNames = {
+  wrapper: 'combobox',
+  input: 'combobox__input',
+  listbox: 'combobox__listbox',
+  groupLabel: 'combobox__group',
+  option: 'combobox__option',
+  optionSelected: 'combobox__option',
+  optionGrouped: 'combobox__option combobox__option--grouped',
+  optionSelectedGrouped: 'combobox__option combobox__option--grouped',
+  notFound: 'combobox__not-found',
+  clearButton: 'combobox__clear-button',
+  visuallyHidden: visuallyHiddenClassName,
+};
+
 export const ComboBox = forwardRef((rawProps, ref) => {
   const optionisedProps = useNormalisedOptions(rawProps);
   const {
     'aria-describedby': ariaDescribedBy, busyDebounce,
-    options, value, selectedOption, id, className, classGenerator,
+    options, value, selectedOption, id,
     notFoundMessage, layoutListBox, managedFocus, busy, onSearch,
     autoselect, showSelectedLabel,
     onBlur: passedOnBlur, onFocus: passedOnFocus,
@@ -38,6 +52,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
     ValueComponent, valueProps,
     ClearButtonComponent, clearButtonProps,
     NotFoundComponent, notFoundProps,
+    classNames,
   } = optionisedProps;
 
   const comboRef = useRef();
@@ -162,19 +177,19 @@ export const ComboBox = forwardRef((rawProps, ref) => {
     };
   }, [busy, busyDebounce, busyTimeoutRef]);
 
-  const classes = classGenerator(className);
   const showNotFound = notFoundMessage && busy === false && expanded && !options.length
     && search?.trim() && search !== value?.label;
   const ariaBusy = showBusy && search?.trim() && search !== (value?.label);
   const combinedRef = useCombineRefs(inputRef, ref);
 
   const context = { props: optionisedProps, state };
+  const classes = { ...defaultClassNames, ...classNames };
 
   return (
     <Context.Provider value={context}>
       <WrapperComponent
         aria-busy={ariaBusy ? 'true' : 'false'}
-        className={classes()}
+        className={classes.wrapper}
         onBlur={handleBlur}
         onFocus={handleFocus}
         ref={comboRef}
@@ -195,7 +210,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
           onFocus={() => dispatch(onFocusInput())}
           aria-describedby={joinTokens(showNotFound && `${id}_not_found`, ariaDescribedBy)}
           ref={combinedRef}
-          className={classes('input', expanded && 'focused')}
+          className={classes.input}
           tabIndex={managedFocus && showListBox && focusListBox ? -1 : 0}
           {...inputProps}
           {...extractProps(optionisedProps, ...allowAttributes)}
@@ -206,7 +221,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
           hidden={!value || search === ''}
           id={`${id}_clear_button`}
           aria-hidden="true"
-          className={classes('clear-button')}
+          className={classes.clearButton}
           {...clearButtonProps}
         />
         <ListBoxComponent
@@ -218,7 +233,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
           aria-activedescendant={(showListBox && focusListBox && focusedOption?.key) || null}
           onKeyDown={(e) => dispatch(onKeyDown(e))}
           onMouseDown={(e) => e.preventDefault()}
-          className={joinTokens(classes('listbox'), listClassName)}
+          className={joinTokens(classes.listbox, listClassName)}
           {...listBoxProps}
           style={listStyle}
         >
@@ -235,8 +250,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
                     {...groupProps}
                   >
                     <GroupLabelComponent
-                      id={key}
-                      className={classes('group')}
+                      className={classes.groupLabel}
                       aria-hidden="true" // Prevent screen readers reading the wrong number of options
                       {...groupLabelProps}
                       {...html}
@@ -264,13 +278,13 @@ export const ComboBox = forwardRef((rawProps, ref) => {
                     aria-selected={selected ? 'true' : null}
                     aria-disabled={disabled ? 'true' : null}
                     ref={selected ? focusedRef : null}
-                    className={classes('option', selected && 'focused', group && 'grouped')}
+                    className={classes[`option${selected ? 'Selected' : ''}${group ? 'Grouped' : ''}`]}
                     {...optionProps}
                     {...html}
                     onClick={disabled ? null : (e) => dispatch(onClick(e, option))}
                   >
                     {group && (
-                      <div className="sr-only">
+                      <div className={classes.visuallyHidden}>
                         {group.label}
                       </div>
                     )}
@@ -288,7 +302,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
           hidden={!showNotFound}
           role="alert"
           aria-live="polite"
-          className={classes('not-found')}
+          className={classes.notFound}
           {...notFoundProps}
         >
           {showNotFound ? notFoundMessage : null}
@@ -304,7 +318,6 @@ ComboBox.propTypes = {
     PropTypes.arrayOf(PropTypes.string),
   ]),
   busy: PropTypes.oneOf([false, true, null]),
-  className: PropTypes.string,
   id: PropTypes.string.isRequired,
   layoutListBox: PropTypes.func,
   managedFocus: PropTypes.bool,
@@ -318,7 +331,6 @@ ComboBox.propTypes = {
   tabAutocomplete: PropTypes.bool,
   findAutoselect: PropTypes.func,
   autoselect: PropTypes.oneOf([false, true, 'inline']),
-  classGenerator: PropTypes.func,
   busyDebounce: PropTypes.number,
   skipOption: PropTypes.func,
 
@@ -343,12 +355,25 @@ ComboBox.propTypes = {
   clearButtonProps: PropTypes.object,
   NotFoundComponent: componentValidator,
   notFoundProps: PropTypes.object,
+
+  classNames: PropTypes.shape({
+    wrapper: PropTypes.string,
+    input: PropTypes.string,
+    listbox: PropTypes.string,
+    groupLabel: PropTypes.string,
+    option: PropTypes.string,
+    optionSelected: PropTypes.string,
+    optionGrouped: PropTypes.string,
+    optionGroupedSelected: PropTypes.string,
+    notFound: PropTypes.string,
+    clearButton: PropTypes.string,
+    visuallyHidden: PropTypes.string,
+  }),
 };
 
 ComboBox.defaultProps = {
   'aria-describedby': null,
   busy: false,
-  className: 'combobox',
   layoutListBox: null,
   managedFocus: true,
   notFoundMessage: 'No matches found',
@@ -365,7 +390,6 @@ ComboBox.defaultProps = {
   findAutoselect: findOption,
   showSelectedLabel: undefined,
 
-  classGenerator: bemClassGenerator,
   busyDebounce: 200,
 
   WrapperComponent: 'div',
@@ -386,6 +410,8 @@ ComboBox.defaultProps = {
   clearButtonProps: null,
   NotFoundComponent: 'div',
   notFoundProps: null,
+
+  classNames: {},
 };
 
 ComboBox.displayName = 'ComboBox';

@@ -31,7 +31,7 @@ exports[`WrapperComponent allows custom layouts 1`] = `
       >
         <li
           aria-selected="true"
-          class="dropdown__option dropdown__option--focused"
+          class="dropdown__option"
           id="id_option_foo"
           role="option"
           tabindex="-1"
@@ -70,7 +70,7 @@ exports[`blank renders a blank option 1`] = `
     >
       <li
         aria-selected="true"
-        class="dropdown__option dropdown__option--focused"
+        class="dropdown__option"
         id="id_option_blank"
         role="option"
         tabindex="-1"
@@ -140,7 +140,7 @@ exports[`options as array of objects disabled sets the aria-disabled attribute 1
     >
       <li
         aria-selected="true"
-        class="dropdown__option dropdown__option--focused"
+        class="dropdown__option"
         id="id_option_apple"
         role="option"
         tabindex="-1"
@@ -189,7 +189,7 @@ exports[`options as array of objects group renders grouped options 1`] = `
     >
       <li
         aria-selected="true"
-        class="dropdown__option dropdown__option--focused"
+        class="dropdown__option"
         id="id_option_apple"
         role="option"
         tabindex="-1"
@@ -201,7 +201,6 @@ exports[`options as array of objects group renders grouped options 1`] = `
       <li
         aria-hidden="true"
         class="dropdown__group"
-        id="id_group_citrus"
       >
         Citrus
       </li>
@@ -212,9 +211,11 @@ exports[`options as array of objects group renders grouped options 1`] = `
         tabindex="-1"
       >
         <div
-          aria-labelledby="id_group_citrus id_option_orange_label"
-          id="id_option_orange_label"
+          class="visually-hidden visuallyhidden sr-only"
         >
+          Citrus
+        </div>
+        <div>
           Orange
         </div>
       </li>
@@ -225,16 +226,17 @@ exports[`options as array of objects group renders grouped options 1`] = `
         tabindex="-1"
       >
         <div
-          aria-labelledby="id_group_citrus id_option_lemon_label"
-          id="id_option_lemon_label"
+          class="visually-hidden visuallyhidden sr-only"
         >
+          Citrus
+        </div>
+        <div>
           Lemon
         </div>
       </li>
       <li
         aria-hidden="true"
         class="dropdown__group"
-        id="id_group_berry"
       >
         Berry
       </li>
@@ -245,9 +247,11 @@ exports[`options as array of objects group renders grouped options 1`] = `
         tabindex="-1"
       >
         <div
-          aria-labelledby="id_group_berry id_option_raspberry_label"
-          id="id_option_raspberry_label"
+          class="visually-hidden visuallyhidden sr-only"
         >
+          Berry
+        </div>
+        <div>
           Raspberry
         </div>
       </li>
@@ -258,9 +262,11 @@ exports[`options as array of objects group renders grouped options 1`] = `
         tabindex="-1"
       >
         <div
-          aria-labelledby="id_group_berry id_option_strawberry_label"
-          id="id_option_strawberry_label"
+          class="visually-hidden visuallyhidden sr-only"
         >
+          Berry
+        </div>
+        <div>
           Strawberry
         </div>
       </li>
@@ -293,7 +299,7 @@ exports[`options as array of objects label renders a closed drop down 1`] = `
     >
       <li
         aria-selected="true"
-        class="dropdown__option dropdown__option--focused"
+        class="dropdown__option"
         id="id_option_apple"
         role="option"
         tabindex="-1"
@@ -351,7 +357,7 @@ exports[`options options as array of numbers renders a closed drop down 1`] = `
     >
       <li
         aria-selected="true"
-        class="dropdown__option dropdown__option--focused"
+        class="dropdown__option"
         id="id_option_0"
         role="option"
         tabindex="-1"
@@ -419,7 +425,7 @@ exports[`options options as array of strings renders a closed drop down 1`] = `
     >
       <li
         aria-selected="true"
-        class="dropdown__option dropdown__option--focused"
+        class="dropdown__option"
         id="id_option_apple"
         role="option"
         tabindex="-1"
@@ -477,7 +483,7 @@ exports[`options options as null renders a closed drop down with the option as a
     >
       <li
         aria-selected="true"
-        class="dropdown__option dropdown__option--focused"
+        class="dropdown__option"
         id="id_option_"
         role="option"
         tabindex="-1"
@@ -513,7 +519,7 @@ exports[`options options as undefined renders a closed drop down with the option
     >
       <li
         aria-selected="true"
-        class="dropdown__option dropdown__option--focused"
+        class="dropdown__option"
         id="id_option_"
         role="option"
         tabindex="-1"
@@ -551,7 +557,7 @@ exports[`options updating options updates the options 1`] = `
     >
       <li
         aria-selected="true"
-        class="dropdown__option dropdown__option--focused"
+        class="dropdown__option"
         id="id_option_strawberry"
         role="option"
         tabindex="-1"

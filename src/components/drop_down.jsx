@@ -13,20 +13,32 @@ import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
 import { useOnBlur } from '../hooks/use_on_blur.js';
 import { componentValidator } from '../validators/component_validator.js';
 import { renderGroupedOptions } from '../helpers/render_grouped_options.js';
-import { bemClassGenerator } from '../helpers/bem_class_generator.js';
 import { joinTokens } from '../helpers/join_tokens.js';
 import { useCombineRefs } from '../hooks/use_combine_refs.js';
 import { findOption } from '../helpers/find_option.js';
 import { extractProps } from '../helpers/extract_props.js';
+import { visuallyHiddenClassName } from '../constants/visually_hidden_class_name.js';
+
+const defaultClassNames = {
+  wrapper: 'dropdown',
+  combobox: 'dropdown__combobox',
+  listbox: 'dropdown__listbox',
+  groupLabel: 'dropdown__group',
+  option: 'dropdown__option',
+  optionSelected: 'dropdown__option',
+  optionGrouped: 'dropdown__option dropdown__option--grouped',
+  optionSelectedGrouped: 'dropdown__option dropdown__option--grouped',
+  visuallyHidden: visuallyHiddenClassName,
+};
 
 export const DropDown = forwardRef((rawProps, ref) => {
   const optionisedProps = useNormalisedOptions(rawProps, { mustHaveSelection: true });
   const {
     'aria-labelledby': ariaLabelledBy,
     required, disabled,
-    options, value, id, className,
+    options, value, id,
     children, managedFocus, layoutListBox,
-    classGenerator, selectedOption, findOption: currentFindOption,
+    selectedOption, findOption: currentFindOption,
     onBlur: passedOnBlur, onFocus: passedOnFocus,
     WrapperComponent, wrapperProps,
     ComboBoxComponent, comboBoxProps,
@@ -35,6 +47,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
     GroupLabelComponent, groupLabelProps,
     OptionComponent, optionProps,
     ValueComponent, valueProps,
+    classNames,
   } = optionisedProps;
   const comboBoxRef = useRef();
   const listRef = useRef();
@@ -110,14 +123,13 @@ export const DropDown = forwardRef((rawProps, ref) => {
 
   const combinedRef = useCombineRefs(comboBoxRef, ref);
 
-  const classes = classGenerator(className);
-
-  const contextValue = { props: optionisedProps, state };
+  const context = { props: optionisedProps, state };
+  const classes = { ...defaultClassNames, ...classNames };
 
   return (
-    <Context.Provider value={contextValue}>
+    <Context.Provider value={context}>
       <WrapperComponent
-        className={classes()}
+        className={classes.wrapper}
         onBlur={handleBlur}
         onFocus={handleFocus}
         onKeyDown={(e) => dispatch(onKeyDown(e))}
@@ -137,9 +149,9 @@ export const DropDown = forwardRef((rawProps, ref) => {
           ref={combinedRef}
           onClick={(e) => dispatch(onToggleOpen(e))}
           onMouseDown={(e) => e.preventDefault()}
-          className={classes('combobox')}
+          className={classes.combobox}
           {...comboBoxProps}
-          {...extractProps(optionisedProps, 'aria-*', 'data-*')}
+          {...extractProps(optionisedProps)}
         >
           {(children ?? value?.label ?? selectedOption?.label) || '\u00A0'}
         </ComboBoxComponent>
@@ -150,7 +162,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
           hidden={!expanded}
           aria-activedescendant={(expanded && focusedOption?.key) || null}
           tabIndex={-1}
-          className={joinTokens(classes('listbox'), listClassName)}
+          className={joinTokens(classes.listbox, listClassName)}
           {...listBoxProps}
           style={listStyle}
         >
@@ -161,14 +173,13 @@ export const DropDown = forwardRef((rawProps, ref) => {
               return (
                 <Context.Provider
                   key={key}
-                  value={{ ...contextValue, group }}
+                  value={{ ...context, group }}
                 >
                   <GroupComponent
                     {...groupProps}
                   >
                     <GroupLabelComponent
-                      id={key}
-                      className={classes('group')}
+                      className={classes.groupLabel}
                       aria-hidden="true" // Prevent screen readers reading the wrong number of options
                       {...groupLabelProps}
                       {...html}
@@ -187,7 +198,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
               return (
                 <Context.Provider
                   key={key}
-                  value={{ ...contextValue, group, option }}
+                  value={{ ...context, group, option }}
                 >
                   <OptionComponent
                     id={key}
@@ -196,21 +207,17 @@ export const DropDown = forwardRef((rawProps, ref) => {
                     aria-selected={selected ? 'true' : null}
                     aria-disabled={optionDisabled ? 'true' : null}
                     ref={selected ? focusedRef : null}
-                    className={classes('option', selected && 'focused', group && 'grouped')}
+                    className={classes[`option${selected ? 'Selected' : ''}${group ? 'Grouped' : ''}`]}
                     {...optionProps}
                     {...html}
                     onClick={optionDisabled ? null : (e) => dispatch(onClick(e, option))}
                   >
-                    {/*
-                        Prefix the label with the group
-                        VoiceOver will not read any label in managedFocus mode if
-                        if aria-label or aria-labelledby is applied to the option
-                    */}
-                    <ValueComponent
-                      aria-labelledby={group ? `${group?.key} ${key}_label` : null}
-                      id={group ? `${key}_label` : null}
-                      {...valueProps}
-                    >
+                    {group && (
+                      <div className={classes.visuallyHidden}>
+                        {group.label}
+                      </div>
+                    )}
+                    <ValueComponent {...valueProps}>
                       {label}
                     </ValueComponent>
                   </OptionComponent>
@@ -236,7 +243,6 @@ DropDown.propTypes = {
   managedFocus: PropTypes.bool,
   className: PropTypes.string,
   skipOption: PropTypes.func,
-  classGenerator: PropTypes.func,
   required: PropTypes.bool,
   disabled: PropTypes.bool,
   findOption: PropTypes.func,
@@ -259,6 +265,18 @@ DropDown.propTypes = {
   optionProps: PropTypes.object,
   ValueComponent: componentValidator,
   valueProps: PropTypes.object,
+
+  classNames: PropTypes.shape({
+    wrapper: PropTypes.string,
+    combobox: PropTypes.string,
+    listbox: PropTypes.string,
+    groupLabel: PropTypes.string,
+    option: PropTypes.string,
+    optionSelected: PropTypes.string,
+    optionGrouped: PropTypes.string,
+    optionGroupedSelected: PropTypes.string,
+    visuallyHidden: PropTypes.string,
+  }),
 };
 
 DropDown.defaultProps = {
@@ -271,7 +289,6 @@ DropDown.defaultProps = {
   className: 'dropdown',
   managedFocus: true,
   skipOption: undefined,
-  classGenerator: bemClassGenerator,
   required: false,
   disabled: false,
   findOption,
@@ -294,6 +311,8 @@ DropDown.defaultProps = {
   optionProps: null,
   ValueComponent: 'div',
   valueProps: null,
+
+  classNames: {},
 };
 
 DropDown.displayName = 'DropDown';

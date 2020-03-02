@@ -14,6 +14,11 @@ export const Option = forwardRef((props, ref) => {
           <td
             role="presentation"
           >
+            {columns[column].label && (
+              <div>
+                {columns[column].label}
+              </div>
+            )}
             <ValueComponent>
               {option[column.name]}
             </ValueComponent>

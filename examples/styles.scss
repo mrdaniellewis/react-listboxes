@@ -99,6 +99,10 @@ select {
   width: max-content;
   position: relative;
   max-width: 100%;
+
+  &:focus-within .combobox__input {
+    box-shadow: inset 0 0 0 2px $colour-heritage-yellow;
+  }
 }
 
 .dropdown__combobox {
@@ -114,10 +118,6 @@ select {
 .combobox__input {
   padding-left: 1.5em;
   padding-right: 1.2em;
-
-  &--focused {
-    box-shadow: inset 0 0 0 2px $colour-heritage-yellow;
-  }
 }
 
 .dropdown__listbox,

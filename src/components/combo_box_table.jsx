@@ -1,8 +1,8 @@
 import React, { forwardRef } from 'react';
 import { ComboBox } from './combo_box.jsx';
-import { Option } from './combo_box_table/option.jsx';
-import { GroupLabel } from './combo_box_table/group_label.jsx';
-import { ListBox } from './combo_box_table/list_box.jsx';
+import { Option } from './listbox_table/option.jsx';
+import { GroupLabel } from './listbox_table/group_label.jsx';
+import { ListBox } from './listbox_table/list_box.jsx';
 
 export const ComboBoxTable = forwardRef(({ columns, ...props }, ref) => {
   return (

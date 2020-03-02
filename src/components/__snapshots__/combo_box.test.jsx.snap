@@ -47,9 +47,7 @@ exports[`WrapperComponent allows custom layouts 1`] = `
           role="option"
           tabindex="-1"
         >
-          <div>
-            foo
-          </div>
+          foo
         </li>
       </ul>
     </div>
@@ -78,7 +76,7 @@ exports[`onSearch updating options updates the displayed options 1`] = `
       aria-autocomplete="none"
       aria-controls="id_listbox"
       aria-expanded="true"
-      class="combobox__input combobox__input--focused"
+      class="combobox__input"
       id="id"
       role="combobox"
       tabindex="0"
@@ -103,9 +101,7 @@ exports[`onSearch updating options updates the displayed options 1`] = `
         role="option"
         tabindex="-1"
       >
-        <div>
-          Strawberry
-        </div>
+        Strawberry
       </li>
       <li
         class="combobox__option"
@@ -113,9 +109,7 @@ exports[`onSearch updating options updates the displayed options 1`] = `
         role="option"
         tabindex="-1"
       >
-        <div>
-          Raspberry
-        </div>
+        Raspberry
       </li>
       <li
         class="combobox__option"
@@ -123,9 +117,7 @@ exports[`onSearch updating options updates the displayed options 1`] = `
         role="option"
         tabindex="-1"
       >
-        <div>
-          Banana
-        </div>
+        Banana
       </li>
     </ul>
     <div
@@ -149,7 +141,7 @@ exports[`options as array of objects disabled sets the aria-disabled attribute 1
       aria-autocomplete="none"
       aria-controls="id_listbox"
       aria-expanded="true"
-      class="combobox__input combobox__input--focused"
+      class="combobox__input"
       id="id"
       role="combobox"
       tabindex="0"
@@ -174,9 +166,7 @@ exports[`options as array of objects disabled sets the aria-disabled attribute 1
         role="option"
         tabindex="-1"
       >
-        <div>
-          Apple
-        </div>
+        Apple
       </li>
       <li
         aria-disabled="true"
@@ -185,9 +175,7 @@ exports[`options as array of objects disabled sets the aria-disabled attribute 1
         role="option"
         tabindex="-1"
       >
-        <div>
-          Banana
-        </div>
+        Banana
       </li>
     </ul>
     <div
@@ -237,14 +225,11 @@ exports[`options as array of objects group renders grouped options 1`] = `
         role="option"
         tabindex="-1"
       >
-        <div>
-          Apple
-        </div>
+        Apple
       </li>
       <li
         aria-hidden="true"
         class="combobox__group"
-        id="id_group_citrus"
       >
         Citrus
       </li>
@@ -255,11 +240,11 @@ exports[`options as array of objects group renders grouped options 1`] = `
         tabindex="-1"
       >
         <div
-          aria-labelledby="id_group_citrus id_option_orange_label"
-          id="id_option_orange_label"
+          class="visually-hidden visuallyhidden sr-only"
         >
-          Orange
+          Citrus
         </div>
+        Orange
       </li>
       <li
         class="combobox__option combobox__option--grouped"
@@ -268,16 +253,15 @@ exports[`options as array of objects group renders grouped options 1`] = `
         tabindex="-1"
       >
         <div
-          aria-labelledby="id_group_citrus id_option_lemon_label"
-          id="id_option_lemon_label"
+          class="visually-hidden visuallyhidden sr-only"
         >
-          Lemon
+          Citrus
         </div>
+        Lemon
       </li>
       <li
         aria-hidden="true"
         class="combobox__group"
-        id="id_group_berry"
       >
         Berry
       </li>
@@ -288,11 +272,11 @@ exports[`options as array of objects group renders grouped options 1`] = `
         tabindex="-1"
       >
         <div
-          aria-labelledby="id_group_berry id_option_raspberry_label"
-          id="id_option_raspberry_label"
+          class="visually-hidden visuallyhidden sr-only"
         >
-          Raspberry
+          Berry
         </div>
+        Raspberry
       </li>
       <li
         class="combobox__option combobox__option--grouped"
@@ -301,11 +285,11 @@ exports[`options as array of objects group renders grouped options 1`] = `
         tabindex="-1"
       >
         <div
-          aria-labelledby="id_group_berry id_option_strawberry_label"
-          id="id_option_strawberry_label"
+          class="visually-hidden visuallyhidden sr-only"
         >
-          Strawberry
+          Berry
         </div>
+        Strawberry
       </li>
     </ul>
     <div
@@ -355,9 +339,7 @@ exports[`options as array of objects label renders a closed combo box 1`] = `
         role="option"
         tabindex="-1"
       >
-        <div>
-          Apple
-        </div>
+        Apple
       </li>
       <li
         class="combobox__option"
@@ -365,9 +347,7 @@ exports[`options as array of objects label renders a closed combo box 1`] = `
         role="option"
         tabindex="-1"
       >
-        <div>
-          Banana
-        </div>
+        Banana
       </li>
       <li
         class="combobox__option"
@@ -375,9 +355,7 @@ exports[`options as array of objects label renders a closed combo box 1`] = `
         role="option"
         tabindex="-1"
       >
-        <div>
-          Orange
-        </div>
+        Orange
       </li>
     </ul>
     <div
@@ -427,9 +405,7 @@ exports[`options options as array of numbers renders a closed combo box 1`] = `
         role="option"
         tabindex="-1"
       >
-        <div>
-          1
-        </div>
+        1
       </li>
       <li
         class="combobox__option"
@@ -437,9 +413,7 @@ exports[`options options as array of numbers renders a closed combo box 1`] = `
         role="option"
         tabindex="-1"
       >
-        <div>
-          2
-        </div>
+        2
       </li>
       <li
         class="combobox__option"
@@ -447,9 +421,7 @@ exports[`options options as array of numbers renders a closed combo box 1`] = `
         role="option"
         tabindex="-1"
       >
-        <div>
-          3
-        </div>
+        3
       </li>
     </ul>
     <div
@@ -499,9 +471,7 @@ exports[`options options as array of strings renders a closed combo box 1`] = `
         role="option"
         tabindex="-1"
       >
-        <div>
-          Apple
-        </div>
+        Apple
       </li>
       <li
         class="combobox__option"
@@ -509,9 +479,7 @@ exports[`options options as array of strings renders a closed combo box 1`] = `
         role="option"
         tabindex="-1"
       >
-        <div>
-          Banana
-        </div>
+        Banana
       </li>
       <li
         class="combobox__option"
@@ -519,9 +487,7 @@ exports[`options options as array of strings renders a closed combo box 1`] = `
         role="option"
         tabindex="-1"
       >
-        <div>
-          Orange
-        </div>
+        Orange
       </li>
     </ul>
     <div
@@ -567,12 +533,12 @@ exports[`options options as null renders an option with an empty string 1`] = `
     >
       <li
         aria-selected="true"
-        class="combobox__option combobox__option--focused"
+        class="combobox__option"
         id="id_option_"
         role="option"
         tabindex="-1"
       >
-        <div />
+        
       </li>
       <li
         class="combobox__option"
@@ -580,9 +546,7 @@ exports[`options options as null renders an option with an empty string 1`] = `
         role="option"
         tabindex="-1"
       >
-        <div>
-          foo
-        </div>
+        foo
       </li>
     </ul>
     <div
@@ -628,12 +592,12 @@ exports[`options options as undefined renders an option with an empty string 1`]
     >
       <li
         aria-selected="true"
-        class="combobox__option combobox__option--focused"
+        class="combobox__option"
         id="id_option_"
         role="option"
         tabindex="-1"
       >
-        <div />
+        
       </li>
       <li
         class="combobox__option"
@@ -641,9 +605,7 @@ exports[`options options as undefined renders an option with an empty string 1`]
         role="option"
         tabindex="-1"
       >
-        <div>
-          foo
-        </div>
+        foo
       </li>
     </ul>
     <div

@@ -1144,11 +1144,11 @@ describe('options', () => {
       describe('when clicking on a group', () => {
         it('does not close the listbox or select the item', () => {
           const spy = jest.fn();
-          const { getByRole, getByText, getAllByRole } = render(
+          const { getByRole, getAllByText, getAllByRole } = render(
             <DropDownWrapper options={options} onValue={spy} />,
           );
           fireEvent.click(getByRole('combobox'));
-          fireEvent.click(getByText('Citrus'));
+          fireEvent.click(getAllByText('Citrus')[0]);
           expect(spy).not.toHaveBeenCalled();
           expectToHaveFocusedOption(getByRole('combobox'), getAllByRole('option')[0]);
         });
@@ -1506,87 +1506,6 @@ describe('managedFocus', () => {
   });
 });
 
-describe('className', () => {
-  const options = [
-    { label: 'Apple' },
-    { label: 'Pear' },
-    { label: 'Orange', group: 'Citrus' },
-  ];
-
-  it('adds default BEM classes', () => {
-    const { container, getByRole, getAllByRole } = render(
-      <DropDownWrapper options={options} />,
-    );
-    fireEvent.click(getByRole('combobox'));
-    expect(container.querySelector('div')).toHaveClass('dropdown');
-    expect(getByRole('combobox')).toHaveClass('dropdown__combobox');
-    expect(getByRole('listbox')).toHaveClass('dropdown__listbox');
-    expect(getAllByRole('option')[0]).toHaveClass('dropdown__option dropdown__option--focused');
-    expect(getAllByRole('option')[1]).toHaveClass('dropdown__option');
-    expect(getAllByRole('option')[2]).toHaveClass('dropdown__option dropdown__option--grouped');
-    expect(getAllByRole('option')[1].nextElementSibling).toHaveClass('dropdown__group');
-  });
-
-  describe('when null', () => {
-    it('does not insert classes', () => {
-      const { container, getByRole, getAllByRole } = render(
-        <DropDownWrapper options={options} className={null} />,
-      );
-      fireEvent.click(getByRole('combobox'));
-      expect(container.querySelector('div')).not.toHaveClass();
-      expect(getByRole('combobox')).not.toHaveClass();
-      expect(getByRole('listbox')).not.toHaveClass();
-      expect(getAllByRole('option')[0]).not.toHaveClass();
-      expect(getAllByRole('option')[2]).not.toHaveClass();
-    });
-  });
-
-  describe('when set', () => {
-    it('it prefixes classes', () => {
-      const { container, getByRole, getAllByRole } = render(
-        <DropDownWrapper options={options} className="foo" />,
-      );
-      fireEvent.click(getByRole('combobox'));
-      expect(container.querySelector('div')).toHaveClass('foo');
-      expect(getByRole('combobox')).toHaveClass('foo__combobox');
-      expect(getByRole('listbox')).toHaveClass('foo__listbox');
-      expect(getAllByRole('option')[0]).toHaveClass('foo__option foo__option--focused');
-      expect(getAllByRole('option')[1]).toHaveClass('foo__option');
-      expect(getAllByRole('option')[2]).toHaveClass('foo__option foo__option--grouped');
-      expect(getAllByRole('option')[1].nextElementSibling).toHaveClass('foo__group');
-    });
-  });
-});
-
-describe('classGenerator', () => {
-  const options = [
-    { label: 'Apple' },
-    { label: 'Pear' },
-    { label: 'Orange', group: 'Citrus' },
-  ];
-
-  it('allows custom class generation', () => {
-    const spy = jest.fn((name) => (
-      (...names) => `${names.filter(Boolean).join('-')}-${name}`
-    ));
-
-    const { container, getByRole, getAllByRole } = render(
-      <DropDownWrapper options={options} className="foo" classGenerator={spy} />,
-    );
-
-    expect(spy).toHaveBeenCalledWith('foo');
-
-    fireEvent.click(getByRole('combobox'));
-    expect(container.querySelector('div')).toHaveClass('-foo');
-    expect(getByRole('combobox')).toHaveClass('combobox-foo');
-    expect(getByRole('listbox')).toHaveClass('listbox-foo');
-    expect(getAllByRole('option')[0]).toHaveClass('option-focused-foo');
-    expect(getAllByRole('option')[1]).toHaveClass('option-foo');
-    expect(getAllByRole('option')[2]).toHaveClass('option-grouped-foo');
-    expect(getAllByRole('option')[1].nextElementSibling).toHaveClass('group-foo');
-  });
-});
-
 describe('id', () => {
   const options = [
     { label: 'Apple' },
@@ -1605,7 +1524,6 @@ describe('id', () => {
     expect(getAllByRole('option')[0]).toHaveAttribute('id', 'foo_option_apple');
     expect(getAllByRole('option')[1]).toHaveAttribute('id', 'foo_option_pear');
     expect(getAllByRole('option')[2]).toHaveAttribute('id', 'foo_option_orange');
-    expect(getAllByRole('option')[1].nextElementSibling).toHaveAttribute('id', 'foo_group_citrus');
   });
 });
 
@@ -2238,5 +2156,214 @@ describe('layoutListBox', () => {
     fireEvent.click(getByRole('combobox'));
     expect(getByRole('listbox')).not.toHaveAttribute('style');
     expect(getByRole('listbox')).toHaveAttribute('class', 'dropdown__listbox');
+  });
+});
+
+describe('classNames', () => {
+  describe('wrapper', () => {
+    it('is dropdown by default', () => {
+      const { container } = render((
+        <DropDownWrapper options={['foo']} />
+      ));
+      expect(container.firstChild).toHaveAttribute('class', 'dropdown');
+    });
+
+    it('is dropdown if not supplied in classes', () => {
+      const { container } = render((
+        <DropDownWrapper options={['foo']} classNames={{}} />
+      ));
+      expect(container.firstChild).toHaveAttribute('class', 'dropdown');
+    });
+
+    it('can be customised by classes', () => {
+      const { container } = render((
+        <DropDownWrapper options={['foo']} classNames={{ wrapper: 'foo' }} />
+      ));
+      expect(container.firstChild).toHaveAttribute('class', 'foo');
+    });
+  });
+
+  describe('combobox', () => {
+    it('is dropdown__combobox by default', () => {
+      const { getByRole } = render((
+        <DropDownWrapper options={['foo']} />
+      ));
+      expect(getByRole('combobox')).toHaveAttribute('class', 'dropdown__combobox');
+    });
+
+    it('is dropdown__combobox if not supplied in classes', () => {
+      const { getByRole } = render((
+        <DropDownWrapper options={['foo']} classNames={{}} />
+      ));
+      expect(getByRole('combobox')).toHaveAttribute('class', 'dropdown__combobox');
+    });
+
+    it('can be customised by classes', () => {
+      const { getByRole } = render((
+        <DropDownWrapper options={['foo']} classNames={{ combobox: 'foo' }} />
+      ));
+      expect(getByRole('combobox')).toHaveAttribute('class', 'foo');
+    });
+  });
+
+  describe('listbox', () => {
+    it('is dropdown__listbox by default', () => {
+      const { getByRole } = render((
+        <DropDownWrapper options={['foo']} />
+      ));
+      expect(getByRole('listbox', { hidden: true })).toHaveAttribute('class', 'dropdown__listbox');
+    });
+
+    it('is dropdown__listbox if not supplied in classes', () => {
+      const { getByRole } = render((
+        <DropDownWrapper options={['foo']} classNames={{}} />
+      ));
+      expect(getByRole('listbox', { hidden: true })).toHaveAttribute('class', 'dropdown__listbox');
+    });
+
+    it('can be customised by classes', () => {
+      const { getByRole } = render((
+        <DropDownWrapper options={['foo']} classNames={{ listbox: 'foo' }} />
+      ));
+      expect(getByRole('listbox', { hidden: true })).toHaveAttribute('class', 'foo');
+    });
+  });
+
+  describe('groupLabel', () => {
+    it('is dropdown__group by default', () => {
+      const { getByRole } = render((
+        <DropDownWrapper options={[{ label: 'foo', group: 'bar' }]} />
+      ));
+      expect(getByRole('option', { hidden: true }).previousSibling).toHaveAttribute('class', 'dropdown__group');
+    });
+
+    it('is dropdown__group if not supplied in classes', () => {
+      const { getByRole } = render((
+        <DropDownWrapper options={[{ label: 'foo', group: 'bar' }]} classNames={{}} />
+      ));
+      expect(getByRole('option', { hidden: true }).previousSibling).toHaveAttribute('class', 'dropdown__group');
+    });
+
+    it('can be customised by classes', () => {
+      const { getByRole } = render((
+        <DropDownWrapper options={[{ label: 'foo', group: 'bar' }]} classNames={{ groupLabel: 'foo' }} />
+      ));
+      expect(getByRole('option', { hidden: true }).previousSibling).toHaveAttribute('class', 'foo');
+    });
+  });
+
+  describe('option', () => {
+    it('is dropdown__option by default', () => {
+      const { getAllByRole } = render((
+        <DropDownWrapper options={['foo', 'bar']} />
+      ));
+      expect(getAllByRole('option', { hidden: true })[1]).toHaveAttribute('class', 'dropdown__option');
+    });
+
+    it('is dropdown__group if not supplied in classes', () => {
+      const { getAllByRole } = render((
+        <DropDownWrapper options={['foo', 'bar']} classNames={{}} />
+      ));
+      expect(getAllByRole('option', { hidden: true })[1]).toHaveAttribute('class', 'dropdown__option');
+    });
+
+    it('can be customised by classes', () => {
+      const { getAllByRole } = render((
+        <DropDownWrapper options={['foo', 'bar']} classNames={{ option: 'foo' }} />
+      ));
+      expect(getAllByRole('option', { hidden: true })[1]).toHaveAttribute('class', 'foo');
+    });
+  });
+
+  describe('optionSelected', () => {
+    it('is dropdown__option by default', () => {
+      const { getByRole } = render((
+        <DropDownWrapper options={['foo']} />
+      ));
+      expect(getByRole('option', { hidden: true })).toHaveAttribute('class', 'dropdown__option');
+    });
+
+    it('is dropdown__option if not supplied in classes', () => {
+      const { getByRole } = render((
+        <DropDownWrapper options={['foo']} classNames={{}} />
+      ));
+      expect(getByRole('option', { hidden: true })).toHaveAttribute('class', 'dropdown__option');
+    });
+
+    it('can be customised by classes', () => {
+      const { getByRole } = render((
+        <DropDownWrapper options={['foo']} classNames={{ optionSelected: 'foo' }} />
+      ));
+      expect(getByRole('option', { hidden: true })).toHaveAttribute('class', 'foo');
+    });
+  });
+
+  describe('optionGrouped', () => {
+    it('is dropdown__option dropdown__option--grouped by default', () => {
+      const { getAllByRole } = render((
+        <DropDownWrapper options={['apple', { label: 'foo', group: 'bar' }]} />
+      ));
+      expect(getAllByRole('option', { hidden: true })[1]).toHaveAttribute('class', 'dropdown__option dropdown__option--grouped');
+    });
+
+    it('is dropdown__option dropdown__option--grouped if not supplied in classes', () => {
+      const { getAllByRole } = render((
+        <DropDownWrapper options={['apple', { label: 'foo', group: 'bar' }]} classNames={{}} />
+      ));
+      expect(getAllByRole('option', { hidden: true })[1]).toHaveAttribute('class', 'dropdown__option dropdown__option--grouped');
+    });
+
+    it('can be customised by classes', () => {
+      const { getAllByRole } = render((
+        <DropDownWrapper options={['apple', { label: 'foo', group: 'bar' }]} classNames={{ optionGrouped: 'foo' }} />
+      ));
+      expect(getAllByRole('option', { hidden: true })[1]).toHaveAttribute('class', 'foo');
+    });
+  });
+
+  describe('optionSelectedGrouped', () => {
+    it('is dropdown__option dropdown__option--grouped by default', () => {
+      const { getByRole } = render((
+        <DropDownWrapper options={[{ label: 'foo', group: 'bar' }]} />
+      ));
+      expect(getByRole('option', { hidden: true })).toHaveAttribute('class', 'dropdown__option dropdown__option--grouped');
+    });
+
+    it('is dropdown__option dropdown__option--grouped if not supplied in classes', () => {
+      const { getByRole } = render((
+        <DropDownWrapper options={[{ label: 'foo', group: 'bar' }]} classNames={{}} />
+      ));
+      expect(getByRole('option', { hidden: true })).toHaveAttribute('class', 'dropdown__option dropdown__option--grouped');
+    });
+
+    it('can be customised by classes', () => {
+      const { getByRole } = render((
+        <DropDownWrapper options={[{ label: 'foo', group: 'bar' }]} classNames={{ optionSelectedGrouped: 'foo' }} />
+      ));
+      expect(getByRole('option', { hidden: true })).toHaveAttribute('class', 'foo');
+    });
+  });
+
+  describe('visuallyHidden', () => {
+    it('is visuallyhidden visually-hidden sr-only by default', () => {
+      const { getByRole } = render((
+        <DropDownWrapper options={[{ label: 'foo', group: 'bar' }]} />
+      ));
+      expect(getByRole('option', { hidden: true }).firstChild).toHaveAttribute('class', 'visually-hidden visuallyhidden sr-only');
+    });
+
+    it('is visuallyhidden visually-hidden sr-only if not supplied in classes', () => {
+      const { getByRole } = render((
+        <DropDownWrapper options={[{ label: 'foo', group: 'bar' }]} classNames={{}} />
+      ));
+      expect(getByRole('option', { hidden: true }).firstChild).toHaveAttribute('class', 'visually-hidden visuallyhidden sr-only');
+    });
+
+    it('can be customised by classes', () => {
+      const { getByRole } = render((
+        <DropDownWrapper options={[{ label: 'foo', group: 'bar' }]} classNames={{ visuallyHidden: 'foo' }} />
+      ));
+      expect(getByRole('option', { hidden: true }).firstChild).toHaveAttribute('class', 'foo');
+    });
   });
 });
