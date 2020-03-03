@@ -7,7 +7,6 @@ export function GroupLabel({ children, ...props }) {
   return (
     <tr
       {...props}
-      role="presentation"
     >
       <td
         colSpan={columns.length}

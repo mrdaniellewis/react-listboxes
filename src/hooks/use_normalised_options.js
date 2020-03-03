@@ -29,15 +29,13 @@ export function useNormalisedOptions({
         identity: '',
         value: null,
         key: idGenerator.uniqueId(`${id || ''}_option_blank`),
-        index: 0,
       });
     }
 
-    rawOptions.forEach((o, index) => {
+    rawOptions.forEach((o) => {
       const option = optionise(o, mapOption);
       option.key = idGenerator.uniqueId(option.html?.id || `${id || ''}_option_${option.label}`);
       delete option?.html?.id;
-      option.index = index + (blank ? 1 : 0);
       if (option.group) {
         let group = groups.get(option.group);
         if (!group) {
@@ -48,15 +46,17 @@ export function useNormalisedOptions({
             key: idGenerator.uniqueId(`${id || ''}_group_${option.group}`),
           };
           groups.set(option.group, group);
+          normalisedOptions.push(group.options);
         } else {
           group.options.push(option);
         }
         option.group = group;
+        return;
       }
       normalisedOptions.push(option);
     });
 
-    return normalisedOptions;
+    return [].concat(...normalisedOptions).map((option, index) => ({ ...option, index }));
   }, [id, rawOptions, blank, mapOption]);
 
   const value = useMemo(() => (
