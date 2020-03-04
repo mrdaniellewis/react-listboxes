@@ -2,16 +2,26 @@ import React, { forwardRef, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { Context } from '../../context.js';
 
+const defaultClassNames = {
+  listbox: 'combobox__listbox',
+  listboxTable: 'combobox__listbox-table',
+};
+
 export const ListBox = forwardRef(({ children, hidden, ...props }, ref) => {
   const context = useContext(Context);
-  const { props: { columns } } = context;
+  const { props: { columns, classNames, CustomListBoxComponent, customListboxProps, TableComponent, tableProps } } = context;
+  const classes = { ...defaultClassNames, classNames };
   return (
-    <div
+    <CustomListBoxComponent
       hidden={hidden}
+      className={classes.listbox}
+      {...customListboxProps}
     >
-      <table
+      <TableComponent
         ref={ref}
         {...props}
+        className={classes.listboxTable}
+        {...tableProps}
       >
         <colgroup>
           {columns.map(({ name, html }) => (
@@ -21,8 +31,8 @@ export const ListBox = forwardRef(({ children, hidden, ...props }, ref) => {
         <tbody role="presentation">
           {children}
         </tbody>
-      </table>
-    </div>
+      </TableComponent>
+    </CustomListBoxComponent>
   );
 });
 

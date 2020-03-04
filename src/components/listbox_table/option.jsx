@@ -4,22 +4,36 @@ import { visuallyHiddenClassName } from '../../constants/visually_hidden_class_n
 
 const defaultClassNames = {
   visuallyHidden: visuallyHiddenClassName,
+  tableRow: 'combobox__table__row',
+  tableCell: 'combobox__table__cell',
 };
 
 export const Option = forwardRef((props, ref) => {
   const context = useContext(Context);
-  const { props: { columns, ValueComponent, classNames }, option, group } = context;
+  const {
+    props: {
+      columns, ValueComponent, classNames,
+      TableRowComponent, TableCellComponent, tableRowProps, tableCellProps,
+    },
+    option,
+    group,
+  } = context;
+
   const classes = { ...defaultClassNames, classNames };
   return (
-    <tr
+    <TableRowComponent
       ref={ref}
       {...props}
+      className={classes.tableRow}
+      {...tableRowProps}
     >
       {columns.map((column, index) => (
         <Context.Provider key={column.name} value={{ ...context, column }}>
-          <td
+          <TableCellComponent
             role="presentation"
             title={column.label || null}
+            className={classes.tableCell}
+            {...tableCellProps}
           >
             {group && index === 0 && (
               <div className={classes.visuallyHidden}>
@@ -34,9 +48,9 @@ export const Option = forwardRef((props, ref) => {
             <ValueComponent>
               {option.value[column.name]}
             </ValueComponent>
-          </td>
+          </TableCellComponent>
         </Context.Provider>
       ))}
-    </tr>
+    </TableRowComponent>
   );
 });
