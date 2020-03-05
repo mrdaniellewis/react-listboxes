@@ -7,14 +7,17 @@ const defaultClassNames = {
   listboxTable: 'combobox__listbox-table',
 };
 
-export const ListBox = forwardRef(({ children, hidden, ...props }, ref) => {
+export const ListBox = forwardRef(({ children, hidden, style, ...props }, ref) => {
   const context = useContext(Context);
-  const { props: { columns, classNames, CustomListBoxComponent, customListboxProps, TableComponent, tableProps } } = context;
+  const { props: {
+    columns, classNames, CustomListBoxComponent, customListboxProps, TableComponent, tableProps,
+  } } = context;
   const classes = { ...defaultClassNames, classNames };
   return (
     <CustomListBoxComponent
       hidden={hidden}
       className={classes.listbox}
+      style={style}
       {...customListboxProps}
     >
       <TableComponent

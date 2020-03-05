@@ -93,10 +93,11 @@ export const ComboBox = forwardRef((rawProps, ref) => {
   useLayoutEffect(() => {
     if (layoutListBox && expanded) {
       const listProps = layoutListBox({
-        listBox: listRef.current,
-        comboBox: inputRef.current,
+        listbox: listRef.current,
+        combobox: inputRef.current,
         option: focusedRef.current,
       });
+      console.log(listProps);
       if (listProps) {
         setListProps({
           style: listProps.style || null,
