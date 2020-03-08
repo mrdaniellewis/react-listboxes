@@ -48,6 +48,7 @@ ComboBoxTable.propTypes = {
   tableRowProps: PropTypes.object,
   TableCellComponent: componentValidator,
   tableCellProps: PropTypes.object,
+  classNames: PropTypes.object,
 };
 
 ComboBoxTable.defaultProps = {
@@ -59,6 +60,17 @@ ComboBoxTable.defaultProps = {
   tableRowProps: null,
   TableCellComponent: 'td',
   tableCellProps: null,
+
+  classNames: {
+    ...ComboBox.defaultProps.classNames,
+    listboxTable: 'combobox__listbox-table',
+    tableRow: 'combobox__table-row',
+    tableRowSelected: 'combobox__table-row',
+    tableRowGrouped: 'combobox__table-row combobox__table-row_grouped',
+    tableRowSelectedGrouped: 'combobox__table-row combobox__table-row_grouped',
+    tableCell: 'combobox__table-cell',
+    tableGroupCell: null,
+  },
 };
 
 ComboBoxTable.displayName = 'ComboBoxTable';

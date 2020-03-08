@@ -5,7 +5,7 @@ import { ComboBoxTable } from '../src/components/combo_box_table.jsx';
 import { useId } from './lib/use_id.js';
 import cats from './lib/cats.json';
 import { useTokenSearch } from '../src/hooks/use_token_search.js';
-import { confine } from '../src/layout_list_box/confine.js';
+import { useConfine } from '../src/hooks/use_confine.js';
 
 function index(o) {
   return o.breed;
@@ -14,6 +14,7 @@ function index(o) {
 function ComboBoxField({ label, options: originalOptions, ...props }) {
   const [value, setValue] = useState(null);
   const [options, onSearch] = useTokenSearch(originalOptions, { index });
+  const [style, layoutListBox] = useConfine();
   const id = useId();
   return (
     <>
@@ -28,7 +29,8 @@ function ComboBoxField({ label, options: originalOptions, ...props }) {
         onValue={setValue}
         options={options}
         onSearch={onSearch}
-        layoutListBox={confine()}
+        layoutListBox={layoutListBox}
+        listBoxProps={{ style }}
         {...props}
       />
     </>

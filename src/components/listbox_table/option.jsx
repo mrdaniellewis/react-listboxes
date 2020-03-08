@@ -1,12 +1,5 @@
 import React, { forwardRef, useContext } from 'react';
 import { Context } from '../../context.js';
-import { visuallyHiddenClassName } from '../../constants/visually_hidden_class_name.js';
-
-const defaultClassNames = {
-  visuallyHidden: visuallyHiddenClassName,
-  tableRow: 'combobox__table__row',
-  tableCell: 'combobox__table__cell',
-};
 
 export const Option = forwardRef((props, ref) => {
   const context = useContext(Context);
@@ -15,16 +8,16 @@ export const Option = forwardRef((props, ref) => {
       columns, ValueComponent, classNames,
       TableRowComponent, TableCellComponent, tableRowProps, tableCellProps,
     },
+    selected,
     option,
     group,
   } = context;
 
-  const classes = { ...defaultClassNames, classNames };
   return (
     <TableRowComponent
       ref={ref}
       {...props}
-      className={classes.tableRow}
+      className={classNames?.[`tableRow${selected ? 'Selected' : ''}${group ? 'Grouped' : ''}`]}
       {...tableRowProps}
     >
       {columns.map((column, index) => (
@@ -32,16 +25,16 @@ export const Option = forwardRef((props, ref) => {
           <TableCellComponent
             role="presentation"
             title={column.label || null}
-            className={classes.tableCell}
+            className={classNames?.tableCell}
             {...tableCellProps}
           >
             {group && index === 0 && (
-              <div className={classes.visuallyHidden}>
+              <div className={classNames?.visuallyHidden}>
                 {group.label}
               </div>
             )}
             {column.label && (
-              <div className={classes.visuallyHidden}>
+              <div className={classNames?.visuallyHidden}>
                 {column.label}
               </div>
             )}

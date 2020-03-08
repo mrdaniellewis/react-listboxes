@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useLayoutEffect, Fragment, forwardRef, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useLayoutEffect, Fragment, forwardRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Context } from '../context.js';
 import { useThunkReducer as useReducer } from '../hooks/use_thunk_reducer.js';
@@ -13,23 +13,10 @@ import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
 import { useOnBlur } from '../hooks/use_on_blur.js';
 import { componentValidator } from '../validators/component_validator.js';
 import { renderGroupedOptions } from '../helpers/render_grouped_options.js';
-import { joinTokens } from '../helpers/join_tokens.js';
 import { useCombineRefs } from '../hooks/use_combine_refs.js';
 import { findOption } from '../helpers/find_option.js';
 import { extractProps } from '../helpers/extract_props.js';
 import { visuallyHiddenClassName } from '../constants/visually_hidden_class_name.js';
-
-const defaultClassNames = {
-  wrapper: 'dropdown',
-  combobox: 'dropdown__combobox',
-  listbox: 'dropdown__listbox',
-  groupLabel: 'dropdown__group',
-  option: 'dropdown__option',
-  optionSelected: 'dropdown__option',
-  optionGrouped: 'dropdown__option dropdown__option--grouped',
-  optionSelectedGrouped: 'dropdown__option dropdown__option--grouped',
-  visuallyHidden: visuallyHiddenClassName,
-};
 
 export const DropDown = forwardRef((rawProps, ref) => {
   const optionisedProps = useNormalisedOptions(rawProps, { mustHaveSelection: true });
@@ -58,10 +45,6 @@ export const DropDown = forwardRef((rawProps, ref) => {
     { ...optionisedProps, comboBoxRef, listRef },
     initialState,
   );
-  const [
-    { className: listClassName, style: listStyle },
-    setListProps,
-  ] = useState({ className: null, style: null });
 
   const { expanded, search, focusedOption } = state;
   const [handleBlur, handleFocus] = useOnBlur(
@@ -102,18 +85,13 @@ export const DropDown = forwardRef((rawProps, ref) => {
   }, [expanded, managedFocus, focusedOption]);
 
   useLayoutEffect(() => {
-    if (layoutListBox && expanded) {
-      const listProps = layoutListBox({
-        listBox: listRef.current,
-        comboBox: comboBoxRef.current,
+    if (layoutListBox) {
+      layoutListBox({
+        expanded,
+        listbox: listRef.current,
+        combobox: comboBoxRef.current,
         option: focusedRef.current,
       });
-      if (listProps) {
-        setListProps({
-          style: listProps.style || null,
-          className: listProps.className || null,
-        });
-      }
     }
   }, [layoutListBox, expanded, focusedOption]);
 
@@ -124,12 +102,11 @@ export const DropDown = forwardRef((rawProps, ref) => {
   const combinedRef = useCombineRefs(comboBoxRef, ref);
 
   const context = { props: optionisedProps, state };
-  const classes = { ...defaultClassNames, ...classNames };
 
   return (
     <Context.Provider value={context}>
       <WrapperComponent
-        className={classes.wrapper}
+        className={classNames?.wrapper}
         onBlur={handleBlur}
         onFocus={handleFocus}
         onKeyDown={(e) => dispatch(onKeyDown(e))}
@@ -149,7 +126,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
           ref={combinedRef}
           onClick={(e) => dispatch(onToggleOpen(e))}
           onMouseDown={(e) => e.preventDefault()}
-          className={classes.combobox}
+          className={classNames?.combobox}
           {...comboBoxProps}
           {...extractProps(optionisedProps)}
         >
@@ -162,9 +139,8 @@ export const DropDown = forwardRef((rawProps, ref) => {
           hidden={!expanded}
           aria-activedescendant={(expanded && focusedOption?.key) || null}
           tabIndex={-1}
-          className={joinTokens(classes.listbox, listClassName)}
+          className={classNames?.listbox}
           {...listBoxProps}
-          style={listStyle}
         >
           {renderGroupedOptions({
             options,
@@ -179,7 +155,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
                     {...groupProps}
                   >
                     <GroupLabelComponent
-                      className={classes.groupLabel}
+                      className={classNames?.groupLabel}
                       aria-hidden="true" // Prevent screen readers reading the wrong number of options
                       {...groupLabelProps}
                       {...html}
@@ -207,13 +183,13 @@ export const DropDown = forwardRef((rawProps, ref) => {
                     aria-selected={selected ? 'true' : null}
                     aria-disabled={optionDisabled ? 'true' : null}
                     ref={selected ? focusedRef : null}
-                    className={classes[`option${selected ? 'Selected' : ''}${group ? 'Grouped' : ''}`]}
+                    className={classNames?.[`option${selected ? 'Selected' : ''}${group ? 'Grouped' : ''}`]}
                     {...optionProps}
                     {...html}
                     onClick={optionDisabled ? null : (e) => dispatch(onClick(e, option))}
                   >
                     {group && (
-                      <div className={classes.visuallyHidden}>
+                      <div className={classNames?.visuallyHidden}>
                         {group.label}
                       </div>
                     )}
@@ -312,7 +288,17 @@ DropDown.defaultProps = {
   ValueComponent: 'div',
   valueProps: null,
 
-  classNames: {},
+  classNames: {
+    wrapper: 'dropdown',
+    combobox: 'dropdown__combobox',
+    listbox: 'dropdown__listbox',
+    groupLabel: 'dropdown__group',
+    option: 'dropdown__option',
+    optionSelected: 'dropdown__option',
+    optionGrouped: 'dropdown__option dropdown__option_grouped',
+    optionSelectedGrouped: 'dropdown__option dropdown__option_grouped',
+    visuallyHidden: visuallyHiddenClassName,
+  },
 };
 
 DropDown.displayName = 'DropDown';

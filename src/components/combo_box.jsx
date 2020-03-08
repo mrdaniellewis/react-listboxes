@@ -21,20 +21,6 @@ const allowAttributes = [
   'required', 'size', 'spellCheck',
 ];
 
-const defaultClassNames = {
-  wrapper: 'combobox',
-  input: 'combobox__input',
-  listbox: 'combobox__listbox',
-  groupLabel: 'combobox__group',
-  option: 'combobox__option',
-  optionSelected: 'combobox__option',
-  optionGrouped: 'combobox__option combobox__option--grouped',
-  optionSelectedGrouped: 'combobox__option combobox__option--grouped',
-  notFound: 'combobox__not-found',
-  clearButton: 'combobox__clear-button',
-  visuallyHidden: visuallyHiddenClassName,
-};
-
 export const ComboBox = forwardRef((rawProps, ref) => {
   const optionisedProps = useNormalisedOptions(rawProps);
   const {
@@ -68,10 +54,6 @@ export const ComboBox = forwardRef((rawProps, ref) => {
     initialState,
   );
   const [showBusy, setShowBusy] = useState(false);
-  const [
-    { className: listClassName, style: listStyle },
-    setListProps,
-  ] = useState({ className: null, style: null });
 
   const {
     expanded, focusedOption, search,
@@ -91,20 +73,15 @@ export const ComboBox = forwardRef((rawProps, ref) => {
   );
 
   useLayoutEffect(() => {
-    if (layoutListBox && expanded) {
-      const listProps = layoutListBox({
-        listbox: listRef.current,
-        combobox: inputRef.current,
-        option: focusedRef.current,
-      });
-      console.log(listProps);
-      if (listProps) {
-        setListProps({
-          style: listProps.style || null,
-          className: listProps.className || null,
-        });
-      }
+    if (!layoutListBox) {
+      return;
     }
+    layoutListBox({
+      listbox: listRef.current,
+      combobox: inputRef.current,
+      option: focusedRef.current,
+      expanded,
+    });
   }, [layoutListBox, expanded, focusedOption, options]);
 
   const searchValue = (search ?? value?.label) || '';
@@ -184,13 +161,12 @@ export const ComboBox = forwardRef((rawProps, ref) => {
   const combinedRef = useCombineRefs(inputRef, ref);
 
   const context = { props: optionisedProps, state };
-  const classes = { ...defaultClassNames, ...classNames };
 
   return (
     <Context.Provider value={context}>
       <WrapperComponent
         aria-busy={ariaBusy ? 'true' : 'false'}
-        className={classes.wrapper}
+        className={classNames?.wrapper}
         onBlur={handleBlur}
         onFocus={handleFocus}
         ref={comboRef}
@@ -211,7 +187,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
           onFocus={() => dispatch(onFocusInput())}
           aria-describedby={joinTokens(showNotFound && `${id}_not_found`, ariaDescribedBy)}
           ref={combinedRef}
-          className={classes.input}
+          className={classNames?.input}
           tabIndex={managedFocus && showListBox && focusListBox ? -1 : 0}
           {...inputProps}
           {...extractProps(optionisedProps, ...allowAttributes)}
@@ -222,7 +198,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
           hidden={!value || search === ''}
           id={`${id}_clear_button`}
           aria-hidden="true"
-          className={classes.clearButton}
+          className={classNames?.clearButton}
           {...clearButtonProps}
         />
         <ListBoxComponent
@@ -234,9 +210,8 @@ export const ComboBox = forwardRef((rawProps, ref) => {
           aria-activedescendant={(showListBox && focusListBox && focusedOption?.key) || null}
           onKeyDown={(e) => dispatch(onKeyDown(e))}
           onMouseDown={(e) => e.preventDefault()}
-          className={joinTokens(classes.listbox, listClassName)}
+          className={classNames?.listbox}
           {...listBoxProps}
-          style={listStyle}
         >
           {renderGroupedOptions({
             options,
@@ -251,7 +226,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
                     {...groupProps}
                   >
                     <GroupLabelComponent
-                      className={classes.groupLabel}
+                      className={classNames?.groupLabel}
                       aria-hidden="true" // Prevent screen readers reading the wrong number of options
                       {...groupLabelProps}
                       {...html}
@@ -270,7 +245,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
               return (
                 <Context.Provider
                   key={key}
-                  value={{ ...context, option, group }}
+                  value={{ ...context, selected, option, group }}
                 >
                   <OptionComponent
                     id={key}
@@ -279,13 +254,13 @@ export const ComboBox = forwardRef((rawProps, ref) => {
                     aria-selected={selected ? 'true' : null}
                     aria-disabled={disabled ? 'true' : null}
                     ref={selected ? focusedRef : null}
-                    className={classes[`option${selected ? 'Selected' : ''}${group ? 'Grouped' : ''}`]}
+                    className={classNames?.[`option${selected ? 'Selected' : ''}${group ? 'Grouped' : ''}`]}
                     {...optionProps}
                     {...html}
                     onClick={disabled ? null : (e) => dispatch(onClick(e, option))}
                   >
                     {group && (
-                      <div className={classes.visuallyHidden}>
+                      <div className={classNames?.visuallyHidden}>
                         {group.label}
                       </div>
                     )}
@@ -303,7 +278,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
           hidden={!showNotFound}
           role="alert"
           aria-live="polite"
-          className={classes.notFound}
+          className={classNames?.notFound}
           {...notFoundProps}
         >
           {showNotFound ? notFoundMessage : null}
@@ -412,7 +387,19 @@ ComboBox.defaultProps = {
   NotFoundComponent: 'div',
   notFoundProps: null,
 
-  classNames: {},
+  classNames: {
+    wrapper: 'combobox',
+    input: 'combobox__input',
+    listbox: 'combobox__listbox',
+    groupLabel: 'combobox__group',
+    option: 'combobox__option',
+    optionSelected: 'combobox__option',
+    optionGrouped: 'combobox__option combobox__option_grouped',
+    optionSelectedGrouped: 'combobox__option combobox__option_grouped',
+    notFound: 'combobox__not-found',
+    clearButton: 'combobox__clear-button',
+    visuallyHidden: visuallyHiddenClassName,
+  },
 };
 
 ComboBox.displayName = 'ComboBox';
