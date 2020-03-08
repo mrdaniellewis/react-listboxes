@@ -1,0 +1,12 @@
+extends layout.pug
+
+block variables
+  - const title = 'foo'
+
+block main
+  p Lorem ipsum
+
+  markdown
+    include ../docs/drop_down.md
+
+  script(src='combo_box_examples.jsx')

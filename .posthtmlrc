@@ -1,12 +1,7 @@
 {
   "plugins": {
-    "posthtml-include": {
-      "root": "./"
-    },
     "posthtml-markdown": {
       "root": "./"
-    },
-    "posthtml-escape-code": {
-    },
+    }
   }
 }
