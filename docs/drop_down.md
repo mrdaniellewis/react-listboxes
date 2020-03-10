@@ -2,26 +2,30 @@
 
 A custom control that works like a HTML `<select>`.
 
-This follows the [Listbox](https://www.w3.org/TR/wai-aria-practices-1.1/#Listbox)
-design pattern.  This is a button that opens a list box.
+This follows the ARIA 1.2 read-only [combo box](https://w3c.github.io/aria-practices/#combobox)
+design pattern.
 
-Warning: the native `<select>` will be more accessible and easier to use on 
-many devices.
+## Warning
 
-Note that there are significant differences between a `<select>` on a Mac and on
-Windows.  This control uses different aria roles depending on whether the user is on a Mac or Windows.
+The native `<select>` will be more accessible and easier to use on many devices.
 
-Windows:
+This control may be useful if options require complex styling.  However a radio group may also be more appropriate.
 
-- The button has a role of `combobox` with `has-popup=listbox`.
-- The listbox has a role of `listbox`.
-- Escape closes the listbox, and sets the current selection.
+There are significant differences between the way a `<select>` is represented with and interacted with
+on different devices and in different operating systems.  This control may confuse users.
 
-Mac
+It is also more cumbersome to add a label to this component.  The native `<label>` element _will not work_.
+Instead you will need to do the following:
 
-- The button is a menu button, that is, has a role of button with `has-popup=menu`.
-- The listbox has a role of `menu`.
-- Escape closes the listbox and cancels the current selection.
+```js
+<div id="label-id">My label</div>
+<DropDown
+  aria-labelledby="label-id"
+  {...moreProps}
+</DropDown>
+```
+
+## Usage
 
 ```js
 const [value, setValue] = useState(initialValue);
@@ -29,37 +33,151 @@ const [value, setValue] = useState(initialValue);
 <Dropdown
   options={options}
   value={value}
-  setValue={value => setValue(value)}
+  setValue={setValue}
 />
 ```
 
 This is a controlled component.  You must update `value` in response to `setValue`.
 
-| Prop               | Type       | Purpose                                                                          |
-| ----               | ----       | ----                                                                             |
-| id                 | `String`   | ID of the control, defaults to a unique generated id                             |
-| blank              | `String`   | Set a placeholder option                                                         |
-| children           | React node | If supplied, is the contents of the button.  Otherwise the current label is used |
-| options            | `Array`    | The set of options.  See options.                                                |
-| value              | `Any`      | The currently selected option                                                    |
-| setValue           | `Function` | Callback when the option changes                                                 |
-| mapOption          | `Function` | Use to map options values                                                        |
-| platform           | `String`   | defaults to mac or windows depending on the user agent                           |
-| Any other property | -          | Will be added to the select element                                              |
+Unlike a regular `<select>` the value of this component will not be submitted with a form.
+If you wish to submit the value add a `<input type="hidden" name="name" value="value" />` element.
 
-## Options
+### Basic options
+
+| Prop              | Type       | Purpose                                                   |
+| ----              | ----       | ----                                                      |
+| `aria-labelledby` | `string`   | Specify the id of the label of the control                |
+| `aria-invalid`    | `string`   | Specify the validity state of the control                 |
+| `blank`           | `String`   | Set a placeholder option                                  |
+| `children`        | `Node`     | Will override the displayed value of the combo box        |
+| `id`              | `String`   | id of the component                                       |
+| `options`         | `Array`    | The set of options.  See options.                         |
+| `value`           | `Any`      | The currently selected option                             |
+| `onValue`         | `Function` | Callback will be called with the selected option onChange |
+| `mapOption`       | `Function` | Use to map options. See options                           |
+| `ref`             |            | Will be passed to combo box  element                      |
+| `disabled`        | `Boolean`  | Make the control disabled                                 |
+| `required`        | `Boolean`  | Mark the control as required (sets `aria-required`        |
+
+### Options
 
 Options is an array of either:
+
 - `String`
 - `Number`
-- `null` or `undefined` - will be treated as a label with an empty string
+- `null` or `undefined` - will be treated as an empty string
 - an object with the following properties:
 
-| Prop     | Type          | Purpose                                                                   |
-| ----     | ----          | ----                                                                      |
-| label    | String/Number | The label of the option (required)                                        |
-| disabled | Boolean       | Is the option disabled                                                    |
-| group    | String        | Label to group options under                                              |
-| value    | Object        | Object value used to compare options.  Defaults to `value ?? id ?? label` |
-| id       | Object        | Fallback value used to compare options                                    | 
-| html     | Object        | Additional html attributes to add                                         |
+| Prop               | Type      | Purpose                                              |
+| ----               | ----      | ----                                                 |
+| `label`            | `String`  | The label of the option (required)                   |
+| `disabled`         | `Boolean` | Is the option disabled                               |
+| `group`            | `String`  | Label to group options under                         |
+| `value`            | `Object`  | Object value used to compare options                 |
+| `id`               | `Object`  | Fallback value used to compare options               |
+| `html`             | `Object`  | Additional html attributes to be added to the option |
+| Any other property |           | Ignored                                              |
+
+When an option is selected `onValue` will be called with the selected option.
+
+When determining which option is selected the option and `value` is compared
+by converting to a string value using the equivalent of
+`String(option?.value ?? option?.id ?? option?.label ?? option ?? '')`.
+
+If your option does not match the above signature, you can use `mapOption` to match the signature.
+
+```js
+const [value, setValue] = useState(initialValue);
+
+const mapOption = useCallback(({ name, deleted }) => {
+  return {
+    label: name,
+    disabled: deleted,
+  };
+}, []);
+
+<DropDown
+  options={options}
+  value={value}
+  setValue={setValue}
+  mapOption={mapOption}
+/>
+```
+
+### Customisation
+
+A number of hooks are provided to customise the appearance of the component.
+
+The component has the following layout:
+
+```html
+<wrapper>
+  <combobox />
+  <listbox>
+    <option>
+      <value />
+    </option>
+    <group>
+      <groupLabel />
+      <option>
+        <value />
+      </option>
+    </group>
+  </listbox>
+</wrapper>
+```
+
+#### `classNames` (`Object`)
+
+An object whose key value pairs set the various class names used for the component parts and some component states.
+The keys are:
+
+- `wrapper`
+- `combobox`
+- `listbox`
+- `groupLabel`
+- `option`
+- `optionSelected` - an option that is currently selected
+- `optionGrouped` - an option that is part of a group
+- `optionSelectedGrouped` - an option that is selected and part of a group
+- `visuallyHidden` - an element that is hidden, but visible to a screen-reader.  Used to prefix options with group names.
+
+#### Components
+
+Each component can be replaced using a `NameComponent` prop.  Bare-in-mind some components will need to forward their refs.
+
+- `WrapperComponent = 'div'`
+- `ComboBoxComponent = 'div'` - forward ref
+- `ListBoxComponent = 'ul'` - forward ref
+- `GroupComponent = Fragment` **Warning** This allows an ARIA 1.2 groups to be implemented, but they are not compatible with most screen-readers.  Avoid settings this.
+- `GroupLabelComponent = 'li'`
+- `OptionComponent = 'li'` - forward ref
+- `ValueComponent = Fragment`
+
+Each component can be given additional props using a `nameProps` prop.
+
+- `wrapperProps`
+- `comboBoxProps`
+- `listBoxProps`
+- `groupProps`
+- `groupLabelProps`
+- `optionProps`
+- `valueProps`
+
+#### Context
+
+A context is provided to access the props and internal state of the control.
+
+### Advanced options
+
+#### `managedFocus` (`Boolean`)
+
+By default this is `true`.  It means the browser focus follows the current selected option.
+
+If `false` the combo box element remains focused and the current selected option is
+marked with `aria-activedescendant`.  This method is found to have incomplete compatibility
+with many screen-readers.
+
+### `skipOption` (`Function`)
+
+### `findOption` (`Function`)

@@ -217,7 +217,6 @@ DropDown.propTypes = {
   options: PropTypes.arrayOf(PropTypes.any).isRequired,
   value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
   managedFocus: PropTypes.bool,
-  className: PropTypes.string,
   skipOption: PropTypes.func,
   required: PropTypes.bool,
   disabled: PropTypes.bool,
@@ -262,7 +261,6 @@ DropDown.defaultProps = {
   children: null,
   layoutListBox: null,
   value: null,
-  className: 'dropdown',
   managedFocus: true,
   skipOption: undefined,
   required: false,
@@ -285,7 +283,7 @@ DropDown.defaultProps = {
   groupLabelProps: null,
   OptionComponent: 'li',
   optionProps: null,
-  ValueComponent: 'div',
+  ValueComponent: Fragment,
   valueProps: null,
 
   classNames: {
