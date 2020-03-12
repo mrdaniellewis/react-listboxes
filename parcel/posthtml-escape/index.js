@@ -7,7 +7,7 @@ const sub = {
 
 module.exports = function posthtmlEscapeCode() {
   return function escapeCode(tree) {
-    return tree.match({ tag: 'code' }, (node) => {
+    return tree.match({ tag: 'escape' }, (node) => {
       node.content = render(node.content).replace(/[<&]/g, (m) => sub[m]); // eslint-disable-line no-param-reassign
       return node;
     });

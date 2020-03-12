@@ -4,9 +4,13 @@ block variables
   - const title = 'Select - basic'
 
 block main
-  p Example of using a select
+  h1 Example of using a select
 
-  markdown
-    include ../docs/drop_down.md
+  div(data-example='select/basic/BasicSelect')
 
-  script(src='.jsx')
+  details
+    summary code
+    pre
+      code.language-js
+        include:escape basic.jsx
+

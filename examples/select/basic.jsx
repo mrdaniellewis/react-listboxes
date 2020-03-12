@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
 import { Select } from '../../src/components/select.jsx';
 import countries from '../lib/countries.json';
 
-function Example() {
+export function BasicSelect() {
   const [value, setValue] = useState(null);
   return (
     <>
@@ -19,8 +18,3 @@ function Example() {
     </>
   );
 }
-
-ReactDOM.render(
-  <Example />,
-  document.getElementById('example'),
-);
