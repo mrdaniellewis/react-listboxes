@@ -4,7 +4,11 @@ Generates an HTML `<select>`, but with a more convenient way of setting the opti
 
 This uses the same options as `<DropDown>` and `<ComboBox>` and maybe used interchangeably.
 
-**Warning:** many users find `<select>` controls difficult to use.  A radio group may be more appropriate.
+## Warning
+
+Many users find `<select>` controls difficult to use.  A radio group may be more appropriate.
+
+## Usage
 
 This is a stateless controlled component.  You must respond to `setValue` to update the selected value.
 
@@ -30,7 +34,7 @@ const [value, setValue] = useState(initialValue);
 | `ref`              |            | Will be passed to `<select>` element                      |
 | Any other property |            | Will be added to the `<select>` element                   |
 
-## Options
+### Options
 
 Options is an array of either:
 

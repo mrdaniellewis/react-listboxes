@@ -12,7 +12,8 @@ The native `<select>` will be more accessible and easier to use on many devices.
 This control may be useful if options require complex styling.  However a radio group may also be more appropriate.
 
 There are significant differences between the way a `<select>` is represented with and interacted with
-on different devices and in different operating systems.  This control may confuse users.
+on different devices and in different operating systems.  This control has to take a single approach and
+may confuse some users.
 
 It is also more cumbersome to add a label to this component.  The native `<label>` element _will not work_.
 Instead you will need to do the following:
@@ -59,7 +60,7 @@ If you wish to submit the value add a `<input type="hidden" name="name" value="v
 | `disabled`        | `Boolean`  | Make the control disabled                                 |
 | `required`        | `Boolean`  | Mark the control as required (sets `aria-required`        |
 
-### Options
+#### Options
 
 Options is an array of either:
 
@@ -130,6 +131,9 @@ The component has the following layout:
 #### `classNames` (`Object`)
 
 An object whose key value pairs set the various class names used for the component parts and some component states.
+
+By default a [BEM style naming convention](https://en.bem.info/methodology/quick-start/#introduction) is used.
+
 The keys are:
 
 - `wrapper`
@@ -144,14 +148,14 @@ The keys are:
 
 #### Components
 
-Each component can be replaced using a `NameComponent` prop.  Bare-in-mind some components will need to forward their refs.
+Each component can be replaced using a `NameComponent` prop.  Some components will need to forward their refs.
 
 - `WrapperComponent = 'div'`
-- `ComboBoxComponent = 'div'` - forward ref
-- `ListBoxComponent = 'ul'` - forward ref
+- `ComboBoxComponent = 'div'` - forwards ref
+- `ListBoxComponent = 'ul'` - forwards ref
 - `GroupComponent = Fragment` **Warning** This allows an ARIA 1.2 groups to be implemented, but they are not compatible with most screen-readers.  Avoid settings this.
 - `GroupLabelComponent = 'li'`
-- `OptionComponent = 'li'` - forward ref
+- `OptionComponent = 'li'` - forwards ref
 - `ValueComponent = Fragment`
 
 Each component can be given additional props using a `nameProps` prop.
@@ -180,4 +184,8 @@ with many screen-readers.
 
 ### `skipOption` (`Function`)
 
+This function can be used to skip an option when navigating with the arrow keys.
+
 ### `findOption` (`Function`)
+
+This function can be used to customise finding an option in response to keystrokes.
