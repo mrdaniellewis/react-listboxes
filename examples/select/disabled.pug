@@ -1,0 +1,18 @@
+extends ../layout.pug
+
+block variables
+  - const title = 'Select - with disabled option'
+
+block main
+  h1 Select with disabled option
+
+  p A select with a disabled option.
+
+  div(data-example='select/disabled/DisabledSelect')
+
+  details
+    summary Code
+    pre
+      code.language-js
+        include:escape disabled.jsx
+
