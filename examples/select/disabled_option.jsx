@@ -7,7 +7,7 @@ const options = [
   { label: 'Orange' },
 ];
 
-export function DisabledSelect() {
+export function Example() {
   const [value, setValue] = useState(null);
   return (
     <>

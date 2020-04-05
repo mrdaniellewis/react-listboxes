@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
-import { Select } from '../../src/components/select.jsx';
-import countries from '../lib/countries.json';
+import { Select } from '../../src/index.js';
 
-export function BasicSelect() {
+const options = [
+  'Apple',
+  'Banana',
+  'Cherry',
+  'Mango',
+  'Ugli fruit',
+];
+
+export function Example() {
   const [value, setValue] = useState(null);
   return (
     <>
@@ -13,7 +20,7 @@ export function BasicSelect() {
         id="basic-select"
         value={value}
         onValue={setValue}
-        options={countries}
+        options={options}
       />
     </>
   );

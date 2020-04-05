@@ -1,12 +1,14 @@
 {
-  "name": "@citizensadvice/react-combo-boxes",
+  "name": "@citizensadvice/list-boxes",
   "version": "1.0.0",
   "private": true,
   "description": "A combo box implementations in React",
-  "main": "src/index.jsx",
+  "main": "lib/index.js",
   "scripts": {
+    "prepare": "babel src --out-dir lib --source-maps",
+    "install": "npm run prepare",
     "prebuild": "rm -rf dist",
-    "build": "parcel build ./test/index.html --public-url .",
+    "build": "parcel build ./examples/**/*.pug --public-url .",
     "start": "parcel ./examples/**/*.pug",
     "lint": "eslint . --ext .js --ext .jsx",
     "test": "jest",
@@ -15,6 +17,7 @@
   },
   "license": "ISC",
   "devDependencies": {
+    "@babel/cli": "^7.8.4",
     "@babel/core": "^7.8.7",
     "@babel/plugin-transform-runtime": "^7.8.3",
     "@babel/preset-env": "^7.8.7",
