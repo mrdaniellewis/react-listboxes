@@ -5,7 +5,7 @@
   "description": "A combo box implementations in React",
   "main": "lib/index.js",
   "scripts": {
-    "prepare": "babel src --out-dir lib --source-maps",
+    "prepare": "rm -rf lib && babel src --out-dir lib --source-maps --keep-file-extension",
     "install": "npm run prepare",
     "prebuild": "rm -rf dist",
     "build": "parcel build ./examples/**/*.pug --public-url .",
