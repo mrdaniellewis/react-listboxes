@@ -34,11 +34,11 @@ const [value, setValue] = useState(initialValue);
 <Dropdown
   options={options}
   value={value}
-  setValue={setValue}
+  onValue={setValue}
 />
 ```
 
-This is a controlled component.  You must update `value` in response to `setValue`.
+This is a controlled component.  You must update `value` in response to `onValue`.
 
 Unlike a regular `<select>` the value of this component will not be submitted with a form.
 If you wish to submit the value add a `<input type="hidden" name="name" value="value" />` element.

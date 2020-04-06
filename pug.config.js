@@ -3,6 +3,9 @@ const { name } = require('./package.json');
 
 module.exports = {
   rootDir: 'examples/',
+  locals: {
+    foo: 'bar',
+  },
   filters: {
     escape: (text) => escape(text),
     fakeInclude: (text) => text.replace('../../src/index.js', name),

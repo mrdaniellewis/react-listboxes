@@ -10,7 +10,7 @@ Many users find `<select>` controls difficult to use.  A radio group may be more
 
 ## Usage
 
-This is a stateless controlled component.  You must respond to `setValue` to update the selected value.
+This is a stateless controlled component.  You must respond to `onValue` or `onChange` to update the selected value.
 
 ```js
 const [value, setValue] = useState(initialValue);
@@ -18,7 +18,7 @@ const [value, setValue] = useState(initialValue);
 <Select
   options={options}
   value={value}
-  setValue={setValue}
+  onValue={setValue}
 />
 ```
 

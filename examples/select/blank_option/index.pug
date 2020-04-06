@@ -1,0 +1,15 @@
+extends ../../layout.pug
+
+block variables
+  - const title = 'Select with a blank option'
+  - const example = 'select/blank_option'
+
+block main
+  markdown
+    include README.md
+
+  div(data-react-example=example)
+
+  pre
+    code.language-js
+      include:escape index.jsx

@@ -23,7 +23,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
   const {
     'aria-labelledby': ariaLabelledBy,
     required, disabled,
-    options, value, id,
+    options, value, id, className,
     children, managedFocus, layoutListBox,
     selectedOption, findOption: currentFindOption,
     onBlur: passedOnBlur, onFocus: passedOnFocus,
@@ -34,7 +34,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
     GroupLabelComponent, groupLabelProps,
     OptionComponent, optionProps,
     ValueComponent, valueProps,
-    classNames,
+    VisuallyHiddenComponent, visuallyHiddenProps,
   } = optionisedProps;
   const comboBoxRef = useRef();
   const listRef = useRef();
@@ -106,7 +106,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
   return (
     <Context.Provider value={context}>
       <WrapperComponent
-        className={classNames?.wrapper}
+        className={className}
         onBlur={handleBlur}
         onFocus={handleFocus}
         onKeyDown={(e) => dispatch(onKeyDown(e))}
@@ -126,7 +126,6 @@ export const DropDown = forwardRef((rawProps, ref) => {
           ref={combinedRef}
           onClick={(e) => dispatch(onToggleOpen(e))}
           onMouseDown={(e) => e.preventDefault()}
-          className={classNames?.combobox}
           {...comboBoxProps}
           {...extractProps(optionisedProps)}
         >
@@ -139,7 +138,6 @@ export const DropDown = forwardRef((rawProps, ref) => {
           hidden={!expanded}
           aria-activedescendant={(expanded && focusedOption?.key) || null}
           tabIndex={-1}
-          className={classNames?.listbox}
           {...listBoxProps}
         >
           {renderGroupedOptions({
@@ -155,8 +153,8 @@ export const DropDown = forwardRef((rawProps, ref) => {
                     {...groupProps}
                   >
                     <GroupLabelComponent
-                      className={classNames?.groupLabel}
                       aria-hidden="true" // Prevent screen readers reading the wrong number of options
+                      role="group"
                       {...groupLabelProps}
                       {...html}
                     >
@@ -183,15 +181,16 @@ export const DropDown = forwardRef((rawProps, ref) => {
                     aria-selected={selected ? 'true' : null}
                     aria-disabled={optionDisabled ? 'true' : null}
                     ref={selected ? focusedRef : null}
-                    className={classNames?.[`option${selected ? 'Selected' : ''}${group ? 'Grouped' : ''}`]}
                     {...optionProps}
                     {...html}
                     onClick={optionDisabled ? null : (e) => dispatch(onClick(e, option))}
                   >
                     {group && (
-                      <div className={classNames?.visuallyHidden}>
+                      <VisuallyHiddenComponent
+                        {...visuallyHiddenProps}
+                      >
                         {group.label}
-                      </div>
+                      </VisuallyHiddenComponent>
                     )}
                     <ValueComponent {...valueProps}>
                       {label}
@@ -212,6 +211,7 @@ DropDown.propTypes = {
   'aria-invalid': PropTypes.string,
   blank: PropTypes.string,
   children: PropTypes.node,
+  className: PropTypes.string,
   id: PropTypes.string.isRequired,
   layoutListBox: PropTypes.func,
   options: PropTypes.arrayOf(PropTypes.any).isRequired,
@@ -240,24 +240,15 @@ DropDown.propTypes = {
   optionProps: PropTypes.object,
   ValueComponent: componentValidator,
   valueProps: PropTypes.object,
-
-  classNames: PropTypes.shape({
-    wrapper: PropTypes.string,
-    combobox: PropTypes.string,
-    listbox: PropTypes.string,
-    groupLabel: PropTypes.string,
-    option: PropTypes.string,
-    optionSelected: PropTypes.string,
-    optionGrouped: PropTypes.string,
-    optionGroupedSelected: PropTypes.string,
-    visuallyHidden: PropTypes.string,
-  }),
+  VisuallyHiddenComponent: componentValidator,
+  visuallyHiddenProps: PropTypes.object,
 };
 
 DropDown.defaultProps = {
   'aria-labelledby': null,
   'aria-invalid': null,
   blank: '',
+  className: null,
   children: null,
   layoutListBox: null,
   value: null,
@@ -285,18 +276,8 @@ DropDown.defaultProps = {
   optionProps: null,
   ValueComponent: Fragment,
   valueProps: null,
-
-  classNames: {
-    wrapper: 'dropdown',
-    combobox: 'dropdown__combobox',
-    listbox: 'dropdown__listbox',
-    groupLabel: 'dropdown__group',
-    option: 'dropdown__option',
-    optionSelected: 'dropdown__option',
-    optionGrouped: 'dropdown__option dropdown__option_grouped',
-    optionSelectedGrouped: 'dropdown__option dropdown__option_grouped',
-    visuallyHidden: visuallyHiddenClassName,
-  },
+  VisuallyHiddenComponent: 'div',
+  visuallyHiddenProps: { className: visuallyHiddenClassName },
 };
 
 DropDown.displayName = 'DropDown';

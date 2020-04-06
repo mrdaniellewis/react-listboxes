@@ -2,8 +2,6 @@
   "plugins": {
     "posthtml-markdown": {
       "root": "./"
-    },
-    "posthtml-escape": {
     }
   }
 }

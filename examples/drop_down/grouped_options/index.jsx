@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Select } from '../../src/index.js';
+import React, { useRef, useState } from 'react';
+import { DropDown } from '../../../src/index.js';
 
 const options = [
   { label: 'Apple' },
@@ -11,16 +11,21 @@ const options = [
 
 export function Example() {
   const [value, setValue] = useState(null);
+  const ref = useRef();
+
   return (
     <>
-      <label htmlFor="basic-select">
-        Basic select
-      </label>
-      <Select
-        id="basic-select"
+      <div className="label" id="example-label" onClick={() => ref.current.focus()}>
+        Drop down
+      </div>
+      <DropDown
+        aria-labelledby="example-label"
+        className="dropdown"
+        id="example"
         value={value}
         onValue={setValue}
         options={options}
+        ref={ref}
       />
     </>
   );

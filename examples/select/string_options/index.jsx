@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Select } from '../../src/index.js';
+import { Select } from '../../../src/index.js';
 
 const options = [
   'Apple',
@@ -13,15 +13,22 @@ export function Example() {
   const [value, setValue] = useState(null);
   return (
     <>
-      <label htmlFor="basic-select">
-        Basic select
+      <label htmlFor="select">
+        Select
       </label>
       <Select
-        id="basic-select"
+        id="select"
         value={value}
         onValue={setValue}
         options={options}
       />
+
+      <label htmlFor="output">
+        Current value
+      </label>
+      <output htmlFor="select" id="output">
+        {JSON.stringify(value, undefined, ' ')}
+      </output>
     </>
   );
 }

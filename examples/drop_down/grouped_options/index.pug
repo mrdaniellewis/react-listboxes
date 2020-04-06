@@ -1,0 +1,14 @@
+extends ../../layout.pug
+
+block variables
+  - const title = 'Drop down with grouped options'
+
+block main
+  markdown
+    include README.md
+
+  div(data-react-example='drop_down/grouped_options')
+
+  pre
+    code.language-js
+      include:escape index.jsx
