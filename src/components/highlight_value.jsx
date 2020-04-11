@@ -5,10 +5,10 @@ import { Context } from '../context.js';
 
 export function HighlightValue({ children: value, highlight }) {
   const context = useContext(Context);
-  const { state: { search } } = context;
+  const { state: { search }, props: { value: _value } } = context;
   return (
     <Highlight>
-      {highlight(value, search, context)}
+      {highlight(value, search || _value?.label, context)}
     </Highlight>
   );
 }

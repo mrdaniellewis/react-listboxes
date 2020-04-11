@@ -2,11 +2,12 @@ import { useMemo } from 'react';
 import { prefixSearcher } from '../searchers/prefix_searcher.js';
 import { useSearch } from './use_search.js';
 
-export function usePrefixSearch(options, { index }) {
+export function usePrefixSearch(options, { index, minLength } = {}) {
   const search = useMemo(() => (
     prefixSearcher(options, { index })
   ), [options, index]);
 
-  const [filteredOptions, onSearch] = useSearch(search, { initialOptions: options });
+  const initialOptions = minLength > 0 ? null : options;
+  const [filteredOptions, onSearch] = useSearch(search, { initialOptions, minLength });
   return [filteredOptions, onSearch, false];
 }

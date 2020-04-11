@@ -1,6 +1,7 @@
+import { shallowEqualObjects } from 'shallow-equal';
 import { SET_EXPANDED, SET_SEARCH_KEY, CLEAR_SEARCH, SET_FOCUSED_OPTION, SET_SELECTED } from './actions.js';
 
-export function reducer(state, { type, ...params }) {
+function reduce(state, { type, ...params }) {
   switch (type) {
     case SET_EXPANDED: {
       const { expanded } = params;
@@ -39,4 +40,12 @@ export function reducer(state, { type, ...params }) {
     default:
       return state;
   }
+}
+
+export function reducer(state, action, props) {
+  const newState = reduce(state, action, props);
+  if (shallowEqualObjects(newState, state)) {
+    return state;
+  }
+  return newState;
 }

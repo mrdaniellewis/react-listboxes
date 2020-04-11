@@ -7,6 +7,7 @@ export const Option = forwardRef((props, ref) => {
     props: {
       columns, ValueComponent, classNames,
       TableRowComponent, TableCellComponent, tableRowProps, tableCellProps,
+      VisuallyHiddenComponent, visuallyHiddenProps,
     },
     selected,
     option,
@@ -29,14 +30,18 @@ export const Option = forwardRef((props, ref) => {
             {...tableCellProps}
           >
             {group && index === 0 && (
-              <div className={classNames?.visuallyHidden}>
+              <VisuallyHiddenComponent
+                {...visuallyHiddenProps}
+              >
                 {group.label}
-              </div>
+              </VisuallyHiddenComponent>
             )}
             {column.label && (
-              <div className={classNames?.visuallyHidden}>
+              <VisuallyHiddenComponent
+                {...visuallyHiddenProps}
+              >
                 {column.label}
-              </div>
+              </VisuallyHiddenComponent>
             )}
             <ValueComponent>
               {option.value[column.name]}

@@ -1,8 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import * as components from '**/*.jsx';
-
-console.log(components);
+import * as components from '**/*.jsx'; // eslint-disable-line import/no-unresolved
 
 document.querySelectorAll('[data-react-example]').forEach((node) => {
   const parts = node.dataset.reactExample.split('/');

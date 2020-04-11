@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Context } from '../../context.js';
 
 export function GroupLabel({ children, ...props }) {
-  const { props: { columns, classNames } } = useContext(Context);
+  const { props: { columns } } = useContext(Context);
   return (
     <tr
       {...props}
@@ -11,7 +11,6 @@ export function GroupLabel({ children, ...props }) {
       <td
         colSpan={columns.length}
         role="presentation"
-        className={classNames?.tableGroupCell}
       >
         {children}
       </td>

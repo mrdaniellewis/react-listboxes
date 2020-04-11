@@ -10,8 +10,8 @@ export const SET_CLOSED = 'SET_CLOSED';
 export const SET_FOCUSED_OPTION = 'SET_FOCUSED_OPTION';
 export const SET_FOCUS_LIST_BOX = 'SET_FOCUS_LIST_BOX';
 
-export function setFocusedOption({ focusedOption, focusListBox, autoselect }) {
-  return { type: SET_FOCUSED_OPTION, focusedOption, focusListBox, autoselect };
+function setFocusedOption({ focusedOption, focusListBox, autoselect, expanded }) {
+  return { type: SET_FOCUSED_OPTION, focusedOption, focusListBox, autoselect, expanded };
 }
 
 export function onSelectValue(newValue) {
@@ -35,7 +35,7 @@ export function onSelectValue(newValue) {
 
 export function onKeyDown(event) {
   return (dispatch, getState, getProps) => {
-    const { expanded, focusListBox, focusedOption } = getState();
+    const { expanded, focusListBox, focusedOption, suggestedOption } = getState();
     const { options, inputRef, managedFocus, lastKeyRef, skipOption: skip } = getProps();
     const { altKey, metaKey, ctrlKey, shiftKey } = event;
     const key = getKey(event);
@@ -158,12 +158,12 @@ export function onKeyDown(event) {
         break;
       case 'Tab': {
         const { tabAutocomplete, value } = getProps();
-        if (tabAutocomplete && focusedOption && expanded && !focusListBox
-          && focusedOption.identity !== value?.identity
+        if (tabAutocomplete && suggestedOption && expanded && !focusListBox
+          && suggestedOption.identity !== value?.identity
           && !shiftKey && !altKey && !ctrlKey && !metaKey
         ) {
           event.preventDefault();
-          dispatch(onSelectValue(focusedOption));
+          dispatch(onSelectValue(suggestedOption));
         }
         break;
       }
@@ -175,10 +175,10 @@ export function onKeyDown(event) {
 export function onChange(event) {
   return (dispatch, getState, getProps) => {
     const { focusedOption } = getState();
-    const { onChange: passedOnChange } = getProps();
+    const { onChange: passedOnChange, value } = getProps();
     const { target: { value: search } } = event;
     dispatch({ type: SET_SEARCH, search, autoselect: true });
-    if (!search && focusedOption) {
+    if (!search && (focusedOption || value)) {
       dispatch(onSelectValue(null));
       return;
     }
@@ -188,17 +188,8 @@ export function onChange(event) {
 
 export function onFocus() {
   return (dispatch, getState, getProps) => {
-    const { selectedOption } = getProps();
-    dispatch(setFocusedOption({ focusedOption: selectedOption }));
-  };
-}
-
-export function onFocusInput() {
-  return (dispatch, getState) => {
-    const { expanded } = getState();
-    if (expanded) {
-      dispatch({ type: SET_FOCUS_LIST_BOX, focusListBox: false });
-    }
+    const { selectedOption, searchOnFocus } = getProps();
+    dispatch(setFocusedOption({ focusedOption: selectedOption, expanded: searchOnFocus }));
   };
 }
 
@@ -244,9 +235,25 @@ export function onOptionsChanged() {
       return;
     }
     const { options } = getProps();
+    const newOption = options.find((o) => o.identity === focusedOption?.identity);
+
     dispatch(setFocusedOption({
-      focusedOption: options.find((o) => o.identity === focusedOption?.identity) || null,
+      focusedOption: newOption,
       autoselect: true,
+    }));
+  };
+}
+
+export function onValueChanged() {
+  return (dispatch, getState, getProps) => {
+    const { expanded } = getState();
+    if (!expanded) {
+      return;
+    }
+    const { options, value } = getProps();
+
+    dispatch(setFocusedOption({
+      focusedOption: options.find((o) => o.identity === value?.identity) || null,
     }));
   };
 }

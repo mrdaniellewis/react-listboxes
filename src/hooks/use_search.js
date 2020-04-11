@@ -1,6 +1,6 @@
 import { useCallback, useReducer, useRef, useEffect } from 'react';
 
-export function useSearch(fn, { initialOptions, debounce, minLength }) {
+export function useSearch(fn, { initialOptions, debounce, minLength } = {}) {
   const [{ options, busy }, dispatch] = useReducer(
     (state, action) => ({ ...state, ...action }),
     { options: initialOptions || [], busy: false },
@@ -32,6 +32,7 @@ export function useSearch(fn, { initialOptions, debounce, minLength }) {
     lastSearchRef.current = query;
     dispatch({ busy: null });
     if (minLength && query.length < minLength) {
+      dispatch({ options: [], busy: false });
       return;
     }
 

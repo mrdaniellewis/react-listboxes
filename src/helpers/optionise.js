@@ -17,7 +17,7 @@ export function optionise(rawOption, mapOption) {
   return {
     label: option ?? '',
     identity: String(option ?? ''),
-    value: option,
+    value: rawOption,
     unselectable: false,
     disabled: false,
   };

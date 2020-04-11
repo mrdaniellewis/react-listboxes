@@ -7,16 +7,17 @@ import { initialState } from './drop_down/initial_state.js';
 import {
   clearSearch, onKeyDown, onBlur,
   onToggleOpen, onFocus, onClick,
-  onSelectValue, setFocusedOption, onOptionsChanged,
+  onSelectValue, setFocusedOption, onOptionsChanged, onValueChanged,
 } from './drop_down/actions.js';
 import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
 import { useOnBlur } from '../hooks/use_on_blur.js';
 import { componentValidator } from '../validators/component_validator.js';
-import { renderGroupedOptions } from '../helpers/render_grouped_options.js';
 import { useCombineRefs } from '../hooks/use_combine_refs.js';
 import { findOption } from '../helpers/find_option.js';
 import { extractProps } from '../helpers/extract_props.js';
 import { visuallyHiddenClassName } from '../constants/visually_hidden_class_name.js';
+import { ListBox } from './list_box.jsx';
+import { classPrefix } from '../constants/class_prefix.js';
 
 export const DropDown = forwardRef((rawProps, ref) => {
   const optionisedProps = useNormalisedOptions(rawProps, { mustHaveSelection: true });
@@ -29,12 +30,6 @@ export const DropDown = forwardRef((rawProps, ref) => {
     onBlur: passedOnBlur, onFocus: passedOnFocus,
     WrapperComponent, wrapperProps,
     ComboBoxComponent, comboBoxProps,
-    ListBoxComponent, listBoxProps,
-    GroupComponent, groupProps,
-    GroupLabelComponent, groupLabelProps,
-    OptionComponent, optionProps,
-    ValueComponent, valueProps,
-    VisuallyHiddenComponent, visuallyHiddenProps,
   } = optionisedProps;
   const comboBoxRef = useRef();
   const listRef = useRef();
@@ -95,13 +90,19 @@ export const DropDown = forwardRef((rawProps, ref) => {
     }
   }, [layoutListBox, expanded, focusedOption]);
 
+  const optionsCheck = options.length ? options : null;
   useLayoutEffect(() => {
     dispatch(onOptionsChanged());
-  }, [options]);
+  }, [optionsCheck]);
+
+  const valueIdentity = value?.identity;
+  useLayoutEffect(() => {
+    dispatch(onValueChanged());
+  }, [valueIdentity]);
 
   const combinedRef = useCombineRefs(comboBoxRef, ref);
-
   const context = { props: optionisedProps, state };
+  const clickOption = useCallback((e, option) => dispatch(onClick(e, option)), []);
 
   return (
     <Context.Provider value={context}>
@@ -115,6 +116,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
         <ComboBoxComponent
           role="combobox"
           id={id}
+          className={`${classPrefix}dropdown__combobox`}
           aria-controls={`${id}_listbox`}
           aria-expanded={expanded ? 'true' : null}
           aria-activedescendant={(expanded && focusedOption?.key) || null}
@@ -131,76 +133,15 @@ export const DropDown = forwardRef((rawProps, ref) => {
         >
           {(children ?? value?.label ?? selectedOption?.label) || '\u00A0'}
         </ComboBoxComponent>
-        <ListBoxComponent
+        <ListBox
           ref={listRef}
           id={`${id}_listbox`}
-          role="listbox"
           hidden={!expanded}
           aria-activedescendant={(expanded && focusedOption?.key) || null}
           tabIndex={-1}
-          {...listBoxProps}
-        >
-          {renderGroupedOptions({
-            options,
-            renderGroup(group) {
-              const { key, html, label, children: groupChildren } = group;
-              return (
-                <Context.Provider
-                  key={key}
-                  value={{ ...context, group }}
-                >
-                  <GroupComponent
-                    {...groupProps}
-                  >
-                    <GroupLabelComponent
-                      aria-hidden="true" // Prevent screen readers reading the wrong number of options
-                      role="group"
-                      {...groupLabelProps}
-                      {...html}
-                    >
-                      {label}
-                    </GroupLabelComponent>
-                    {groupChildren}
-                  </GroupComponent>
-                </Context.Provider>
-              );
-            },
-            // eslint-disable-next-line react/prop-types
-            renderOption(option) {
-              const { label, key, html, disabled: optionDisabled, group } = option;
-              const selected = focusedOption?.key === key;
-              return (
-                <Context.Provider
-                  key={key}
-                  value={{ ...context, group, option }}
-                >
-                  <OptionComponent
-                    id={key}
-                    role="option"
-                    tabIndex={-1}
-                    aria-selected={selected ? 'true' : null}
-                    aria-disabled={optionDisabled ? 'true' : null}
-                    ref={selected ? focusedRef : null}
-                    {...optionProps}
-                    {...html}
-                    onClick={optionDisabled ? null : (e) => dispatch(onClick(e, option))}
-                  >
-                    {group && (
-                      <VisuallyHiddenComponent
-                        {...visuallyHiddenProps}
-                      >
-                        {group.label}
-                      </VisuallyHiddenComponent>
-                    )}
-                    <ValueComponent {...valueProps}>
-                      {label}
-                    </ValueComponent>
-                  </OptionComponent>
-                </Context.Provider>
-              );
-            },
-          })}
-        </ListBoxComponent>
+          onSelectOption={clickOption}
+          focusedRef={focusedRef}
+        />
       </WrapperComponent>
     </Context.Provider>
   );
@@ -248,7 +189,7 @@ DropDown.defaultProps = {
   'aria-labelledby': null,
   'aria-invalid': null,
   blank: '',
-  className: null,
+  className: `${classPrefix}dropdown`,
   children: null,
   layoutListBox: null,
   value: null,

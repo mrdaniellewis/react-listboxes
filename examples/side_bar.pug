@@ -1,0 +1,79 @@
+mixin link(href)
+  if href.endsWith(`${example}/index.pug`)
+    a
+      block
+  else
+    a(href=href)
+      block
+
+nav
+  ul
+    li
+      | Select
+      ul
+        li
+          +link('~/select/string_options/index.pug') String options
+        li
+          +link('~/select/object_options/index.pug') Object options
+        li
+          +link('~/select/blank_option/index.pug') Blank option
+        li
+          +link('~/select/disabled_option/index.pug') Disabled option
+        li
+          +link('~/select/grouped_options/index.pug') Grouped options
+        li
+          +link('~/select/mapped_options/index.pug') Mapped options
+        li
+          +link('~/select/html_options/index.pug') HTML options
+    li
+      | Drop down
+      ul
+        li
+          +link('~/drop_down/string_options/index.pug') String options
+        li
+          +link('~/drop_down/object_options/index.pug') Object options
+        li
+          +link('~/drop_down/blank_option/index.pug') Blank option
+        li
+          +link('~/drop_down/disabled_option/index.pug') Disabled option
+        li
+          +link('~/drop_down/grouped_options/index.pug') Grouped options
+        li
+          +link('~/drop_down/html_options/index.pug') HTML options
+        li
+          +link('~/drop_down/mapped_options/index.pug') Mapped options
+        li
+          +link('~/drop_down/without_managed_focus/index.pug') Without managed focus
+        li
+          +link('~/drop_down/aria_1_2_groups/index.pug') With ARIA 1.2 groups
+    li
+      | Combo box
+      ul
+        li
+          +link('~/combo_box/string_options/index.pug') String options
+        li
+          +link('~/combo_box/object_options/index.pug') Object options
+        li
+          +link('~/combo_box/disabled_option/index.pug') Disabled option
+        li
+          +link('~/combo_box/grouped_options/index.pug') Grouped options
+        li
+          +link('~/combo_box/html_options/index.pug') HTML options
+        li
+          +link('~/combo_box/without_autocomplete/index.pug') Without autocomplete
+        li
+          +link('~/combo_box/without_managed_focus/index.pug') Without managed focus
+        li
+          +link('~/combo_box/inline_autocomplete/index.pug') With inline autocomplete
+        li
+          +link('~/combo_box/background_autocomplete/index.pug') With background autocomplete
+        li
+          +link('~/combo_box/search_suggestions/index.pug') Search suggestions
+        li
+          +link('~/combo_box/aria_1_0/index.pug') ARIA 1.0
+        li
+          +link('~/combo_box/aria_1_1/index.pug') ARIA 1.1
+        li
+          ARIA 1.2 groups
+        li
+          List box footer

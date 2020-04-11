@@ -1,3 +1,4 @@
+import { shallowEqualObjects } from 'shallow-equal';
 import { SET_SEARCH, SET_EXPANDED, SET_CLOSED, SET_FOCUSED_OPTION, SET_FOCUS_LIST_BOX } from './actions.js';
 
 // AT RISK: It is debatable autoselect in this form is actually useful
@@ -11,8 +12,8 @@ function applyAutoselect(state, { type, ...params }, props) {
   switch (type) {
     case SET_FOCUSED_OPTION:
     case SET_SEARCH: {
-      const { options, lastKeyRef: { current: key }, findAutoselect } = props;
-      const { focusListBox, search, inlineAutoselect } = state;
+      const { lastKeyRef: { current: key } } = props;
+      const { focusListBox, search, inlineAutoselect, suggestedOption } = state;
 
       if (focusListBox || !search || !params.autoselect) {
         break;
@@ -35,19 +36,7 @@ function applyAutoselect(state, { type, ...params }, props) {
         };
       }
 
-      let focusedOption;
-      for (let i = 0; i < options.length; i += 1) {
-        const result = findAutoselect(options[i], search);
-        if (result) {
-          focusedOption = options[i];
-          break;
-        }
-        if (result === false) {
-          break;
-        }
-      }
-
-      if (!focusedOption) {
+      if (!suggestedOption) {
         break;
       }
 
@@ -55,19 +44,57 @@ function applyAutoselect(state, { type, ...params }, props) {
 
       return {
         ...state,
-        focusedOption,
+        focusedOption: suggestedOption,
         inlineAutoselect: autoselect === 'inline' && selectionStart === search.length,
       };
     }
     default:
   }
+
   return {
     ...state,
     inlineAutoselect: false,
   };
 }
 
-function reduce(state, props, { type, ...params }) {
+function applySuggestedOption(state, { type }, props) {
+  switch (type) {
+    case SET_FOCUSED_OPTION:
+    case SET_SEARCH: {
+      const { options, findAutoselect } = props;
+      const { focusListBox, search } = state;
+
+      if (!search || focusListBox) {
+        return {
+          ...state,
+          suggestedOption: null,
+        };
+      }
+
+      let suggestedOption = null;
+      for (let i = 0; i < options.length; i += 1) {
+        const result = findAutoselect(options[i], search);
+        if (result) {
+          suggestedOption = options[i];
+          break;
+        }
+        if (result === false) {
+          break;
+        }
+      }
+
+      return {
+        ...state,
+        suggestedOption,
+      };
+    }
+    default:
+  }
+
+  return state;
+}
+
+function reduce(state, { type, ...params }, props) {
   switch (type) {
     case SET_SEARCH: {
       const { search } = params;
@@ -104,11 +131,12 @@ function reduce(state, props, { type, ...params }) {
       const {
         focusListBox = state.focusListBox,
         focusedOption,
+        expanded,
       } = params;
 
       return {
         ...state,
-        expanded: true,
+        expanded: expanded ?? true,
         focusListBox: focusedOption ? focusListBox : false,
         focusedOption,
       };
@@ -130,6 +158,15 @@ function reduce(state, props, { type, ...params }) {
 }
 
 export function reducer(state, action, props) {
-  const result = applyAutoselect(reduce(state, props, action), action, props);
-  return result;
+  return [
+    reduce,
+    applySuggestedOption,
+    applyAutoselect,
+  ].reduce((currentState, fn) => {
+    const newState = fn(currentState, action, props);
+    if (shallowEqualObjects(newState, currentState)) {
+      return currentState;
+    }
+    return newState;
+  }, state);
 }

@@ -1,10 +1,28 @@
 # TODO
 
+- examples
+  - drop down
+    - without managed focus
+    - aria groups
+    - layout
+    - table
+    - large content
+  - combo box
+    - basic
+    - without managed focus
+    - aria groups
+    - layout
+    - table
+    - no autocomplete
+    - autocomplete
+    - tab autocomplete
+    - table layout
+    - aria 1.0
+    - aria 1.1
 - table as custom listbox
 - button style as custom listbox
-- examples
-  + select
-  - drop down
-  - combobox
 - fix tests
 - Main docs
+- Accessibility retest
+- Combobox 
+  - show options when clicking on unexpanded combxobox

@@ -12,21 +12,29 @@ const options = [
 export function Example() {
   const [value, setValue] = useState(null);
   const ref = useRef();
-
   return (
     <>
-      <div className="label" id="example-label" onClick={() => ref.current.focus()}>
+      <div
+        className="label"
+        onClick={() => ref.current.focus()}
+        id="drop-down-label"
+      >
         Drop down
       </div>
       <DropDown
-        aria-labelledby="example-label"
-        className="dropdown"
-        id="example"
+        id="drop-down"
+        aria-labelledby="drop-down-label"
         value={value}
         onValue={setValue}
         options={options}
-        ref={ref}
       />
+
+      <label htmlFor="output">
+        Current value
+      </label>
+      <output htmlFor="drop-down" id="output">
+        {JSON.stringify(value, undefined, ' ')}
+      </output>
     </>
   );
 }

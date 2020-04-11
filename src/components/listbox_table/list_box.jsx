@@ -2,21 +2,25 @@ import React, { forwardRef, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { Context } from '../../context.js';
 
-export const ListBox = forwardRef(({ children, hidden, ...props }, ref) => {
+export const ListBox = forwardRef(({ children, hidden, id, 'aria-activedescendant': ariaActiveDescendant }, ref) => {
   const context = useContext(Context);
   const { props: {
-    columns, classNames, CustomListBoxComponent, customListBoxProps, TableComponent, tableProps,
+    columns, classNames,
+    listBoxProps,
+    TableComponent, tableProps,
   } } = context;
   return (
-    <CustomListBoxComponent
+    <div
       ref={ref}
       hidden={hidden}
       className={classNames?.listbox}
       tabIndex={-1}
-      {...customListBoxProps}
+      {...listBoxProps}
     >
       <TableComponent
-        {...props}
+        id={id}
+        role="listbox"
+        aria-activedescendant={ariaActiveDescendant}
         className={classNames?.listboxTable}
         {...tableProps}
       >
@@ -29,16 +33,19 @@ export const ListBox = forwardRef(({ children, hidden, ...props }, ref) => {
           {children}
         </tbody>
       </TableComponent>
-    </CustomListBoxComponent>
+    </div>
   );
 });
 
 ListBox.propTypes = {
+  id: PropTypes.string.isRequired,
+  'aria-activedescendant': PropTypes.string,
   children: PropTypes.node.isRequired,
   hidden: PropTypes.bool.isRequired,
   style: PropTypes.object,
 };
 
 ListBox.defaultProps = {
+  'aria-activedescendant': null,
   style: null,
 };

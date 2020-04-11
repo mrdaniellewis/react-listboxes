@@ -5,11 +5,10 @@ block variables
   - const example = 'select/blank_option'
 
 block main
-  markdown
-    include README.md
+  include:markdown README.md
 
   div(data-react-example=example)
 
-  pre
+  pre.language-js
     code.language-js
-      include:escape index.jsx
+      include:highlight:packageInclude index.jsx
