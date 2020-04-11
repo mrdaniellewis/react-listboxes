@@ -172,3 +172,17 @@ export function onOptionsChanged() {
     ));
   };
 }
+
+export function onValueChanged() {
+  return (dispatch, getState, getProps) => {
+    const { expanded } = getState();
+    if (!expanded) {
+      return;
+    }
+    const { options, value } = getProps();
+
+    dispatch(setFocusedOption(
+      options.find((o) => o.identity === value?.identity) || options[0],
+    ));
+  };
+}
