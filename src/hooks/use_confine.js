@@ -1,32 +1,35 @@
 import { useState, useEffect, useCallback } from 'react';
 
-function calculateMaxWidth(listbox, selector) {
-  const contained = listbox.closest(selector) || document.body;
-  const listboxBounding = listbox.getBoundingClientRect();
-  const extras = Math.ceil(listboxBounding.width - listbox.clientWidth)
-    + parseFloat(getComputedStyle(listbox).marginRight);
-  const maxWidth = `${contained.getBoundingClientRect().right - extras - listboxBounding.left}px`;
+function calculateMaxWidth(el, selector) {
+  el.maxWidth = ''; // eslint-disable-line no-param-reassign
+  const contained = el.closest(selector) || document.body;
+  const elBounding = el.getBoundingClientRect();
+  const extras = Math.ceil(elBounding.width - el.clientWidth)
+    + parseFloat(getComputedStyle(el).marginRight);
+  const maxWidth = `${contained.getBoundingClientRect().right - extras - elBounding.left}px`;
+  el.maxWidth = maxWidth;// eslint-disable-line no-param-reassign
   return maxWidth;
 }
 
-function calculateMaxHeight(listbox) {
-  const currentMaxHeight = listbox.style.maxHeight;
-  listbox.style.maxHeight = ''; // eslint-disable-line no-param-reassign
-  const listboxBounding = listbox.getBoundingClientRect();
+function calculateMaxHeight(el) {
+  el.style.maxHeight = ''; // eslint-disable-line no-param-reassign
+
+  const elBounding = el.getBoundingClientRect();
   const windowEnd = window.innerHeight;
   let maxHeight = '';
-  if (listboxBounding.bottom > windowEnd) {
-    const extras = Math.ceil(listboxBounding.height - listbox.clientHeight)
-      + parseFloat(getComputedStyle(listbox).marginBottom);
-    const newHeight = listboxBounding.height - (listboxBounding.bottom - windowEnd) - extras;
+
+  if (elBounding.bottom > windowEnd) {
+    const extras = Math.ceil(elBounding.height - el.clientHeight)
+      + parseFloat(getComputedStyle(el).marginBottom);
+    const newHeight = elBounding.height - (elBounding.bottom - windowEnd) - extras;
     const newMaxHeight = Math.max(newHeight, 0);
     maxHeight = `${newMaxHeight}px`;
   }
-  listbox.style.maxHeight = currentMaxHeight; // eslint-disable-line no-param-reassign
+  el.style.maxHeight = maxHeight; // eslint-disable-line no-param-reassign
   return maxHeight;
 }
 
-export function useConfine(selector = 'body') {
+export function useConfine({ selector = 'body', resizeElement } = {}) {
   const [style, setStyle] = useState({});
   const [handler, setHandler] = useState(null);
 
@@ -37,15 +40,17 @@ export function useConfine(selector = 'body') {
         return;
       }
 
+      const element = resizeElement ? resizeElement(listbox) : listbox;
+
       setStyle({
-        maxWidth: calculateMaxWidth(listbox, selector),
-        maxHeight: calculateMaxHeight(listbox),
+        maxWidth: calculateMaxWidth(element, selector),
+        maxHeight: calculateMaxHeight(element),
       });
     };
 
     updateProps();
     setHandler(() => updateProps);
-  }, [selector]);
+  }, [selector, resizeElement]);
 
   useEffect(() => {
     if (!handler) {

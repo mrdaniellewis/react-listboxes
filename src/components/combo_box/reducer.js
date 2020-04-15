@@ -119,14 +119,17 @@ function reduce(state, { type, ...params }, props) {
         focusListBox: focusListBox || state.focusListBox,
       };
     }
-    case SET_CLOSED:
+    case SET_CLOSED: {
+      const { expanded } = params;
+
       return {
         ...state,
-        expanded: false,
+        expanded: !!expanded,
         focusedOption: null,
         focusListBox: false,
         search: null,
       };
+    }
     case SET_FOCUSED_OPTION: {
       const {
         focusListBox = state.focusListBox,
@@ -158,15 +161,15 @@ function reduce(state, { type, ...params }, props) {
 }
 
 export function reducer(state, action, props) {
-  return [
+  const newState = [
     reduce,
     applySuggestedOption,
     applyAutoselect,
-  ].reduce((currentState, fn) => {
-    const newState = fn(currentState, action, props);
-    if (shallowEqualObjects(newState, currentState)) {
-      return currentState;
-    }
-    return newState;
-  }, state);
+  ].reduce((currentState, fn) => fn(currentState, action, props), state);
+
+  if (shallowEqualObjects(newState, state)) {
+    return state;
+  }
+
+  return newState;
 }

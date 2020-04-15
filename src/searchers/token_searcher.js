@@ -8,7 +8,7 @@ export function tokenSearcher(
   const indexed = options.map((o) => tokenise(index(o)));
 
   return (query) => {
-    if (!query || !query.trim()) {
+    if (!query || !tokenise(query)) {
       return options;
     }
 

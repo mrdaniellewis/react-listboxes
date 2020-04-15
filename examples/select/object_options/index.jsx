@@ -10,7 +10,7 @@ const options = [
 ];
 
 export function Example() {
-  const [value, setValue] = useState(null);
+  const [value, setValue] = useState('Lemon');
   return (
     <>
 

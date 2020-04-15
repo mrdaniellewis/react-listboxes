@@ -1,10 +1,14 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { DropDown } from '../../../src/index.js';
 import countries from '../../countries.json';
 
 export function Example() {
   const [value, setValue] = useState(null);
   const ref = useRef();
+  const mapOption = useCallback(
+    ({ name, code }) => ({ label: `${name} (${code})` }),
+    [],
+  );
 
   return (
     <>
@@ -16,12 +20,13 @@ export function Example() {
         Drop down
       </div>
       <DropDown
+        ref={ref}
         id="drop-down"
         aria-labelledby="drop-down-label"
         value={value}
         onValue={setValue}
         options={countries}
-        mapOption={({ name, code }) => ({ label: `${name} (${code})` })}
+        mapOption={mapOption}
       />
 
       <label htmlFor="output">

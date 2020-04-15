@@ -32,7 +32,7 @@ function search(value) {
 }
 
 const InputComponent = forwardRef((props, ref) => {
-  const { state: { expanded, suggestedOption } } = useContext(Context);
+  const { expanded, suggestedOption } = useContext(Context);
   const suggestedValue = (expanded && suggestedOption?.label) || '';
 
   return (

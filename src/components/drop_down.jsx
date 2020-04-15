@@ -15,7 +15,6 @@ import { componentValidator } from '../validators/component_validator.js';
 import { useCombineRefs } from '../hooks/use_combine_refs.js';
 import { findOption } from '../helpers/find_option.js';
 import { extractProps } from '../helpers/extract_props.js';
-import { visuallyHiddenClassName } from '../constants/visually_hidden_class_name.js';
 import { ListBox } from './list_box.jsx';
 import { classPrefix } from '../constants/class_prefix.js';
 
@@ -25,9 +24,10 @@ export const DropDown = forwardRef((rawProps, ref) => {
     'aria-labelledby': ariaLabelledBy,
     required, disabled,
     options, value, id, className,
-    children, managedFocus, layoutListBox,
+    children, managedFocus, onLayoutListBox,
     selectedOption, findOption: currentFindOption,
     onBlur: passedOnBlur, onFocus: passedOnFocus,
+    ListBoxComponent, listBoxProps,
     WrapperComponent, wrapperProps,
     ComboBoxComponent, comboBoxProps,
   } = optionisedProps;
@@ -80,15 +80,15 @@ export const DropDown = forwardRef((rawProps, ref) => {
   }, [expanded, managedFocus, focusedOption]);
 
   useLayoutEffect(() => {
-    if (layoutListBox) {
-      layoutListBox({
+    if (onLayoutListBox) {
+      onLayoutListBox({
         expanded,
         listbox: listRef.current,
         combobox: comboBoxRef.current,
         option: focusedRef.current,
       });
     }
-  }, [layoutListBox, expanded, focusedOption]);
+  }, [onLayoutListBox, expanded, focusedOption]);
 
   const optionsCheck = options.length ? options : null;
   useLayoutEffect(() => {
@@ -101,7 +101,11 @@ export const DropDown = forwardRef((rawProps, ref) => {
   }, [valueIdentity]);
 
   const combinedRef = useCombineRefs(comboBoxRef, ref);
-  const context = { props: optionisedProps, state };
+  const context = {
+    props: optionisedProps,
+    expanded,
+    currentOption: focusedOption,
+  };
   const clickOption = useCallback((e, option) => dispatch(onClick(e, option)), []);
 
   return (
@@ -133,7 +137,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
         >
           {(children ?? value?.label ?? selectedOption?.label) || '\u00A0'}
         </ComboBoxComponent>
-        <ListBox
+        <ListBoxComponent
           ref={listRef}
           id={`${id}_listbox`}
           hidden={!expanded}
@@ -141,6 +145,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
           tabIndex={-1}
           onSelectOption={clickOption}
           focusedRef={focusedRef}
+          {...listBoxProps}
         />
       </WrapperComponent>
     </Context.Provider>
@@ -154,7 +159,6 @@ DropDown.propTypes = {
   children: PropTypes.node,
   className: PropTypes.string,
   id: PropTypes.string.isRequired,
-  layoutListBox: PropTypes.func,
   options: PropTypes.arrayOf(PropTypes.any).isRequired,
   value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
   managedFocus: PropTypes.bool,
@@ -166,11 +170,14 @@ DropDown.propTypes = {
   onBlur: PropTypes.func,
   onFocus: PropTypes.func,
   onValue: PropTypes.func,
+  onLayoutListBox: PropTypes.func,
 
   WrapperComponent: componentValidator,
   wrapperProps: PropTypes.object,
   ListBoxComponent: componentValidator,
   listBoxProps: PropTypes.object,
+  ListBoxListComponent: componentValidator,
+  listBoxListProps: PropTypes.object,
   ComboBoxComponent: componentValidator,
   comboBoxProps: PropTypes.object,
   GroupComponent: componentValidator,
@@ -191,7 +198,6 @@ DropDown.defaultProps = {
   blank: '',
   className: `${classPrefix}dropdown`,
   children: null,
-  layoutListBox: null,
   value: null,
   managedFocus: true,
   skipOption: undefined,
@@ -202,11 +208,14 @@ DropDown.defaultProps = {
   onBlur: null,
   onFocus: null,
   onValue: null,
+  onLayoutListBox: null,
 
   WrapperComponent: 'div',
   wrapperProps: null,
-  ListBoxComponent: 'ul',
+  ListBoxComponent: ListBox,
   listBoxProps: null,
+  ListBoxListComponent: 'ul',
+  listBoxListProps: null,
   ComboBoxComponent: 'div',
   comboBoxProps: null,
   GroupComponent: Fragment,
@@ -218,7 +227,7 @@ DropDown.defaultProps = {
   ValueComponent: Fragment,
   valueProps: null,
   VisuallyHiddenComponent: 'div',
-  visuallyHiddenProps: { className: visuallyHiddenClassName },
+  visuallyHiddenProps: null,
 };
 
 DropDown.displayName = 'DropDown';

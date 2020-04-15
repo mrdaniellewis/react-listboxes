@@ -14,10 +14,10 @@ function setFocusedOption({ focusedOption, focusListBox, autoselect, expanded })
   return { type: SET_FOCUSED_OPTION, focusedOption, focusListBox, autoselect, expanded };
 }
 
-export function onSelectValue(newValue) {
+function onSelectValue(newValue, expanded = false) {
   return (dispatch, getState, getProps) => {
     const { onValue, onChange: passedOnChange, inputRef } = getProps();
-    dispatch({ type: SET_CLOSED });
+    dispatch({ type: SET_CLOSED, expanded });
     if (newValue?.unselectable) {
       return;
     }
@@ -100,7 +100,7 @@ export function onKeyDown(event) {
         // Close if altKey, otherwise next item and show
         event.preventDefault();
         if (altKey) {
-          dispatch({ type: SET_EXPANDED, expanded: false });
+          dispatch({ type: SET_CLOSED });
           inputRef.current.focus();
         } else if (expanded) {
           dispatch(setFocusedOption({
@@ -179,7 +179,7 @@ export function onChange(event) {
     const { target: { value: search } } = event;
     dispatch({ type: SET_SEARCH, search, autoselect: true });
     if (!search && (focusedOption || value)) {
-      dispatch(onSelectValue(null));
+      dispatch(onSelectValue(null, true));
       return;
     }
     passedOnChange?.(event);
@@ -188,6 +188,17 @@ export function onChange(event) {
 
 export function onFocus() {
   return (dispatch, getState, getProps) => {
+    const { selectedOption, searchOnFocus } = getProps();
+    dispatch(setFocusedOption({ focusedOption: selectedOption, expanded: searchOnFocus }));
+  };
+}
+
+export function onInputMouseUp() {
+  return (dispatch, getState, getProps) => {
+    const { expanded } = getState();
+    if (expanded) {
+      return;
+    }
     const { selectedOption, searchOnFocus } = getProps();
     dispatch(setFocusedOption({ focusedOption: selectedOption, expanded: searchOnFocus }));
   };
@@ -224,7 +235,7 @@ export function onClearValue(event) {
     if (event.button > 0) {
       return;
     }
-    dispatch(onSelectValue(null));
+    dispatch(onSelectValue(null, true));
   };
 }
 

@@ -4,6 +4,7 @@ import { ComboBox, useTokenSearch } from '../../../src/index.js';
 const options = [
   'Apple',
   'Orange',
+  'Blood orange',
   'Lemon',
   'Raspberry',
   'Strawberry',

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { ComboBox, usePrefixSearch } from '../../../src/index.js';
-import { SuggestionHighlight } from '../../../src/components/highlighters/suggestion_highlight.jsx';
+import { ComboBox, usePrefixSearch, TokenHighlight } from '../../../src/index.js';
 
 const options = [
   'css',
@@ -22,7 +21,7 @@ const options = [
 
 export function Example() {
   const [value, setValue] = useState(null);
-  const [filteredOptions, onSearch] = usePrefixSearch(options, { minLength: 1 });
+  const [filteredOptions, onSearch] = usePrefixSearch(options);
 
   return (
     <>
@@ -37,9 +36,10 @@ export function Example() {
         options={filteredOptions}
         showSelectedLabel
         managedFocus={false}
-        ValueComponent={SuggestionHighlight}
-        ClearButtonComponent={() => null}
         searchOnFocus={false}
+        ClearButtonComponent={() => null}
+        ValueComponent={TokenHighlight}
+        valueProps={{ inverse: true }}
       />
 
       <label htmlFor="output">

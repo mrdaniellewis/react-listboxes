@@ -3,11 +3,13 @@
 @import "./combobox.scss";
 @import "prismjs/themes/prism.css";
 
+$text-colour: #161616;
+
 body {
   font: 1em/1.5 sans-serif;
-  padding-bottom: 10em;
   display: grid;
   grid: "nav main" / 20em;
+  color: $text-colour;
 
   @media (max-width: 50em) {
     grid: "main" auto "nav" auto;
@@ -23,7 +25,55 @@ main {
 
 nav {
   grid-area: nav;
-  padding: 1em;
+  border-right: 1px solid #ddd;
+
+  > div {
+    font-weight: bold;
+    font-size: 1.2em;
+    margin: 1rem;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  > ul > li {
+    &:not(:first-child) {
+      border-top: 1px solid #ddd;
+    }
+
+    div {
+      padding: .5em 1em;
+      font-weight: bold;
+    }
+
+    > ul > li div {
+      padding: .5em 2em;
+    }
+  }
+
+  a {
+    display: block;
+    text-decoration: none;
+    padding: .2em;
+    padding-left: 2em;
+    color: $text-colour;
+
+    &:hover {
+      background-color: #DFDFDF;
+    }
+
+    &:not([href]),
+    &:not([href]):hover {
+      background-color: #CAEAFF;
+    }
+
+  }
+
+  ul ul ul a {
+    padding-left: 3em;
+  }
 }
 
 [data-react-example] {
@@ -73,4 +123,46 @@ output {
 
 pre > code {
   padding: 0;
+}
+
+pre {
+  padding: 1em;
+  margin: .5em 0 1.5em 0;
+  overflow: auto;
+  background: #f5f2f0;
+  font-size: 90%;
+}
+
+table {
+  border-collapse: collapse;
+
+  th {
+    text-align: left;
+    padding: 0.4em;
+    border: 1px solid #ddd;
+  }
+
+  td {
+    vertical-align: top;
+    padding: 0.4em;
+    border: 1px solid #ddd;
+  }
+}
+
+blockquote {
+  border-left: .25em solid #ddd;
+  margin: 0 0 1.5em 0;
+  padding-left: 1em;
+}
+
+.reset-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list-footer {
+  background-color: #CAEAFF;
+  padding: .2em .5em;
+  border-top: 1px solid #ddd;
 }

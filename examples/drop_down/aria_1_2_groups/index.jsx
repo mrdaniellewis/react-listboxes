@@ -1,5 +1,4 @@
 import React, { forwardRef, useContext, useRef, useState } from 'react';
-import PropTypes from 'prop-types';
 import { DropDown, Context } from '../../../src/index.js';
 
 const options = [
@@ -28,10 +27,6 @@ function GroupComponent({ children }) {
   );
 }
 
-GroupComponent.propTypes = {
-  children: PropTypes.array.isRequired,
-};
-
 function GroupLabelComponent({ children }) {
   const { group: { key } } = useContext(Context);
 
@@ -45,10 +40,6 @@ function GroupLabelComponent({ children }) {
   );
 }
 
-GroupLabelComponent.propTypes = {
-  children: PropTypes.node.isRequired,
-};
-
 const OptionComponent = forwardRef(({ children, ...props }, ref) => {
   // Remove hidden group label
   const [, value] = children;
@@ -59,10 +50,6 @@ const OptionComponent = forwardRef(({ children, ...props }, ref) => {
     </li>
   );
 });
-
-OptionComponent.propTypes = {
-  children: PropTypes.node.isRequired,
-};
 
 export function Example() {
   const [value, setValue] = useState(null);

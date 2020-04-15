@@ -4,7 +4,7 @@ import { Context } from '../context.js';
 import { useThunkReducer as useReducer } from '../hooks/use_thunk_reducer.js';
 import { reducer } from './combo_box/reducer.js';
 import { initialState } from './combo_box/initial_state.js';
-import { onKeyDown, onChange, onFocus, onClearValue, onBlur, onClick, onOptionsChanged, onValueChanged } from './combo_box/actions.js';
+import { onKeyDown, onChange, onFocus, onInputMouseUp, onClearValue, onBlur, onClick, onOptionsChanged, onValueChanged } from './combo_box/actions.js';
 import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
 import { useOnBlur } from '../hooks/use_on_blur.js';
 import { joinTokens } from '../helpers/join_tokens.js';
@@ -12,7 +12,6 @@ import { componentValidator } from '../validators/component_validator.js';
 import { findOption } from '../helpers/find_option.js';
 import { useCombineRefs } from '../hooks/use_combine_refs.js';
 import { extractProps } from '../helpers/extract_props.js';
-import { visuallyHiddenClassName } from '../constants/visually_hidden_class_name.js';
 import { ListBox } from './list_box.jsx';
 import { classPrefix } from '../constants/class_prefix.js';
 
@@ -27,9 +26,10 @@ export const ComboBox = forwardRef((rawProps, ref) => {
   const {
     'aria-describedby': ariaDescribedBy, busyDebounce,
     options, value, selectedOption, id, className,
-    notFoundMessage, layoutListBox, managedFocus, busy, onSearch,
+    notFoundMessage, onLayoutListBox, managedFocus, busy, onSearch,
     autoselect, showSelectedLabel,
     onBlur: passedOnBlur, onFocus: passedOnFocus,
+    ListBoxComponent, listBoxProps,
     WrapperComponent, wrapperProps,
     InputComponent, inputProps,
     ClearButtonComponent, clearButtonProps,
@@ -52,7 +52,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
 
   const {
     expanded, focusedOption, search,
-    focusListBox, inlineAutoselect,
+    focusListBox, inlineAutoselect, suggestedOption,
   } = state;
 
   const [handleBlur, handleFocus] = useOnBlur(
@@ -66,18 +66,6 @@ export const ComboBox = forwardRef((rawProps, ref) => {
       passedOnFocus?.();
     }, [passedOnFocus]),
   );
-
-  useLayoutEffect(() => {
-    if (!layoutListBox) {
-      return;
-    }
-    layoutListBox({
-      listbox: listRef.current,
-      combobox: inputRef.current,
-      option: focusedRef.current,
-      expanded,
-    });
-  }, [layoutListBox, expanded, focusedOption, options]);
 
   const searchValue = (search ?? value?.label) || '';
   useEffect(() => {
@@ -130,11 +118,11 @@ export const ComboBox = forwardRef((rawProps, ref) => {
   // Do not show the list box is the only option is the currently selected option
   const showListBox = useMemo(() => (
     expanded && options.length
-      && !(!search && options.length === 1 && options[0].key === selectedOption?.key)
-  ), [expanded, options, search, selectedOption]);
+      && !(options.length === 1 && options[0].identity === selectedOption?.identity)
+  ), [expanded, options, selectedOption]);
 
   useLayoutEffect(() => {
-    if (expanded && focusedOption && managedFocus && focusListBox && showListBox) {
+    if (focusedOption && managedFocus && focusListBox && showListBox) {
       focusedRef.current?.focus?.();
     } else if (expanded && document.activeElement !== inputRef.current) {
       inputRef.current.focus();
@@ -156,13 +144,31 @@ export const ComboBox = forwardRef((rawProps, ref) => {
     };
   }, [busy, busyDebounce, busyTimeoutRef]);
 
+  useLayoutEffect(() => {
+    if (!onLayoutListBox) {
+      return;
+    }
+    onLayoutListBox({
+      listbox: listRef.current,
+      combobox: inputRef.current,
+      option: focusedRef.current,
+      expanded: showListBox,
+    });
+  }, [onLayoutListBox, showListBox, focusedOption, options]);
+
   const showNotFound = notFoundMessage && busy === false && expanded && !options.length
     && search?.trim() && search !== value?.label;
   const ariaBusy = showBusy && search?.trim() && search !== (value?.label);
   const combinedRef = useCombineRefs(inputRef, ref);
   const context = {
     props: optionisedProps,
-    state: { ...state, showListBox, showNotFound, ariaBusy },
+    expanded: showListBox,
+    notFound: showNotFound,
+    currentOption: focusedOption,
+    search,
+    suggestedOption,
+    'aria-busy': ariaBusy,
+    'aria-autocomplete': 'ariaAutocomplete',
   };
   const clickOption = useCallback((e, option) => dispatch(onClick(e, option)), []);
 
@@ -189,7 +195,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
           value={inputLabel || ''}
           onKeyDown={(e) => dispatch(onKeyDown(e))}
           onChange={(e) => dispatch(onChange(e))}
-          onClick={(e) => dispatch(onFocus(e))}
+          onMouseUp={(e) => dispatch(onInputMouseUp(e))}
           aria-describedby={joinTokens(showNotFound && `${id}_not_found`, ariaDescribedBy)}
           ref={combinedRef}
           tabIndex={managedFocus && showListBox && focusListBox ? -1 : null}
@@ -205,7 +211,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
           aria-hidden="true"
           {...clearButtonProps}
         />
-        <ListBox
+        <ListBoxComponent
           ref={listRef}
           id={`${id}_listbox`}
           tabIndex={-1}
@@ -214,6 +220,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
           onKeyDown={(e) => dispatch(onKeyDown(e))}
           onSelectOption={clickOption}
           focusedRef={focusedRef}
+          {...listBoxProps}
         />
         <NotFoundComponent
           id={`${id}_not_found`}
@@ -238,13 +245,13 @@ ComboBox.propTypes = {
   busy: PropTypes.oneOf([false, true, null]),
   className: PropTypes.string,
   id: PropTypes.string.isRequired,
-  layoutListBox: PropTypes.func,
   managedFocus: PropTypes.bool,
   notFoundMessage: PropTypes.node,
   onSearch: PropTypes.func,
   options: PropTypes.arrayOf(PropTypes.any).isRequired,
   onValue: PropTypes.func,
   onChange: PropTypes.func,
+  onLayoutListBox: PropTypes.func,
   value: PropTypes.any,
 
   showSelectedLabel: PropTypes.bool,
@@ -264,6 +271,8 @@ ComboBox.propTypes = {
   inputProps: PropTypes.object,
   ListBoxComponent: componentValidator,
   listBoxProps: PropTypes.object,
+  ListBoxListComponent: componentValidator,
+  listBoxListProps: PropTypes.object,
   GroupComponent: componentValidator,
   groupProps: PropTypes.object,
   GroupLabelComponent: componentValidator,
@@ -285,7 +294,6 @@ ComboBox.defaultProps = {
   busy: false,
   busyDebounce: 200,
   className: `${classPrefix}combobox`,
-  layoutListBox: null,
   managedFocus: true,
   notFoundMessage: 'No matches found',
   value: null,
@@ -294,6 +302,7 @@ ComboBox.defaultProps = {
   onChange: null,
   onBlur: null,
   onFocus: null,
+  onLayoutListBox: null,
   skipOption: undefined,
   searchOnFocus: true,
 
@@ -306,8 +315,10 @@ ComboBox.defaultProps = {
   wrapperProps: null,
   InputComponent: 'input',
   inputProps: null,
-  ListBoxComponent: 'ul',
+  ListBoxComponent: ListBox,
   listBoxProps: null,
+  ListBoxListComponent: 'ul',
+  listBoxListProps: null,
   GroupComponent: Fragment,
   groupProps: null,
   GroupLabelComponent: 'li',
@@ -321,7 +332,7 @@ ComboBox.defaultProps = {
   NotFoundComponent: 'div',
   notFoundProps: null,
   VisuallyHiddenComponent: 'div',
-  visuallyHiddenProps: { className: visuallyHiddenClassName },
+  visuallyHiddenProps: null,
 };
 
 ComboBox.displayName = 'ComboBox';

@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import { Highlight } from './highlight.jsx';
 import { Context } from '../context.js';
 
-export function HighlightValue({ children: value, highlight }) {
+export function HighlightValue({ children: value, highlight, inverse, ...props }) {
   const context = useContext(Context);
-  const { state: { search }, props: { value: _value } } = context;
+  const { search, props: { value: _value } } = context;
   return (
-    <Highlight>
-      {highlight(value, search || _value?.label, context)}
+    <Highlight inverse={inverse}>
+      {highlight(value, search || _value?.label, context, props)}
     </Highlight>
   );
 }
@@ -16,8 +16,10 @@ export function HighlightValue({ children: value, highlight }) {
 HighlightValue.propTypes = {
   children: PropTypes.string,
   highlight: PropTypes.func.isRequired,
+  inverse: PropTypes.bool,
 };
 
 HighlightValue.defaultProps = {
   children: '',
+  inverse: false,
 };

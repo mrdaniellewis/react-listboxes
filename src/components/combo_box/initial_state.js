@@ -5,5 +5,6 @@ export function initialState({ selectedOption }) {
     focusListBox: false,
     search: null,
     focusedOption: selectedOption,
+    suggestedOption: null,
   };
 }

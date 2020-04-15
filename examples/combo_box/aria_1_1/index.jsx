@@ -10,14 +10,14 @@ const options = [
 ];
 
 const WrapperComponent = forwardRef((props, ref) => {
-  const { state: { showListBox }, props: { id } } = useContext(Context);
+  const { expanded, props: { id } } = useContext(Context);
   return (
     <div
       {...props}
       ref={ref}
-      role="combobox" // eslint-disable-line jsx-a11y/role-has-required-aria-props
+      role="combobox"
       aria-owns={id}
-      aris-expanded={showListBox ? 'true' : 'false'}
+      aris-expanded={expanded ? 'true' : 'false'}
     />
   );
 });

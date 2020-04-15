@@ -1,9 +1,14 @@
 import { useCallback, useReducer, useRef, useEffect } from 'react';
 
+const empty = [];
+
 export function useSearch(fn, { initialOptions, debounce, minLength } = {}) {
+  // eslint-disable-next-line no-param-reassign
+  initialOptions = initialOptions?.length ? initialOptions : empty;
+
   const [{ options, busy }, dispatch] = useReducer(
     (state, action) => ({ ...state, ...action }),
-    { options: initialOptions || [], busy: false },
+    { options: initialOptions, busy: false },
   );
 
   const lastSearchRef = useRef();

@@ -22,6 +22,7 @@ export function Example() {
         Drop down
       </div>
       <DropDown
+        ref={ref}
         id="drop-down"
         aria-labelledby="drop-down-label"
         value={value}

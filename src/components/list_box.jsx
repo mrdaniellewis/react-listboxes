@@ -3,16 +3,15 @@ import PropTypes from 'prop-types';
 import { Context } from '../context.js';
 import { renderGroupedOptions } from '../helpers/render_grouped_options.js';
 import { classPrefix } from '../constants/class_prefix.js';
+import { visuallyHiddenClassName } from '../constants/visually_hidden_class_name.js';
 
 export const ListBox = forwardRef(({ focusedRef, onSelectOption, ...props }, ref) => {
   const context = useContext(Context);
   const {
-    state: {
-      focusedOption,
-    },
+    currentOption,
     props: {
       options,
-      ListBoxComponent, listBoxProps,
+      ListBoxListComponent, listBoxListProps,
       GroupComponent, groupProps,
       GroupLabelComponent, groupLabelProps,
       OptionComponent, optionProps,
@@ -22,13 +21,13 @@ export const ListBox = forwardRef(({ focusedRef, onSelectOption, ...props }, ref
   } = context;
 
   return (
-    <ListBoxComponent
+    <ListBoxListComponent
       ref={ref}
       role="listbox"
       className={`${classPrefix}listbox`}
       onMouseDown={(e) => e.preventDefault()}
       {...props}
-      {...listBoxProps}
+      {...listBoxListProps}
     >
       {renderGroupedOptions({
         options,
@@ -58,7 +57,7 @@ export const ListBox = forwardRef(({ focusedRef, onSelectOption, ...props }, ref
         // eslint-disable-next-line react/prop-types
         renderOption(option) {
           const { label, key, html, disabled, group } = option;
-          const selected = focusedOption?.key === key;
+          const selected = currentOption?.key === key;
           return (
             <Context.Provider
               key={key}
@@ -78,6 +77,7 @@ export const ListBox = forwardRef(({ focusedRef, onSelectOption, ...props }, ref
               >
                 {group && (
                   <VisuallyHiddenComponent
+                    className={visuallyHiddenClassName}
                     {...visuallyHiddenProps}
                   >
                     {group.label}
@@ -91,7 +91,7 @@ export const ListBox = forwardRef(({ focusedRef, onSelectOption, ...props }, ref
           );
         },
       })}
-    </ListBoxComponent>
+    </ListBoxListComponent>
   );
 });
 
