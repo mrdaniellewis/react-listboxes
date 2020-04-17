@@ -1,3 +1,3 @@
-# Combo box with string options
+# Combo box with all options disabled
 
-A combo box whose options are an array of strings.
+A combo box where all the options have been disabled.

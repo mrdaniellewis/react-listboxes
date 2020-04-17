@@ -1,3 +1,3 @@
-# Drop down with string options
+# Disabled drop down
 
-A drop down whose options are an array of strings.
+The drop down has the disabled option and is inert and cannot be interacted with.

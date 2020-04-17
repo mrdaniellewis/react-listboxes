@@ -2,8 +2,7 @@ import React, { useEffect } from 'react';
 import { render, act, wait } from '@testing-library/react';
 import { useTokenSearch } from './use_token_search.js';
 
-function TestTokenSearch({ options, index, tokenise, onUpdate }) {
-  const params = index || tokenise ? { index, tokenise } : undefined;
+function TestTokenSearch({ options, onUpdate, ...params }) {
   const [filteredOptions, onSearch, busy] = useTokenSearch(options, params);
   useEffect(() => {
     onUpdate(filteredOptions, onSearch, busy);
@@ -143,26 +142,65 @@ describe('options', () => {
   });
 });
 
-describe('busy', () => {
-  it('is always false', async () => {
+describe('minLength', () => {
+  it('does not search for a query less then minLength', async () => {
     const spy = jest.fn();
     render((
-      <TestTokenSearch options={['foo', 'bar', 'foe']} onUpdate={spy} />
+      <TestTokenSearch options={['foo', 'bar', 'foe']} onUpdate={spy} minLength={2} />
     ));
-    act(() => {
+    await act(async () => {
+      spy.mock.calls[0][1]('b');
+    });
+    expect(spy).toHaveBeenLastCalledWith(
+      ['foo', 'bar', 'foe'],
+      expect.anything(),
+      null,
+    );
+  });
+
+  it('searches for a query of minLength', async () => {
+    const spy = jest.fn();
+    render((
+      <TestTokenSearch options={['foo', 'bar', 'foe']} onUpdate={spy} minLength={2} />
+    ));
+    await act(async () => {
       spy.mock.calls[0][1]('ba');
     });
-    await wait(() => {
-      expect(spy).toHaveBeenLastCalledWith(
-        ['bar'],
-        expect.any(Function),
-        false,
-      );
+    expect(spy).toHaveBeenLastCalledWith(
+      ['bar'],
+      expect.anything(),
+      false,
+    );
+  });
+});
+
+describe('initialOptions', () => {
+  it('overrides using options as the initial options', async () => {
+    const spy = jest.fn();
+    render((
+      <TestTokenSearch initialOptions={['foo']} options={['foo', 'bar', 'foe']} onUpdate={spy} minLength={2} />
+    ));
+    expect(spy).toHaveBeenLastCalledWith(
+      ['foo'],
+      expect.anything(),
+      false,
+    );
+  });
+});
+
+describe('maxResults', () => {
+  it('limits the results returned', async () => {
+    const spy = jest.fn();
+    render((
+      <TestTokenSearch options={['foo', 'fi', 'foe']} onUpdate={spy} maxResults={2} />
+    ));
+    await act(async () => {
+      spy.mock.calls[0][1]('f');
     });
-    expect(spy).not.toHaveBeenCalledWith(
+    expect(spy).toHaveBeenLastCalledWith(
+      ['foo', 'fi'],
       expect.anything(),
-      expect.anything(),
-      true,
+      false,
     );
   });
 });

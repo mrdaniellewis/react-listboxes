@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { Select } from '../../../src/index.js';
-import countries from '../../countries.json';
+import countries from '../../data/countries.json';
+
+function map({ name, code }) {
+  return { label: `${name} (${code})` };
+}
 
 export function Example() {
   const [value, setValue] = useState(null);
@@ -14,7 +18,7 @@ export function Example() {
         value={value}
         onValue={setValue}
         options={countries}
-        mapOption={({ name, code }) => ({ label: `${name} (${code})` })}
+        mapOption={map}
       />
 
       <label htmlFor="output">

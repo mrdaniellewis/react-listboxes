@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 
+// @private
 export function useCombineRefs(...refs) {
   return useCallback((value) => {
     refs.forEach((ref) => {

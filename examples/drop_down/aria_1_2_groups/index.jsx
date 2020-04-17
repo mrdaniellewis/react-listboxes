@@ -40,17 +40,6 @@ function GroupLabelComponent({ children }) {
   );
 }
 
-const OptionComponent = forwardRef(({ children, ...props }, ref) => {
-  // Remove hidden group label
-  const [, value] = children;
-
-  return (
-    <li {...props} ref={ref}>
-      {value}
-    </li>
-  );
-});
-
 export function Example() {
   const [value, setValue] = useState(null);
   const [managedFocus, setManagedFocus] = useState(true);
@@ -74,7 +63,7 @@ export function Example() {
         managedFocus={managedFocus}
         GroupComponent={GroupComponent}
         GroupLabelComponent={GroupLabelComponent}
-        OptionComponent={OptionComponent}
+        VisuallyHiddenComponent={() => null} // hidden group label not required
       />
 
       <label>

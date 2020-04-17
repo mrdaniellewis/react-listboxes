@@ -1,20 +1,37 @@
-import React, { useState } from 'react';
-import { Select } from '../../../src/index.js';
-import countries from '../../countries.json';
+import React, { useCallback, useState } from 'react';
+import { ComboBox, useTokenSearch, TokenHighlight } from '../../../src/index.js';
+import emoji from '../../data/emoji.json';
+
+// The emoji set includes identical variations on code sequences
+const seen = new Set();
+const dedupedEmoji = emoji.filter(({ name }) => {
+  if (seen.has(name)) {
+    return false;
+  }
+  seen.add(name);
+  return true;
+});
 
 export function Example() {
+  const index = useCallback((o) => o.name, []);
+  const map = useCallback(({ name, char, group }) => ({ label: `${name} ${char}`, group }), []);
   const [value, setValue] = useState(null);
+  // The list of emoji can be thousands.  This rather ruins performance so limit results to 100.
+  const [filteredOptions, onSearch] = useTokenSearch(dedupedEmoji, { index, minLength: 1, maxResults: 100 });
+
   return (
     <>
       <label htmlFor="select">
         Select
       </label>
-      <Select
+      <ComboBox
         id="select"
         value={value}
         onValue={setValue}
-        options={countries}
-        mapOption={({ name, code }) => ({ label: `${name} (${code})` })}
+        onSearch={onSearch}
+        options={filteredOptions}
+        mapOption={map}
+        ValueComponent={TokenHighlight}
       />
 
       <label htmlFor="output">

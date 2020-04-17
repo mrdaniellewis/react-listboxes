@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { ComboBox, useTokenSearch } from '../../../src/index.js';
-import countries from '../../countries.json';
+import { ComboBox, useTokenSearch, TokenHighlight } from '../../../src/index.js';
+import countries from '../../data/countries.json';
 
 function map({ name, code }) {
   return `${name} (${code})`;
@@ -30,6 +30,7 @@ export function Example() {
         tabAutocomplete={tabAutocomplete}
         showSelectedLabel={showSelectedLabel}
         managedFocus={managedFocus}
+        ValueComponent={TokenHighlight}
       />
 
       <fieldset>

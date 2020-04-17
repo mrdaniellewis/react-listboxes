@@ -73,7 +73,7 @@ export function Example() {
         options={filteredOptions}
         tabAutocomplete
         showSelectedLabel
-        searchOnFocus={false}
+        expandOnFocus={false}
         managedFocus={false}
         NotFoundComponent={() => null}
         ClearButtonComponent={() => null}

@@ -18,22 +18,24 @@ export function setFocusedOption(focusedOption, expanded) {
 
 export function onSelectValue(newValue) {
   return (dispatch, getState, getProps) => {
-    const { onValue, value } = getProps();
+    const { onValue } = getProps();
     if (!newValue || newValue.unselectable) {
       dispatch({ type: SET_EXPANDED, expanded: false });
       return;
     }
     dispatch({ type: SET_SELECTED });
-    if (newValue.identity !== value?.identity) {
-      onValue?.(newValue?.value);
-    }
+    onValue?.(newValue?.value);
   };
 }
 
 export function onToggleOpen(event) {
   return (dispatch, getState, getProps) => {
     const { disabled, options } = getProps();
-    if (event?.button > 0 || disabled || !options.length) {
+    if (event?.button > 0 || disabled) {
+      return;
+    }
+    if (!options.length) {
+      event.preventDefault();
       return;
     }
     const { expanded } = getState();
@@ -53,6 +55,7 @@ export function onKeyDown(event) {
     const { altKey, metaKey, ctrlKey, key } = event;
 
     if (disabled || !options.length) {
+      event.preventDefault();
       return;
     }
 

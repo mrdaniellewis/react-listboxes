@@ -327,17 +327,17 @@ describe('options', () => {
   });
 });
 
-describe('blank', () => {
+describe('placeholder', () => {
   const options = ['Apple', 'Banana', 'Orange'];
 
-  it('renders a blank option', () => {
-    const { getByRole, getAllByRole } = render(<SelectWrapper options={options} blank="Please select…" />);
+  it('renders a placeholder option', () => {
+    const { getByRole, getAllByRole } = render(<SelectWrapper options={options} placeholder="Please select…" />);
     expect(getAllByRole('option')[0]).toHaveTextContent('Please select…');
     expect(getByRole('combobox')).toHaveValue('');
   });
 
   it('renders with a selected value', () => {
-    const { getByRole } = render(<SelectWrapper options={options} blank="Please select…" value="Orange" />);
+    const { getByRole } = render(<SelectWrapper options={options} placeholder="Please select…" value="Orange" />);
     expect(getByRole('combobox')).toHaveValue('Orange');
   });
 });

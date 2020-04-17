@@ -4,6 +4,7 @@ import { optionise } from '../helpers/optionise.js';
 import { UniqueIdGenerator } from '../helpers/unique_id_generator.js';
 
 /**
+ * @private
  * Turn value and options into objects
  *
  * Each option will have the following values:
@@ -17,18 +18,18 @@ import { UniqueIdGenerator } from '../helpers/unique_id_generator.js';
  *   - html
  */
 export function useNormalisedOptions({
-  id, options: rawOptions, blank, value: rawValue, mapOption, ...props
+  id, options: rawOptions, placeholder, value: rawValue, mapOption, ...props
 }, { mustHaveSelection = false } = {}) {
   const options = useMemo(() => {
     const idGenerator = new UniqueIdGenerator();
     const groups = new Map();
     const normalisedOptions = [];
-    if (blank) {
+    if (placeholder) {
       normalisedOptions.push({
-        label: blank,
+        label: placeholder,
         identity: '',
         value: null,
-        key: idGenerator.uniqueId(`${id || ''}_option_blank`),
+        key: idGenerator.uniqueId(`${id || ''}_option_placeholder`),
       });
     }
 
@@ -57,7 +58,7 @@ export function useNormalisedOptions({
     });
 
     return [].concat(...normalisedOptions).map((option, index) => ({ ...option, index }));
-  }, [id, rawOptions, blank, mapOption]);
+  }, [id, rawOptions, placeholder, mapOption]);
 
   const value = useMemo(() => (
     rawValue && optionise(rawValue, mapOption)

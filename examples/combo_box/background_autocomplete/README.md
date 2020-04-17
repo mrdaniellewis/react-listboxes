@@ -1,10 +1,12 @@
-# Combo box with inline autocomplete
+# Combo box with background autocomplete
 
-A Combo box with inline autocomplete.
+This demonstrates the search working like the autocomplete on the Google Mail search bar.
 
-The various autocomplete options can be toggled:
+Try typing `on:` or `is:` for example.
 
-- `autoselect` set to true to automatically select the first matching option, or 'inline' to automatically select and complete the text.
-- `tabAutocomplete` set true to allow tab to autocomplete the suggestion
-- `showSelectedLabel` set true to always update the input with the label from the selected option
-- `managedFocus` set to false to keep the focus in the input.
+Pressing tab will complete the suggestion.  A disabled 'ghost' input is placed behind the main input to
+show the autocomplete suggestion.
+
+> :warning: **Warning** the search suggestions are not accessible to a screen reader.
+>
+> Potentially using `autoselect="inline"` could resolve this.

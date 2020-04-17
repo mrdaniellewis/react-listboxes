@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ComboBox, useTokenSearch } from '../../../src/index.js';
-import countries from '../../countries.json';
+import countries from '../../data/countries.json';
 
 function map({ name, code }) {
   return `${name} (${code})`;

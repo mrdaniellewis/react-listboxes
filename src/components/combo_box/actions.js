@@ -188,8 +188,8 @@ export function onChange(event) {
 
 export function onFocus() {
   return (dispatch, getState, getProps) => {
-    const { selectedOption, searchOnFocus } = getProps();
-    dispatch(setFocusedOption({ focusedOption: selectedOption, expanded: searchOnFocus }));
+    const { selectedOption, expandOnFocus } = getProps();
+    dispatch(setFocusedOption({ focusedOption: selectedOption, expanded: expandOnFocus }));
   };
 }
 
@@ -199,8 +199,8 @@ export function onInputMouseUp() {
     if (expanded) {
       return;
     }
-    const { selectedOption, searchOnFocus } = getProps();
-    dispatch(setFocusedOption({ focusedOption: selectedOption, expanded: searchOnFocus }));
+    const { selectedOption, expandOnFocus } = getProps();
+    dispatch(setFocusedOption({ focusedOption: selectedOption, expanded: expandOnFocus }));
   };
 }
 

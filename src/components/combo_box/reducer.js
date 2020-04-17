@@ -61,7 +61,7 @@ function applySuggestedOption(state, { type }, props) {
   switch (type) {
     case SET_FOCUSED_OPTION:
     case SET_SEARCH: {
-      const { options, findAutoselect } = props;
+      const { options, findSuggestion } = props;
       const { focusListBox, search } = state;
 
       if (!search || focusListBox) {
@@ -73,7 +73,7 @@ function applySuggestedOption(state, { type }, props) {
 
       let suggestedOption = null;
       for (let i = 0; i < options.length; i += 1) {
-        const result = findAutoselect(options[i], search);
+        const result = findSuggestion(options[i], search);
         if (result) {
           suggestedOption = options[i];
           break;

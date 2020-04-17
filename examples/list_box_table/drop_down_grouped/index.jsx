@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
-import { DropDown, ListBoxTable, useConfine } from '../../../src/index.js';
-import cats from '../../cats.json';
+import { DropDown, ListBoxTable, useConfineListBoxTable } from '../../../src/index.js';
+import cats from '../../data/cats.json';
 
 const columns = ['breed', 'country', 'origin', 'bodyType', 'pattern'];
 
@@ -8,14 +8,10 @@ function mapOption({ breed, coatLength }) {
   return { label: breed, group: coatLength };
 }
 
-function resizeElement(listbox) {
-  return listbox.parentNode;
-}
-
 export function Example() {
   const [value, setValue] = useState(null);
   const ref = useRef();
-  const [style, onLayoutListBox] = useConfine({ resizeElement });
+  const [style, onLayoutListBox] = useConfineListBoxTable();
 
   return (
     <>

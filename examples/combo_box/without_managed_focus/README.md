@@ -4,5 +4,4 @@ A combo box without managed focus.
 
 The focus remains in the input, and the currently selected item is set by `aria-activedescendant`.
 
-While this make editing the input value easier, it is found to be unreliable in many screen-readers and requires additional code to keep the selected option on the screen.
-
+This is technically correct and makes editing the input value easier. However, it is found to be unreliable in many screen-readers and requires additional code to keep the selected option on the screen.

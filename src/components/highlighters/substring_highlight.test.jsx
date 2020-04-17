@@ -3,10 +3,10 @@ import { render } from '@testing-library/react';
 import { SubstringHighlight } from './substring_highlight.jsx';
 import { Context } from '../../context.js';
 
-function TestHighlight({ children, ...props }) {
+function TestHighlight({ children, value, inverse, ...props }) {
   return (
-    <Context.Provider value={props}>
-      <SubstringHighlight>
+    <Context.Provider value={{ ...props, props: { value } }}>
+      <SubstringHighlight inverse={inverse}>
         {children}
       </SubstringHighlight>
     </Context.Provider>
@@ -15,7 +15,7 @@ function TestHighlight({ children, ...props }) {
 
 it('does not highlight with no children', () => {
   const { container } = render((
-    <TestHighlight state={{ search: 'bar' }} />
+    <TestHighlight search="bar" />
   ));
 
   expect(container).toContainHTML('<div></div>');
@@ -23,7 +23,7 @@ it('does not highlight with no children', () => {
 
 it('does not highlight with no search children', () => {
   const { container } = render((
-    <TestHighlight state={{ search: null }}>
+    <TestHighlight search={null}>
       foo
     </TestHighlight>
   ));
@@ -33,7 +33,7 @@ it('does not highlight with no search children', () => {
 
 it('does not highlight no match', () => {
   const { container } = render((
-    <TestHighlight state={{ search: 'bar' }}>
+    <TestHighlight search="bar">
       foo
     </TestHighlight>
   ));
@@ -43,10 +43,30 @@ it('does not highlight no match', () => {
 
 it('highlights a substring', () => {
   const { container } = render((
-    <TestHighlight state={{ search: 'bar' }}>
+    <TestHighlight search="bar">
       foo bar foo bar
     </TestHighlight>
   ));
 
   expect(container).toContainHTML('<div>foo <mark>bar</mark> foo bar</div>');
+});
+
+it('highlights an existing value substring', () => {
+  const { container } = render((
+    <TestHighlight value={{ label: 'bar' }}>
+      foo bar foo bar
+    </TestHighlight>
+  ));
+
+  expect(container).toContainHTML('<div>foo <mark>bar</mark> foo bar</div>');
+});
+
+it('inverses the highlight', () => {
+  const { container } = render((
+    <TestHighlight search="bar" inverse>
+      foo bar foo bar
+    </TestHighlight>
+  ));
+
+  expect(container).toContainHTML('<div><mark>foo </mark>bar<mark> foo bar</mark></div>');
 });

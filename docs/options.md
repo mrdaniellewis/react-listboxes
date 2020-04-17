@@ -1,4 +1,4 @@
-## Options
+# Options
 
 Options are an array whose element can be any of:
 
@@ -19,7 +19,7 @@ Options are an array whose element can be any of:
 
 When an option is selected `onValue` will be called with the selected option.
 
-### Option identity
+## Option identity
 
 When determining which option is selected the "identity" of the option is compared.
 
@@ -29,7 +29,7 @@ The identity is calculated by the equivalent of:
 String(option?.value ?? option?.id ?? option?.label ?? option ?? '')
 ```
 
-### `mapOption`
+## `mapOption`
 
 If your options don't match the object signature you can use `mapOption` to map the options.
 
@@ -50,5 +50,16 @@ const mapOption = useCallback(({ name, deleted }) => {
   value={value}
   setValue={setValue}
   mapOption={mapOption}
+/>
+```
+
+## `placeholder`
+
+This will add a placeholder label option to the start of the options.
+
+```js
+<Select
+  options={options}
+  placeholder="Please choose…"
 />
 ```

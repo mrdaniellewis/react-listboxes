@@ -1,14 +1,9 @@
 import { useCallback, useReducer, useRef, useEffect } from 'react';
 
-const empty = [];
-
-export function useSearch(fn, { initialOptions, debounce, minLength } = {}) {
-  // eslint-disable-next-line no-param-reassign
-  initialOptions = initialOptions?.length ? initialOptions : empty;
-
+export function useSearch(fn, { initialOptions, debounce, minLength, maxResults } = {}) {
   const [{ options, busy }, dispatch] = useReducer(
     (state, action) => ({ ...state, ...action }),
-    { options: initialOptions, busy: false },
+    { options: initialOptions?.slice(0, maxResults) || [], busy: false },
   );
 
   const lastSearchRef = useRef();
@@ -26,18 +21,13 @@ export function useSearch(fn, { initialOptions, debounce, minLength } = {}) {
       dispatch({ busy: null });
       return;
     }
-    dispatch({ options: results, busy: false });
-  }, [fn]);
+    dispatch({ options: results.slice(0, maxResults), busy: false });
+  }, [fn, maxResults]);
 
   const onSearch = useCallback((query) => {
-    if (!query && initialOptions) {
-      dispatch({ options: initialOptions, busy: false });
-      return;
-    }
     lastSearchRef.current = query;
     dispatch({ busy: null });
     if (minLength && query.length < minLength) {
-      dispatch({ options: [], busy: false });
       return;
     }
 
@@ -49,7 +39,7 @@ export function useSearch(fn, { initialOptions, debounce, minLength } = {}) {
     } else {
       search(query);
     }
-  }, [initialOptions, search, debounce, minLength]);
+  }, [search, debounce, minLength]);
 
   useEffect(() => () => {
     unmountedRef.current = true;

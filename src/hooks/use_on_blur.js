@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState, useRef } from 'react';
 
 /**
+ * @private
+ *
  * This generates blur and focus
  * handlers that fire if the focus moves from within an element and does not return
  */

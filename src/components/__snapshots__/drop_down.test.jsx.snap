@@ -46,85 +46,16 @@ exports[`WrapperComponent allows custom layouts 1`] = `
 </div>
 `;
 
-exports[`blank renders a blank option 1`] = `
-<div>
-  <div
-    class="dropdown"
-  >
-    <div
-      aria-controls="id_listbox"
-      aria-readonly="true"
-      class="dropdown__combobox"
-      id="id"
-      role="combobox"
-      tabindex="0"
-    >
-      Please select…
-    </div>
-    <ul
-      class="dropdown__listbox"
-      hidden=""
-      id="id_listbox"
-      role="listbox"
-      tabindex="-1"
-    >
-      <li
-        aria-selected="true"
-        class="dropdown__option"
-        id="id_option_blank"
-        role="option"
-        tabindex="-1"
-      >
-        <div>
-          Please select…
-        </div>
-      </li>
-      <li
-        class="dropdown__option"
-        id="id_option_apple"
-        role="option"
-        tabindex="-1"
-      >
-        <div>
-          Apple
-        </div>
-      </li>
-      <li
-        class="dropdown__option"
-        id="id_option_banana"
-        role="option"
-        tabindex="-1"
-      >
-        <div>
-          Banana
-        </div>
-      </li>
-      <li
-        class="dropdown__option"
-        id="id_option_orange"
-        role="option"
-        tabindex="-1"
-      >
-        <div>
-          Orange
-        </div>
-      </li>
-    </ul>
-  </div>
-</div>
-`;
-
 exports[`options as array of objects disabled sets the aria-disabled attribute 1`] = `
 <div>
   <div
-    class="dropdown"
+    class="react-combo-boxes-dropdown"
   >
     <div
       aria-activedescendant="id_option_apple"
       aria-controls="id_listbox"
       aria-expanded="true"
-      aria-readonly="true"
-      class="dropdown__combobox"
+      class="react-combo-boxes-dropdown__combobox"
       id="id"
       role="combobox"
       tabindex="0"
@@ -133,32 +64,28 @@ exports[`options as array of objects disabled sets the aria-disabled attribute 1
     </div>
     <ul
       aria-activedescendant="id_option_apple"
-      class="dropdown__listbox"
+      class="react-combo-boxes-listbox"
       id="id_listbox"
       role="listbox"
       tabindex="-1"
     >
       <li
         aria-selected="true"
-        class="dropdown__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_apple"
         role="option"
         tabindex="-1"
       >
-        <div>
-          Apple
-        </div>
+        Apple
       </li>
       <li
         aria-disabled="true"
-        class="dropdown__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_banana"
         role="option"
         tabindex="-1"
       >
-        <div>
-          Banana
-        </div>
+        Banana
       </li>
     </ul>
   </div>
@@ -168,12 +95,12 @@ exports[`options as array of objects disabled sets the aria-disabled attribute 1
 exports[`options as array of objects group renders grouped options 1`] = `
 <div>
   <div
-    class="dropdown"
+    class="react-combo-boxes-dropdown"
   >
     <div
       aria-controls="id_listbox"
-      aria-readonly="true"
-      class="dropdown__combobox"
+      aria-expanded="false"
+      class="react-combo-boxes-dropdown__combobox"
       id="id"
       role="combobox"
       tabindex="0"
@@ -181,7 +108,7 @@ exports[`options as array of objects group renders grouped options 1`] = `
       Apple
     </div>
     <ul
-      class="dropdown__listbox"
+      class="react-combo-boxes-listbox"
       hidden=""
       id="id_listbox"
       role="listbox"
@@ -189,86 +116,76 @@ exports[`options as array of objects group renders grouped options 1`] = `
     >
       <li
         aria-selected="true"
-        class="dropdown__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_apple"
         role="option"
         tabindex="-1"
       >
-        <div>
-          Apple
-        </div>
+        Apple
       </li>
       <li
         aria-hidden="true"
-        class="dropdown__group"
+        class="react-combo-boxes-listbox__group-label"
       >
         Citrus
       </li>
       <li
-        class="dropdown__option dropdown__option--grouped"
+        class="react-combo-boxes-listbox__option"
         id="id_option_orange"
         role="option"
         tabindex="-1"
       >
         <div
-          class="visually-hidden visuallyhidden sr-only"
+          class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
         >
           Citrus
         </div>
-        <div>
-          Orange
-        </div>
+        Orange
       </li>
       <li
-        class="dropdown__option dropdown__option--grouped"
+        class="react-combo-boxes-listbox__option"
         id="id_option_lemon"
         role="option"
         tabindex="-1"
       >
         <div
-          class="visually-hidden visuallyhidden sr-only"
+          class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
         >
           Citrus
         </div>
-        <div>
-          Lemon
-        </div>
+        Lemon
       </li>
       <li
         aria-hidden="true"
-        class="dropdown__group"
+        class="react-combo-boxes-listbox__group-label"
       >
         Berry
       </li>
       <li
-        class="dropdown__option dropdown__option--grouped"
+        class="react-combo-boxes-listbox__option"
         id="id_option_raspberry"
         role="option"
         tabindex="-1"
       >
         <div
-          class="visually-hidden visuallyhidden sr-only"
+          class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
         >
           Berry
         </div>
-        <div>
-          Raspberry
-        </div>
+        Raspberry
       </li>
       <li
-        class="dropdown__option dropdown__option--grouped"
+        class="react-combo-boxes-listbox__option"
         id="id_option_strawberry"
         role="option"
         tabindex="-1"
       >
         <div
-          class="visually-hidden visuallyhidden sr-only"
+          class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
         >
           Berry
         </div>
-        <div>
-          Strawberry
-        </div>
+        Strawberry
       </li>
     </ul>
   </div>
@@ -278,12 +195,12 @@ exports[`options as array of objects group renders grouped options 1`] = `
 exports[`options as array of objects label renders a closed drop down 1`] = `
 <div>
   <div
-    class="dropdown"
+    class="react-combo-boxes-dropdown"
   >
     <div
       aria-controls="id_listbox"
-      aria-readonly="true"
-      class="dropdown__combobox"
+      aria-expanded="false"
+      class="react-combo-boxes-dropdown__combobox"
       id="id"
       role="combobox"
       tabindex="0"
@@ -291,7 +208,7 @@ exports[`options as array of objects label renders a closed drop down 1`] = `
       Apple
     </div>
     <ul
-      class="dropdown__listbox"
+      class="react-combo-boxes-listbox"
       hidden=""
       id="id_listbox"
       role="listbox"
@@ -299,34 +216,28 @@ exports[`options as array of objects label renders a closed drop down 1`] = `
     >
       <li
         aria-selected="true"
-        class="dropdown__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_apple"
         role="option"
         tabindex="-1"
       >
-        <div>
-          Apple
-        </div>
+        Apple
       </li>
       <li
-        class="dropdown__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_banana"
         role="option"
         tabindex="-1"
       >
-        <div>
-          Banana
-        </div>
+        Banana
       </li>
       <li
-        class="dropdown__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_orange"
         role="option"
         tabindex="-1"
       >
-        <div>
-          Orange
-        </div>
+        Orange
       </li>
     </ul>
   </div>
@@ -336,20 +247,20 @@ exports[`options as array of objects label renders a closed drop down 1`] = `
 exports[`options options as array of numbers renders a closed drop down 1`] = `
 <div>
   <div
-    class="dropdown"
+    class="react-combo-boxes-dropdown"
   >
     <div
       aria-controls="id_listbox"
-      aria-readonly="true"
-      class="dropdown__combobox"
+      aria-expanded="false"
+      class="react-combo-boxes-dropdown__combobox"
       id="id"
       role="combobox"
       tabindex="0"
     >
-       
+      0
     </div>
     <ul
-      class="dropdown__listbox"
+      class="react-combo-boxes-listbox"
       hidden=""
       id="id_listbox"
       role="listbox"
@@ -357,44 +268,36 @@ exports[`options options as array of numbers renders a closed drop down 1`] = `
     >
       <li
         aria-selected="true"
-        class="dropdown__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_0"
         role="option"
         tabindex="-1"
       >
-        <div>
-          0
-        </div>
+        0
       </li>
       <li
-        class="dropdown__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_1"
         role="option"
         tabindex="-1"
       >
-        <div>
-          1
-        </div>
+        1
       </li>
       <li
-        class="dropdown__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_2"
         role="option"
         tabindex="-1"
       >
-        <div>
-          2
-        </div>
+        2
       </li>
       <li
-        class="dropdown__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_3"
         role="option"
         tabindex="-1"
       >
-        <div>
-          3
-        </div>
+        3
       </li>
     </ul>
   </div>
@@ -404,12 +307,12 @@ exports[`options options as array of numbers renders a closed drop down 1`] = `
 exports[`options options as array of strings renders a closed drop down 1`] = `
 <div>
   <div
-    class="dropdown"
+    class="react-combo-boxes-dropdown"
   >
     <div
       aria-controls="id_listbox"
-      aria-readonly="true"
-      class="dropdown__combobox"
+      aria-expanded="false"
+      class="react-combo-boxes-dropdown__combobox"
       id="id"
       role="combobox"
       tabindex="0"
@@ -417,7 +320,7 @@ exports[`options options as array of strings renders a closed drop down 1`] = `
       Apple
     </div>
     <ul
-      class="dropdown__listbox"
+      class="react-combo-boxes-listbox"
       hidden=""
       id="id_listbox"
       role="listbox"
@@ -425,34 +328,28 @@ exports[`options options as array of strings renders a closed drop down 1`] = `
     >
       <li
         aria-selected="true"
-        class="dropdown__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_apple"
         role="option"
         tabindex="-1"
       >
-        <div>
-          Apple
-        </div>
+        Apple
       </li>
       <li
-        class="dropdown__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_banana"
         role="option"
         tabindex="-1"
       >
-        <div>
-          Banana
-        </div>
+        Banana
       </li>
       <li
-        class="dropdown__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_orange"
         role="option"
         tabindex="-1"
       >
-        <div>
-          Orange
-        </div>
+        Orange
       </li>
     </ul>
   </div>
@@ -462,12 +359,12 @@ exports[`options options as array of strings renders a closed drop down 1`] = `
 exports[`options options as null renders a closed drop down with the option as an empty string 1`] = `
 <div>
   <div
-    class="dropdown"
+    class="react-combo-boxes-dropdown"
   >
     <div
       aria-controls="id_listbox"
-      aria-readonly="true"
-      class="dropdown__combobox"
+      aria-expanded="false"
+      class="react-combo-boxes-dropdown__combobox"
       id="id"
       role="combobox"
       tabindex="0"
@@ -475,7 +372,7 @@ exports[`options options as null renders a closed drop down with the option as a
        
     </div>
     <ul
-      class="dropdown__listbox"
+      class="react-combo-boxes-listbox"
       hidden=""
       id="id_listbox"
       role="listbox"
@@ -483,12 +380,12 @@ exports[`options options as null renders a closed drop down with the option as a
     >
       <li
         aria-selected="true"
-        class="dropdown__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_"
         role="option"
         tabindex="-1"
       >
-        <div />
+        
       </li>
     </ul>
   </div>
@@ -498,12 +395,12 @@ exports[`options options as null renders a closed drop down with the option as a
 exports[`options options as undefined renders a closed drop down with the option as an empty string 1`] = `
 <div>
   <div
-    class="dropdown"
+    class="react-combo-boxes-dropdown"
   >
     <div
       aria-controls="id_listbox"
-      aria-readonly="true"
-      class="dropdown__combobox"
+      aria-expanded="false"
+      class="react-combo-boxes-dropdown__combobox"
       id="id"
       role="combobox"
       tabindex="0"
@@ -511,7 +408,7 @@ exports[`options options as undefined renders a closed drop down with the option
        
     </div>
     <ul
-      class="dropdown__listbox"
+      class="react-combo-boxes-listbox"
       hidden=""
       id="id_listbox"
       role="listbox"
@@ -519,12 +416,12 @@ exports[`options options as undefined renders a closed drop down with the option
     >
       <li
         aria-selected="true"
-        class="dropdown__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_"
         role="option"
         tabindex="-1"
       >
-        <div />
+        
       </li>
     </ul>
   </div>
@@ -534,14 +431,13 @@ exports[`options options as undefined renders a closed drop down with the option
 exports[`options updating options updates the options 1`] = `
 <div>
   <div
-    class="dropdown"
+    class="react-combo-boxes-dropdown"
   >
     <div
       aria-activedescendant="id_option_strawberry"
       aria-controls="id_listbox"
       aria-expanded="true"
-      aria-readonly="true"
-      class="dropdown__combobox"
+      class="react-combo-boxes-dropdown__combobox"
       id="id"
       role="combobox"
       tabindex="0"
@@ -550,41 +446,95 @@ exports[`options updating options updates the options 1`] = `
     </div>
     <ul
       aria-activedescendant="id_option_strawberry"
-      class="dropdown__listbox"
+      class="react-combo-boxes-listbox"
       id="id_listbox"
       role="listbox"
       tabindex="-1"
     >
       <li
         aria-selected="true"
-        class="dropdown__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_strawberry"
         role="option"
         tabindex="-1"
       >
-        <div>
-          Strawberry
-        </div>
+        Strawberry
       </li>
       <li
-        class="dropdown__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_raspberry"
         role="option"
         tabindex="-1"
       >
-        <div>
-          Raspberry
-        </div>
+        Raspberry
       </li>
       <li
-        class="dropdown__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_banana"
         role="option"
         tabindex="-1"
       >
-        <div>
-          Banana
-        </div>
+        Banana
+      </li>
+    </ul>
+  </div>
+</div>
+`;
+
+exports[`placeholder renders a placeholder option 1`] = `
+<div>
+  <div
+    class="react-combo-boxes-dropdown"
+  >
+    <div
+      aria-controls="id_listbox"
+      aria-expanded="false"
+      class="react-combo-boxes-dropdown__combobox"
+      id="id"
+      role="combobox"
+      tabindex="0"
+    >
+      Please select…
+    </div>
+    <ul
+      class="react-combo-boxes-listbox"
+      hidden=""
+      id="id_listbox"
+      role="listbox"
+      tabindex="-1"
+    >
+      <li
+        aria-selected="true"
+        class="react-combo-boxes-listbox__option"
+        id="id_option_placeholder"
+        role="option"
+        tabindex="-1"
+      >
+        Please select…
+      </li>
+      <li
+        class="react-combo-boxes-listbox__option"
+        id="id_option_apple"
+        role="option"
+        tabindex="-1"
+      >
+        Apple
+      </li>
+      <li
+        class="react-combo-boxes-listbox__option"
+        id="id_option_banana"
+        role="option"
+        tabindex="-1"
+      >
+        Banana
+      </li>
+      <li
+        class="react-combo-boxes-listbox__option"
+        id="id_option_orange"
+        role="option"
+        tabindex="-1"
+      >
+        Orange
       </li>
     </ul>
   </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ComboBox, useTokenSearch } from '../../../src/index.js';
+import { ComboBox, useTokenSearch, TokenHighlight } from '../../../src/index.js';
 
 const options = [
   { label: 'Apple' },
@@ -24,6 +24,7 @@ export function Example() {
         onValue={setValue}
         onSearch={onSearch}
         options={filteredOptions}
+        ValueComponent={TokenHighlight}
       />
 
       <label htmlFor="output">

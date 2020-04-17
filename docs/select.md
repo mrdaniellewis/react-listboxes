@@ -1,4 +1,4 @@
-# Select
+# `<Select>`
 
 Generates an HTML `<select>`, but with a more convenient way of setting the options and responding to changed values.
 
@@ -22,12 +22,14 @@ const [value, setValue] = useState(initialValue);
 
 | Prop            | Type       | Purpose                                   |
 | ----            | ----       | ----                                      |
-| `blank`         | `String`   | Set a placeholder option                  |
-| `options`       | `Array`    | The set of options.  See options.         |
+| `placeholder`   | `String`   | Set a placeholder option                  |
+| `options`       | `Array`    | The set of options. [See options][1]      |
 | `value`         | `Any`      | The currently selected option             |
 | `onValue`       | `Function` | Called with the selected option           |
-| `mapOption`     | `Function` | Use to map options. See options           |
+| `mapOption`     | `Function` | Use to map options. [See options][1]      |
 | `optionProps`   | `Object`   | Props to add to all `<option>` elements   |
 | `optGroupProps` | `Object`   | Props to add to all `<optgroup>` elements |
 | `ref`           | `ref`      | Will be forwarded to `<select>` element   |
 | Any other prop  |            | Will be passed to the `<select>` element  |
+
+[1]: options.md

@@ -1,5 +1,5 @@
 mixin link(href)
-  if href.endsWith(`${example}/index.pug`)
+  if href.endsWith(`${example}/index.pug`) || href === path
     a
       block
   else
@@ -13,13 +13,13 @@ nav
       div Select
       ul
         li
-          +link('~/select/index.pug') About
+          +link('~/select.pug') About
         li
           +link('~/select/string_options/index.pug') String options
         li
           +link('~/select/object_options/index.pug') Object options
         li
-          +link('~/select/blank_option/index.pug') Blank option
+          +link('~/select/placeholder_option/index.pug') Placeholder option
         li
           +link('~/select/disabled_option/index.pug') Disabled option
         li
@@ -32,13 +32,13 @@ nav
       div Drop down
       ul
         li
-          +link('~/drop_down/index.pug') About
+          +link('~/drop_down.pug') About
         li
           +link('~/drop_down/string_options/index.pug') String options
         li
           +link('~/drop_down/object_options/index.pug') Object options
         li
-          +link('~/drop_down/blank_option/index.pug') Blank option
+          +link('~/drop_down/placeholder_option/index.pug') Placeholder option
         li
           +link('~/drop_down/disabled_option/index.pug') Disabled option
         li
@@ -66,7 +66,7 @@ nav
       div Combo box
       ul
         li
-          a About
+          +link('~/combo_box.pug') About
         li
           +link('~/combo_box/string_options/index.pug') String options
         li
@@ -78,15 +78,13 @@ nav
         li
           +link('~/combo_box/html_options/index.pug') HTML options
         li
+          +link('~/combo_box/mapped_options/index.pug') Mapped options
+        li
           +link('~/combo_box/without_autocomplete/index.pug') Without autocomplete
         li
           +link('~/combo_box/without_managed_focus/index.pug') Without managed focus
         li
           +link('~/combo_box/inline_autocomplete/index.pug') With inline autocomplete
-        li
-          +link('~/combo_box/background_autocomplete/index.pug') With background autocomplete
-        li
-          +link('~/combo_box/search_suggestions/index.pug') Search suggestions
         li
           +link('~/combo_box/aria_1_0/index.pug') ARIA 1.0
         li
@@ -96,23 +94,16 @@ nav
         li
           +link('~/combo_box/listbox_footer/index.pug') Listbox footer
         li
-          +link('~/combo_box/identical_options/index.pug') Identical options
-        li
-          a async search
-        li
           div Searches
           ul
             li
-              a About
+              +link('~/searchers.pug') About
             li
-              a Searches
-        li
-          div Highlighters
-          ul
+              +link('~/combo_box/async_search/index.pug') Async search
             li
-              a About
+              +link('~/combo_box/search_suggestions/index.pug') Search suggestions
             li
-              a Highlighters
+              +link('~/combo_box/background_autocomplete/index.pug') With background autocomplete
         li
           div Edge cases
           ul
@@ -124,7 +115,7 @@ nav
       div Table layout
       ul
         li
-          a About
+          +link('~/list_box_table.pug') About
         li
           div Drop down
           ul
@@ -138,8 +129,8 @@ nav
           div Combo box
           ul
             li
-              a Table
+              +link('~/list_box_table/combo_box/index.pug') Table
             li
-              a With labelled headers
+              +link('~/list_box_table/combo_box_headers/index.pug') With headers
             li
-              a Grouped
+              +link('~/list_box_table/combo_box_grouped/index.pug') Grouped

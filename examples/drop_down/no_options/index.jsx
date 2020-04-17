@@ -22,7 +22,9 @@ export function Example() {
         value={value}
         onValue={setValue}
         options={options}
-      />
+      >
+        No options
+      </DropDown>
 
       <label htmlFor="output">
         Current value

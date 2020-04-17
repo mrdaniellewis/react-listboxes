@@ -1,5 +1,6 @@
 import { useRef, useCallback, useReducer } from 'react';
 
+// @private
 export function useThunkReducer(reducer, props, initialState) {
   // Holds the latest props
   const propsRef = useRef(props);

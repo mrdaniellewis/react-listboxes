@@ -2,11 +2,11 @@ import { useMemo } from 'react';
 import { tokenSearcher } from '../searchers/token_searcher.js';
 import { useSearch } from './use_search.js';
 
-export function useTokenSearch(options, { index, tokenise, minLength } = {}) {
+export function useTokenSearch(options, { index, tokenise, ...more } = {}) {
   const search = useMemo(() => (
     tokenSearcher(options, { index, tokenise })
   ), [options, index, tokenise]);
 
-  const [filteredOptions, onSearch] = useSearch(search, { initialOptions: options, minLength });
-  return [filteredOptions, onSearch, false];
+  const [filteredOptions, onSearch, busy] = useSearch(search, { initialOptions: options, ...more });
+  return [filteredOptions, onSearch, busy];
 }

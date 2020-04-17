@@ -1,3 +1,5 @@
-# Drop down with string options
+# Drop down with identical options
 
-A drop down whose options are an array of strings.
+All the options in this drop down technically have the same `indentity`.
+
+While it is possible to select any option, note that only the first option is ever selected when re-opened.

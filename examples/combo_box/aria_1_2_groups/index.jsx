@@ -1,5 +1,4 @@
 import React, { forwardRef, useContext, useState } from 'react';
-import PropTypes from 'prop-types';
 import { Context, ComboBox, useTokenSearch } from '../../../src/index.js';
 
 const options = [
@@ -28,10 +27,6 @@ function GroupComponent({ children }) {
   );
 }
 
-GroupComponent.propTypes = {
-  children: PropTypes.array.isRequired,
-};
-
 function GroupLabelComponent({ children }) {
   const { group: { key } } = useContext(Context);
 
@@ -44,25 +39,6 @@ function GroupLabelComponent({ children }) {
     </div>
   );
 }
-
-GroupLabelComponent.propTypes = {
-  children: PropTypes.node.isRequired,
-};
-
-const OptionComponent = forwardRef(({ children, ...props }, ref) => {
-  // Remove hidden group label
-  const [, value] = children;
-
-  return (
-    <li {...props} ref={ref}>
-      {value}
-    </li>
-  );
-});
-
-OptionComponent.propTypes = {
-  children: PropTypes.node.isRequired,
-};
 
 export function Example() {
   const [value, setValue] = useState(null);
@@ -83,7 +59,7 @@ export function Example() {
         managedFocus={managedFocus}
         GroupComponent={GroupComponent}
         GroupLabelComponent={GroupLabelComponent}
-        OptionComponent={OptionComponent}
+        VisuallyHiddenComponent={() => null} // hidden group label not required
       />
 
       <label>

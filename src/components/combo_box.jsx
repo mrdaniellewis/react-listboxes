@@ -238,32 +238,36 @@ export const ComboBox = forwardRef((rawProps, ref) => {
 });
 
 ComboBox.propTypes = {
+  options: PropTypes.arrayOf(PropTypes.any).isRequired,
+  mapOption: PropTypes.func,
+  value: PropTypes.any,
+
+  busy: PropTypes.oneOf([false, true, null]),
+  busyDebounce: PropTypes.number,
+
   'aria-describedby': PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.arrayOf(PropTypes.string),
   ]),
-  busy: PropTypes.oneOf([false, true, null]),
   className: PropTypes.string,
   id: PropTypes.string.isRequired,
-  managedFocus: PropTypes.bool,
-  notFoundMessage: PropTypes.node,
-  onSearch: PropTypes.func,
-  options: PropTypes.arrayOf(PropTypes.any).isRequired,
-  onValue: PropTypes.func,
-  onChange: PropTypes.func,
-  onLayoutListBox: PropTypes.func,
-  value: PropTypes.any,
 
-  showSelectedLabel: PropTypes.bool,
-  tabAutocomplete: PropTypes.bool,
-  findAutoselect: PropTypes.func,
-  autoselect: PropTypes.oneOf([false, true, 'inline']),
-  busyDebounce: PropTypes.number,
-  skipOption: PropTypes.func,
-  searchOnFocus: PropTypes.bool,
+  notFoundMessage: PropTypes.node,
 
   onBlur: PropTypes.func,
+  onChange: PropTypes.func,
   onFocus: PropTypes.func,
+  onLayoutListBox: PropTypes.func,
+  onSearch: PropTypes.func,
+  onValue: PropTypes.func,
+
+  autoselect: PropTypes.oneOf([false, true, 'inline']),
+  expandOnFocus: PropTypes.bool,
+  findSuggestion: PropTypes.func,
+  managedFocus: PropTypes.bool,
+  showSelectedLabel: PropTypes.bool,
+  skipOption: PropTypes.func,
+  tabAutocomplete: PropTypes.bool,
 
   WrapperComponent: componentValidator,
   wrapperProps: PropTypes.object,
@@ -290,26 +294,31 @@ ComboBox.propTypes = {
 };
 
 ComboBox.defaultProps = {
-  'aria-describedby': null,
+  mapOption: null,
+  value: null,
+
   busy: false,
   busyDebounce: 200,
+
+  'aria-describedby': null,
   className: `${classPrefix}combobox`,
-  managedFocus: true,
+
   notFoundMessage: 'No matches found',
-  value: null,
-  onSearch: null,
-  onValue: null,
-  onChange: null,
+
   onBlur: null,
+  onChange: null,
   onFocus: null,
   onLayoutListBox: null,
-  skipOption: undefined,
-  searchOnFocus: true,
+  onSearch: null,
+  onValue: null,
 
   autoselect: false,
-  tabAutocomplete: false,
-  findAutoselect: findOption,
+  expandOnFocus: true,
+  findSuggestion: findOption,
+  managedFocus: true,
+  skipOption: undefined,
   showSelectedLabel: undefined,
+  tabAutocomplete: false,
 
   WrapperComponent: 'div',
   wrapperProps: null,

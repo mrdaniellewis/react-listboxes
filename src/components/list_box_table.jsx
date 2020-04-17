@@ -15,6 +15,7 @@ export const ListBoxTable = forwardRef(({ focusedRef, hidden, onSelectOption, ..
       listBoxListProps,
       tableProps,
       tableHeaderProps,
+      tableGroupRowProps,
       tableGroupHeaderProps,
       tableRowProps,
       tableCellProps,
@@ -78,7 +79,10 @@ export const ListBoxTable = forwardRef(({ focusedRef, hidden, onSelectOption, ..
                   key={key}
                   value={{ ...context, group, columns }}
                 >
-                  <tr>
+                  <tr
+                    className={`${classPrefix}listbox__table-group-row`}
+                    {...tableGroupRowProps}
+                  >
                     <th
                       colSpan={Object.keys(columns).length}
                       className={`${classPrefix}listbox__table-group-header`}

@@ -56,7 +56,7 @@ export const Select = forwardRef((rawProps, ref) => {
 });
 
 Select.propTypes = {
-  blank: PropTypes.node,
+  placeholder: PropTypes.node,
   onChange: PropTypes.func,
   onValue: PropTypes.func,
   options: PropTypes.arrayOf(PropTypes.any).isRequired,
@@ -66,7 +66,7 @@ Select.propTypes = {
 };
 
 Select.defaultProps = {
-  blank: null,
+  placeholder: null,
   value: null,
   onChange: null,
   onValue: null,

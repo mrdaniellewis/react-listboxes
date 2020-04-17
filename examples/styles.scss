@@ -1,7 +1,7 @@
 @import "normalize.css";
-@import "./dropdown.scss";
-@import "./combobox.scss";
 @import "prismjs/themes/prism.css";
+@import "../src/styles/dropdown.scss";
+@import "../src/styles/combobox.scss";
 
 $text-colour: #161616;
 
@@ -44,81 +44,43 @@ nav {
     }
 
     div {
-      padding: .5em 1em;
+      padding: 0.5em 1em;
       font-weight: bold;
     }
 
     > ul > li div {
-      padding: .5em 2em;
+      padding: 0.5em 2em;
     }
   }
 
   a {
     display: block;
     text-decoration: none;
-    padding: .2em;
+    padding: 0.2em;
     padding-left: 2em;
     color: $text-colour;
-
-    &:hover {
-      background-color: #DFDFDF;
-    }
-
-    &:not([href]),
-    &:not([href]):hover {
-      background-color: #CAEAFF;
-    }
-
   }
 
   ul ul ul a {
     padding-left: 3em;
   }
-}
 
-[data-react-example] {
-  border: 1px solid #ddd;
-  padding: 1em;
-  margin-bottom: 1.5em;
-
-  > label:not(:first-child),
-  > .label:not(:first-child),
-  > fieldset {
-    margin-top: 1.5em;
+  a:hover {
+    background-color: #dfdfdf;
   }
-}
 
-.sr-only {
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  height: 1px;
-  overflow: hidden;
-  position: absolute;
-  white-space: nowrap;
-  width: 1px;
-}
-
-label,
-.label {
-  display: block;
-  font-weight: bold;
-}
-
-fieldset {
-  border: 1px solid #ddd;
-  display: flex;
-
-  label {
-    margin-right: 1.5em;
+  a:not([href]),
+  a:not([href]):hover {
+    background-color: #caeaff;
   }
 }
 
 code,
 output {
-  font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace;
-  background: rgba(27,31,35,.05);
+  font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+  background: rgba(27, 31, 35, 0.05);
   font-size: 85%;
-  padding: .2em .4em;
+  padding: 0.2em 0.4em;
 }
 
 pre > code {
@@ -127,7 +89,7 @@ pre > code {
 
 pre {
   padding: 1em;
-  margin: .5em 0 1.5em 0;
+  margin: 0.5em 0 1.5em 0;
   overflow: auto;
   background: #f5f2f0;
   font-size: 90%;
@@ -150,7 +112,7 @@ table {
 }
 
 blockquote {
-  border-left: .25em solid #ddd;
+  border-left: 0.25em solid #ddd;
   margin: 0 0 1.5em 0;
   padding-left: 1em;
 }
@@ -162,7 +124,34 @@ blockquote {
 }
 
 .list-footer {
-  background-color: #CAEAFF;
-  padding: .2em .5em;
+  background-color: #caeaff;
+  padding: 0.2em 0.5em;
   border-top: 1px solid #ddd;
+}
+
+label,
+.label {
+  display: block;
+  font-weight: bold;
+}
+
+fieldset {
+  border: 1px solid #ddd;
+  display: flex;
+
+  label {
+    margin-right: 1.5em;
+  }
+}
+
+[data-react-example] {
+  border: 1px solid #ddd;
+  padding: 1em;
+  margin-bottom: 1.5em;
+
+  > label:not(:first-child),
+  > .label:not(:first-child),
+  > fieldset {
+    margin-top: 1.5em;
+  }
 }

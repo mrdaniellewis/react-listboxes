@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { DropDown } from '../../../src/index.js';
-import countries from '../../countries.json';
+import countries from '../../data/countries.json';
 
 export function Example() {
   const [value, setValue] = useState(null);

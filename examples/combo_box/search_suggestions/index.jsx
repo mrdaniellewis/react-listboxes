@@ -36,7 +36,7 @@ export function Example() {
         options={filteredOptions}
         showSelectedLabel
         managedFocus={false}
-        searchOnFocus={false}
+        expandOnFocus={false}
         ClearButtonComponent={() => null}
         ValueComponent={TokenHighlight}
         valueProps={{ inverse: true }}

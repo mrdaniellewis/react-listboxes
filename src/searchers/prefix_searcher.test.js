@@ -34,25 +34,18 @@ it('finds matching items from the start of the string only', () => {
   expect(result).toEqual([]);
 });
 
-it('finds matching items trimming white space', () => {
-  const collection = [' apple ', 'apricot', 'banana', 'toffee apple'];
+it('finds matching items trimming left white space', () => {
+  const collection = [' apple', 'apricot', 'banana', 'toffee apple'];
   const search = prefixSearcher(collection);
-  const result = search(' ap ');
-  expect(result).toEqual([' apple ', 'apricot']);
+  const result = search(' ap');
+  expect(result).toEqual([' apple', 'apricot']);
 });
 
-it('finds matching items ignoring diacritics', () => {
-  const collection = ['apple', 'apricot', 'banana', 'toffee a̧pple'];
+it('finds matching items without trimming right white space', () => {
+  const collection = [' apple', 'foo bar', 'apricot', 'banana', 'toffee apple'];
   const search = prefixSearcher(collection);
-  const result = search('Áp');
-  expect(result).toEqual(['apple', 'apricot']);
-});
-
-it('finds matching items ignoring punctuation', () => {
-  const collection = ['!apple', '(apricot)', 'banana', 'toffee apple'];
-  const search = prefixSearcher(collection);
-  const result = search('.ap,');
-  expect(result).toEqual(['!apple', '(apricot)']);
+  const result = search(' foo ');
+  expect(result).toEqual(['foo bar']);
 });
 
 describe('options as objects', () => {

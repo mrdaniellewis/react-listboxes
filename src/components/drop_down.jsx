@@ -14,14 +14,15 @@ import { useOnBlur } from '../hooks/use_on_blur.js';
 import { componentValidator } from '../validators/component_validator.js';
 import { useCombineRefs } from '../hooks/use_combine_refs.js';
 import { findOption } from '../helpers/find_option.js';
-import { extractProps } from '../helpers/extract_props.js';
 import { ListBox } from './list_box.jsx';
 import { classPrefix } from '../constants/class_prefix.js';
+import { joinTokens } from '../helpers/join_tokens.js';
 
 export const DropDown = forwardRef((rawProps, ref) => {
   const optionisedProps = useNormalisedOptions(rawProps, { mustHaveSelection: true });
   const {
     'aria-labelledby': ariaLabelledBy,
+    'aria-invalid': ariaInvalid,
     required, disabled,
     options, value, id, className,
     children, managedFocus, onLayoutListBox,
@@ -122,18 +123,17 @@ export const DropDown = forwardRef((rawProps, ref) => {
           id={id}
           className={`${classPrefix}dropdown__combobox`}
           aria-controls={`${id}_listbox`}
-          aria-expanded={expanded ? 'true' : null}
+          aria-expanded={expanded ? 'true' : 'false'}
           aria-activedescendant={(expanded && focusedOption?.key) || null}
-          aria-labelledby={ariaLabelledBy}
-          aria-readonly="true"
+          aria-labelledby={joinTokens(ariaLabelledBy)}
           aria-required={required ? 'true' : null}
           aria-disabled={disabled ? 'true' : null}
+          aria-invalid={ariaInvalid == null ? null : String(ariaInvalid)}
           tabIndex={disabled ? null : 0}
           ref={combinedRef}
           onClick={(e) => dispatch(onToggleOpen(e))}
           onMouseDown={(e) => e.preventDefault()}
           {...comboBoxProps}
-          {...extractProps(optionisedProps)}
         >
           {(children ?? value?.label ?? selectedOption?.label) || '\u00A0'}
         </ComboBoxComponent>
@@ -153,19 +153,28 @@ export const DropDown = forwardRef((rawProps, ref) => {
 });
 
 DropDown.propTypes = {
-  'aria-labelledby': PropTypes.string,
-  'aria-invalid': PropTypes.string,
-  blank: PropTypes.string,
-  children: PropTypes.node,
-  className: PropTypes.string,
-  id: PropTypes.string.isRequired,
   options: PropTypes.arrayOf(PropTypes.any).isRequired,
+  mapOption: PropTypes.func,
+  placeholder: PropTypes.string,
   value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
+  children: PropTypes.node,
+
+  'aria-labelledby': PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.arrayOf(PropTypes.string),
+  ]),
+  'aria-invalid': PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.string,
+  ]),
+  className: PropTypes.string,
+  disabled: PropTypes.bool,
+  id: PropTypes.string.isRequired,
+  required: PropTypes.bool,
+
+  findOption: PropTypes.func,
   managedFocus: PropTypes.bool,
   skipOption: PropTypes.func,
-  required: PropTypes.bool,
-  disabled: PropTypes.bool,
-  findOption: PropTypes.func,
 
   onBlur: PropTypes.func,
   onFocus: PropTypes.func,
@@ -193,17 +202,20 @@ DropDown.propTypes = {
 };
 
 DropDown.defaultProps = {
+  children: null,
+  mapOption: null,
+  placeholder: null,
+  value: null,
+
   'aria-labelledby': null,
   'aria-invalid': null,
-  blank: '',
   className: `${classPrefix}dropdown`,
-  children: null,
-  value: null,
+  disabled: false,
+  required: false,
+
+  findOption,
   managedFocus: true,
   skipOption: undefined,
-  required: false,
-  disabled: false,
-  findOption,
 
   onBlur: null,
   onFocus: null,

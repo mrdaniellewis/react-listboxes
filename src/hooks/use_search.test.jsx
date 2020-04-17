@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { render, act } from '@testing-library/react';
 import { useSearch } from './use_search.js';
 
-function TestTokenSearch({ fn, initialOptions, debounce, onUpdate, minLength }) {
-  const [filteredOptions, onSearch, busy] = useSearch(fn, { initialOptions, debounce, minLength });
+function TestSearch({ fn, onUpdate, ...props }) {
+  const [filteredOptions, onSearch, busy] = useSearch(fn, props);
   useEffect(() => {
     onUpdate(filteredOptions, onSearch, busy);
   }, [filteredOptions, onSearch, busy, onUpdate]);
@@ -15,7 +15,7 @@ describe('options', () => {
     const spy = jest.fn();
     const fn = jest.fn(() => ['foo']);
     render((
-      <TestTokenSearch fn={fn} onUpdate={spy} />
+      <TestSearch fn={fn} onUpdate={spy} />
     ));
     expect(spy).toHaveBeenCalledWith(
       [],
@@ -29,7 +29,7 @@ describe('options', () => {
     const spy = jest.fn();
     const fn = jest.fn(() => ['foo']);
     render((
-      <TestTokenSearch fn={fn} onUpdate={spy} />
+      <TestSearch fn={fn} onUpdate={spy} />
     ));
     await act(async () => {
       spy.mock.calls[0][1]('ba');
@@ -46,7 +46,7 @@ describe('options', () => {
     const spy = jest.fn();
     const fn = jest.fn(() => ['foo']);
     render((
-      <TestTokenSearch fn={fn} onUpdate={spy} />
+      <TestSearch fn={fn} onUpdate={spy} />
     ));
     await act(async () => {
       spy.mock.calls[0][1]('');
@@ -67,7 +67,7 @@ describe('options', () => {
       .mockImplementationOnce(() => null);
 
     render((
-      <TestTokenSearch fn={fn} onUpdate={spy} />
+      <TestSearch fn={fn} onUpdate={spy} />
     ));
     await act(async () => {
       spy.mock.calls[0][1]('ba');
@@ -98,7 +98,7 @@ describe('options', () => {
       .mockImplementationOnce(() => promise2);
 
     render((
-      <TestTokenSearch fn={fn} onUpdate={spy} />
+      <TestSearch fn={fn} onUpdate={spy} />
     ));
     await act(async () => {
       spy.mock.calls[0][1]('a');
@@ -120,7 +120,7 @@ describe('busy', () => {
     const spy = jest.fn();
     const fn = jest.fn(() => ['foo']);
     render((
-      <TestTokenSearch fn={fn} onUpdate={spy} />
+      <TestSearch fn={fn} onUpdate={spy} />
     ));
     expect(spy).toHaveBeenCalledWith(
       expect.anything(),
@@ -133,7 +133,7 @@ describe('busy', () => {
     const spy = jest.fn();
     const fn = jest.fn(() => new Promise(() => {}));
     render((
-      <TestTokenSearch fn={fn} onUpdate={spy} />
+      <TestSearch fn={fn} onUpdate={spy} />
     ));
     await act(async () => {
       spy.mock.calls[0][1]('a');
@@ -152,7 +152,7 @@ describe('busy', () => {
       resolve = r;
     }));
     render((
-      <TestTokenSearch fn={fn} onUpdate={spy} />
+      <TestSearch fn={fn} onUpdate={spy} />
     ));
     await act(async () => {
       spy.mock.calls[0][1]('a');
@@ -179,7 +179,7 @@ describe('busy', () => {
       resolve = r;
     }));
     render((
-      <TestTokenSearch fn={fn} onUpdate={spy} />
+      <TestSearch fn={fn} onUpdate={spy} />
     ));
     await act(async () => {
       spy.mock.calls[0][1]('a');
@@ -211,7 +211,7 @@ describe('busy', () => {
       .mockImplementationOnce(() => new Promise(() => {}));
 
     render((
-      <TestTokenSearch fn={fn} onUpdate={spy} />
+      <TestSearch fn={fn} onUpdate={spy} />
     ));
 
     await act(async () => {
@@ -240,7 +240,7 @@ describe('minLength', () => {
     const spy = jest.fn();
     const fn = jest.fn();
     render((
-      <TestTokenSearch fn={fn} onUpdate={spy} minLength={2} />
+      <TestSearch fn={fn} onUpdate={spy} minLength={2} />
     ));
     await act(async () => {
       spy.mock.calls[0][1]('a');
@@ -252,7 +252,7 @@ describe('minLength', () => {
     const spy = jest.fn();
     const fn = jest.fn();
     render((
-      <TestTokenSearch fn={fn} onUpdate={spy} minLength={2} />
+      <TestSearch fn={fn} onUpdate={spy} minLength={2} />
     ));
     await act(async () => {
       spy.mock.calls[0][1]('a');
@@ -268,7 +268,7 @@ describe('minLength', () => {
     const spy = jest.fn();
     const fn = jest.fn(() => ['foo']);
     render((
-      <TestTokenSearch fn={fn} onUpdate={spy} minLength={2} />
+      <TestSearch fn={fn} onUpdate={spy} minLength={2} />
     ));
     await act(async () => {
       spy.mock.calls[0][1]('ab');
@@ -287,26 +287,8 @@ describe('initialOptions', () => {
     const spy = jest.fn();
     const fn = jest.fn(() => ['foo']);
     render((
-      <TestTokenSearch initialOptions={['foo', 'bar', 'foe']} fn={fn} onUpdate={spy} />
+      <TestSearch initialOptions={['foo', 'bar', 'foe']} fn={fn} onUpdate={spy} />
     ));
-    expect(spy).toHaveBeenCalledWith(
-      ['foo', 'bar', 'foe'],
-      expect.any(Function),
-      false,
-    );
-    expect(fn).not.toHaveBeenCalled();
-  });
-
-  it('shows initial options if searching for nothing', async () => {
-    const spy = jest.fn();
-    const fn = jest.fn(() => ['foo']);
-    render((
-      <TestTokenSearch initialOptions={['foo', 'bar', 'foe']} fn={fn} onUpdate={spy} />
-    ));
-    await act(async () => {
-      spy.mock.calls[0][1]('');
-    });
-    expect(fn).not.toHaveBeenCalled();
     expect(spy).toHaveBeenCalledWith(
       ['foo', 'bar', 'foe'],
       expect.any(Function),
@@ -323,7 +305,7 @@ describe('debounce', () => {
     const fn = jest.fn(() => ['foo']);
 
     render((
-      <TestTokenSearch fn={fn} onUpdate={spy} debounce={200} />
+      <TestSearch fn={fn} onUpdate={spy} debounce={200} />
     ));
 
     await act(async () => {
@@ -359,7 +341,7 @@ describe('debounce', () => {
     const fn = jest.fn(() => ['foo']);
 
     render((
-      <TestTokenSearch fn={fn} onUpdate={spy} debounce={200} />
+      <TestSearch fn={fn} onUpdate={spy} debounce={200} />
     ));
 
     await act(async () => {
@@ -381,6 +363,37 @@ describe('debounce', () => {
     expect(spy).toHaveBeenLastCalledWith(
       expect.anything(),
       expect.anything(),
+      false,
+    );
+  });
+});
+
+describe('maxResults', () => {
+  it('does not return more initialOptions than maxResults', () => {
+    const spy = jest.fn();
+    const fn = jest.fn(() => ['foo']);
+    render((
+      <TestSearch initialOptions={['foo', 'bar', 'foe']} fn={fn} onUpdate={spy} maxResults={2} />
+    ));
+    expect(spy).toHaveBeenCalledWith(
+      ['foo', 'bar'],
+      expect.any(Function),
+      false,
+    );
+  });
+
+  it('does not return more found options than maxResults', async () => {
+    const spy = jest.fn();
+    const fn = jest.fn(() => ['foo', 'bar', 'foe']);
+    render((
+      <TestSearch fn={fn} onUpdate={spy} maxResults={2} />
+    ));
+    await act(async () => {
+      spy.mock.calls[0][1]('ba');
+    });
+    expect(spy).toHaveBeenCalledWith(
+      ['foo', 'bar'],
+      expect.any(Function),
       false,
     );
   });

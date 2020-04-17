@@ -1,4 +1,4 @@
-# Drop down
+# `<DropDown>`
 
 A custom control that works like a HTML `<select>`.
 
@@ -29,7 +29,7 @@ design pattern.
 ```js
 const [value, setValue] = useState(initialValue);
 
-<Dropdown
+<DropDown
   options={options}
   value={value}
   onValue={setValue}
@@ -43,20 +43,28 @@ If you wish to submit the value add a `<input type="hidden" name="name" value="v
 
 ## Props
 
-| Prop              | Type       | Purpose                                                   |
-| ----              | ----       | ----                                                      |
-| `aria-labelledby` | `string`   | Specify the id of the label of the control                |
-| `aria-invalid`    | `string`   | Specify the validity state of the control                 |
-| `blank`           | `String`   | Set a placeholder option                                  |
-| `children`        | `Node`     | Will override the displayed value of the combo box        |
-| `id`              | `String`   | id of the component                                       |
-| `options`         | `Array`    | The set of options.  See options.                         |
-| `value`           | `Any`      | The currently selected option                             |
-| `onValue`         | `Function` | Callback will be called with the selected option onChange |
-| `mapOption`       | `Function` | Use to map options. See options                           |
-| `ref`             |            | Will be passed to combo box  element                      |
-| `disabled`        | `Boolean`  | Make the control disabled                                 |
-| `required`        | `Boolean`  | Mark the control as required (sets `aria-required`        |
+| Prop              | Type       | Purpose                                                          |
+| ----              | ----       | ----                                                             |
+| `value`           | Any        | The currently selected option                                    |
+| `options`         | `Array`    | The set of options. [See options][1]                             |
+| `placeholder`     | `String`   | Set a placeholder option                                         |
+| `mapOption`       | `Function` | Use to map options. [See options][1]                             |
+| `id`              | `String`   | id of the component (required)                                   |
+| `children`        | `Node`     | Will override the displayed value of the combo box               |
+| `ref`             | React ref  | Will be passed to combo box element                              |
+| `className`       | `String`   | Class name for the wrapper                                       |
+| `aria-labelledby` | `string`   | Specify the id of the label of the control                       |
+| `aria-invalid`    | `string`   | Specify the validity state of the control                        |
+| `disabled`        | `Boolean`  | Make the control disabled                                        |
+| `required`        | `Boolean`  | Mark the control as required (sets `aria-required`               |
+| `onBlur`          | `Function` | Handler for when the component is blured                         |
+| `onFocus`         | `Function` | Handler for when the component is focused                        |
+| `onValue`         | `Function` | Handler for when a value is selected                             |
+| `onLayoutListBox` | `Function` | Handler for custom listbox positioning. See [onLayoutListBox][2] |
+| `skipOption`      | `Function` | Allows options to be skipped with keyboard navigation            |
+| `findOption`      | `Function` | Customise finding an option when typing                          |
+
+Additional props can be used to customise the component.  See customisation.
 
 ## Customisation
 
@@ -73,7 +81,7 @@ the html element, or a full component if you want a more far reaching change.  B
 <WrapperComponent {...wrapperProps}>
   <ComboBoxComponent {...comboBoxProps} />
   <ListBoxComponent {...listBoxProps} >
-    <ListBoxList {...listBoxListProps}>
+    <ListBoxListComponent {...listBoxListProps}>
       <OptionComponent {...optionProps}>
         <ValueComponent {...valueProps} />
       </OptionComponent>
@@ -111,6 +119,22 @@ with many screen-readers.
 
 This function can be used to skip an option when navigating with the arrow keys.
 
+It has the signature `function (option: Object): Boolean`.  Return `true` if the option should be skipped.
+
 #### `findOption` (`Function`)
 
 This function can be used to customise finding an option in response to keystrokes.
+
+It has the signature `function (option: Object, search: String): boolean`.
+Return true if an option matching the search string is found.
+
+#### `onLayoutListBox` (`Function`)
+
+This is called when the list box is displayed or the options change.
+
+It has the signature `Function (expanded: Boolean, listbox: Element, combobox: Element, option: Element)`
+
+See [onLayoutListBox][2]
+
+[1]: options.md
+[2]: on_layout_list_box.md

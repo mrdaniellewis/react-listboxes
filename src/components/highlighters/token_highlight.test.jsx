@@ -3,10 +3,10 @@ import { render } from '@testing-library/react';
 import { TokenHighlight } from './token_highlight.jsx';
 import { Context } from '../../context.js';
 
-function TestHighlight({ children, ...props }) {
+function TestHighlight({ children, value, inverse, ...props }) {
   return (
-    <Context.Provider value={props}>
-      <TokenHighlight>
+    <Context.Provider value={{ ...props, props: { value } }}>
+      <TokenHighlight inverse={inverse}>
         {children}
       </TokenHighlight>
     </Context.Provider>
@@ -15,7 +15,7 @@ function TestHighlight({ children, ...props }) {
 
 it('does not highlight with no children', () => {
   const { container } = render((
-    <TestHighlight state={{ search: 'bar' }} />
+    <TestHighlight search="bar" />
   ));
 
   expect(container).toContainHTML('<div></div>');
@@ -23,7 +23,7 @@ it('does not highlight with no children', () => {
 
 it('does not highlight with no search children', () => {
   const { container } = render((
-    <TestHighlight state={{ search: null }}>
+    <TestHighlight search={null}>
       foo
     </TestHighlight>
   ));
@@ -33,7 +33,7 @@ it('does not highlight with no search children', () => {
 
 it('does not highlight no match', () => {
   const { container } = render((
-    <TestHighlight state={{ search: 'bar' }}>
+    <TestHighlight search="bar">
       foo foobar
     </TestHighlight>
   ));
@@ -43,7 +43,7 @@ it('does not highlight no match', () => {
 
 it('highlights all tokens', () => {
   const { container } = render((
-    <TestHighlight state={{ search: 'bar' }}>
+    <TestHighlight search="bar">
       foo bar foo bar
     </TestHighlight>
   ));
@@ -53,10 +53,30 @@ it('highlights all tokens', () => {
 
 it('highlights the start of tokens', () => {
   const { container } = render((
-    <TestHighlight state={{ search: 'bar' }}>
+    <TestHighlight search="bar">
       &quot;barfoo&quot;
     </TestHighlight>
   ));
 
   expect(container).toContainHTML('<div>"<mark>bar</mark>foo"');
+});
+
+it('highlights existing value', () => {
+  const { container } = render((
+    <TestHighlight value={{ label: 'bar' }}>
+      foo bar foo bar
+    </TestHighlight>
+  ));
+
+  expect(container).toContainHTML('<div>foo <mark>bar</mark> foo <mark>bar</mark></div>');
+});
+
+it('inverses the highlight', () => {
+  const { container } = render((
+    <TestHighlight search="bar" inverse>
+      foo bar foo bar
+    </TestHighlight>
+  ));
+
+  expect(container).toContainHTML('<div><mark>foo </mark>bar<mark> foo </mark>bar</div>');
 });

@@ -1,3 +1,3 @@
-# Combo box with string options
+# Combo box with identical options
 
-A combo box whose options are an array of strings.
+All the options in this drop down technically have the same `indentity`.

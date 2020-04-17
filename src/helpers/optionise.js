@@ -15,7 +15,7 @@ export function optionise(rawOption, mapOption) {
 
   // A primitive
   return {
-    label: option ?? '',
+    label: String(option ?? ''),
     identity: String(option ?? ''),
     value: rawOption,
     unselectable: false,
