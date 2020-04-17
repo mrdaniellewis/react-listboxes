@@ -86,7 +86,7 @@ the html element, or a full component if you want a more far reaching change.  B
 ```js
 <WrapperComponent {...wrapperProps}>
   <InputComponent {...inputProps} />
-  <ListBoxComponent {...listBoxProps} >
+  <ListBoxComponent {...listBoxProps} > // the entire listbox implementation
     <ListBoxListComponent {...listBoxListProps}>
       <OptionComponent {...optionProps}>
         <ValueComponent {...valueProps} />

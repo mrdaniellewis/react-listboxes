@@ -16,7 +16,6 @@ import { useCombineRefs } from '../hooks/use_combine_refs.js';
 import { findOption } from '../helpers/find_option.js';
 import { ListBox } from './list_box.jsx';
 import { classPrefix } from '../constants/class_prefix.js';
-import { joinTokens } from '../helpers/join_tokens.js';
 
 export const DropDown = forwardRef((rawProps, ref) => {
   const optionisedProps = useNormalisedOptions(rawProps, { mustHaveSelection: true });
@@ -24,7 +23,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
     'aria-labelledby': ariaLabelledBy,
     'aria-invalid': ariaInvalid,
     required, disabled,
-    options, value, id, className,
+    options, value, id,
     children, managedFocus, onLayoutListBox,
     selectedOption, findOption: currentFindOption,
     onBlur: passedOnBlur, onFocus: passedOnFocus,
@@ -112,10 +111,10 @@ export const DropDown = forwardRef((rawProps, ref) => {
   return (
     <Context.Provider value={context}>
       <WrapperComponent
-        className={className}
         onBlur={handleBlur}
         onFocus={handleFocus}
         onKeyDown={(e) => dispatch(onKeyDown(e))}
+        className={`${classPrefix}dropdown`}
         {...wrapperProps}
       >
         <ComboBoxComponent
@@ -125,10 +124,10 @@ export const DropDown = forwardRef((rawProps, ref) => {
           aria-controls={`${id}_listbox`}
           aria-expanded={expanded ? 'true' : 'false'}
           aria-activedescendant={(expanded && focusedOption?.key) || null}
-          aria-labelledby={joinTokens(ariaLabelledBy)}
+          aria-labelledby={ariaLabelledBy}
           aria-required={required ? 'true' : null}
           aria-disabled={disabled ? 'true' : null}
-          aria-invalid={ariaInvalid == null ? null : String(ariaInvalid)}
+          aria-invalid={ariaInvalid == null ? undefined : String(ariaInvalid)}
           tabIndex={disabled ? null : 0}
           ref={combinedRef}
           onClick={(e) => dispatch(onToggleOpen(e))}
@@ -159,15 +158,8 @@ DropDown.propTypes = {
   value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
   children: PropTypes.node,
 
-  'aria-labelledby': PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.arrayOf(PropTypes.string),
-  ]),
-  'aria-invalid': PropTypes.oneOfType([
-    PropTypes.bool,
-    PropTypes.string,
-  ]),
-  className: PropTypes.string,
+  'aria-labelledby': PropTypes.string,
+  'aria-invalid': PropTypes.string,
   disabled: PropTypes.bool,
   id: PropTypes.string.isRequired,
   required: PropTypes.bool,
@@ -209,7 +201,6 @@ DropDown.defaultProps = {
 
   'aria-labelledby': null,
   'aria-invalid': null,
-  className: `${classPrefix}dropdown`,
   disabled: false,
   required: false,
 

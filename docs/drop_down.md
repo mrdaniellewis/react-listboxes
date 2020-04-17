@@ -52,7 +52,6 @@ If you wish to submit the value add a `<input type="hidden" name="name" value="v
 | `id`              | `String`   | id of the component (required)                                   |
 | `children`        | `Node`     | Will override the displayed value of the combo box               |
 | `ref`             | React ref  | Will be passed to combo box element                              |
-| `className`       | `String`   | Class name for the wrapper                                       |
 | `aria-labelledby` | `string`   | Specify the id of the label of the control                       |
 | `aria-invalid`    | `string`   | Specify the validity state of the control                        |
 | `disabled`        | `Boolean`  | Make the control disabled                                        |
@@ -80,7 +79,7 @@ the html element, or a full component if you want a more far reaching change.  B
 ```js
 <WrapperComponent {...wrapperProps}>
   <ComboBoxComponent {...comboBoxProps} />
-  <ListBoxComponent {...listBoxProps} >
+  <ListBoxComponent {...listBoxProps} > // The entire listbox implementation
     <ListBoxListComponent {...listBoxListProps}>
       <OptionComponent {...optionProps}>
         <ValueComponent {...valueProps} />
