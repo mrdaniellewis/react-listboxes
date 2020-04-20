@@ -19,7 +19,12 @@ async function search(term) {
 
 export function Example() {
   const [value, setValue] = useState(null);
-  const [filteredOptions, onSearch, busy] = useSearch(search, { initialOptions: countries });
+  const [searchDebounce, setSearchDebounce] = useState(200);
+  const [busyDebounce, setBusyDebounce] = useState(400);
+  const [filteredOptions, onSearch, busy] = useSearch(
+    search,
+    { initialOptions: countries, debounce: searchDebounce },
+  );
 
   return (
     <>
@@ -34,6 +39,35 @@ export function Example() {
         options={filteredOptions}
         mapOption={mapOption}
         busy={busy}
+        busyDebounce={busyDebounce}
+      />
+
+      <label htmlFor="busy-debounce">
+        Busy debounce
+        {`(${busyDebounce})`}
+      </label>
+      <input
+        id="busy-debounce"
+        onChange={({ target: { value: v } }) => setBusyDebounce(+v)}
+        value={busyDebounce}
+        type="range"
+        min={0}
+        max={1000}
+        step={100}
+      />
+
+      <label htmlFor="search-debounce">
+        Search debounce
+        {`(${searchDebounce})`}
+      </label>
+      <input
+        id="busy-debounce"
+        onChange={({ target: { value: v } }) => setSearchDebounce(+v)}
+        value={searchDebounce}
+        type="range"
+        min={0}
+        max={1000}
+        step={100}
       />
 
       <label htmlFor="output">

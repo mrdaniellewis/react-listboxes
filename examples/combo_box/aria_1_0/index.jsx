@@ -27,6 +27,7 @@ InputComponent.displayName = 'InputComponent';
 export function Example() {
   const [value, setValue] = useState(null);
   const [filteredOptions, onSearch] = useTokenSearch(options);
+  const [managedFocus, setManagedFocus] = useState(true);
 
   return (
     <>
@@ -40,7 +41,18 @@ export function Example() {
         onSearch={onSearch}
         options={filteredOptions}
         InputComponent={InputComponent}
+        managedFocus={managedFocus}
       />
+
+      <label>
+        <input
+          type="checkbox"
+          onChange={({ target: { checked } }) => setManagedFocus(checked)}
+          checked={managedFocus}
+        />
+        {' '}
+        Toggle managed focus
+      </label>
 
       <label htmlFor="output">
         Current value

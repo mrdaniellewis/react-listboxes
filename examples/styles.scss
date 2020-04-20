@@ -8,7 +8,7 @@ $text-colour: #161616;
 body {
   font: 1em/1.5 sans-serif;
   display: grid;
-  grid: "nav main" / 20em;
+  grid-template: "nav main" / 20em;
   color: $text-colour;
 
   @media (max-width: 50em) {

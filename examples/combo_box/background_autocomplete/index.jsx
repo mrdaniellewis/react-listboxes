@@ -58,6 +58,7 @@ InputComponent.displayName = 'InputComponent';
 export function Example() {
   const [value, setValue] = useState(null);
   const [filteredOptions, onSearch] = useSearch(search, { minLength: 1 });
+  const [autoselect, setAutoselect] = useState(false);
 
   return (
     <>
@@ -78,7 +79,55 @@ export function Example() {
         NotFoundComponent={() => null}
         ClearButtonComponent={() => null}
         InputComponent={InputComponent}
+        autoselect={autoselect}
       />
+
+      <fieldset>
+        <legend>Autoselect</legend>
+        <label>
+          <input
+            type="radio"
+            name="autoselect"
+            checked={autoselect === false}
+            onChange={({ target: { checked } }) => {
+              if (checked) {
+                setAutoselect(false);
+              }
+            }}
+          />
+          {' '}
+          <code>false</code>
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="autoselect"
+            checked={autoselect === true}
+            onChange={({ target: { checked } }) => {
+              if (checked) {
+                setAutoselect(true);
+              }
+            }}
+          />
+          {' '}
+          <code>true</code>
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="autoselect"
+            checked={autoselect === 'inline'}
+            onChange={({ target: { checked } }) => {
+              if (checked) {
+                setAutoselect('inline');
+              }
+            }}
+          />
+          {' '}
+          <code>&quot;inline&quot;</code>
+        </label>
+      </fieldset>
+
 
       <label htmlFor="output">
         Current value

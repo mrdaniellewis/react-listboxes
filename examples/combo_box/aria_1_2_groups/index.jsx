@@ -16,11 +16,13 @@ function GroupComponent({ children }) {
   return (
     <li
       role="group"
-      className="react-combo-boxes-listbox__group"
       aria-labelledby={key}
     >
       {label}
-      <ul role="presentation">
+      <ul
+        role="presentation"
+        className="react-combo-boxes-listbox__group"
+      >
         {groupOptions}
       </ul>
     </li>

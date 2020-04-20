@@ -1337,7 +1337,7 @@ describe('busy', () => {
 
   describe('busyDebounce is the default', () => {
     describe('when true', () => {
-      it('sets aria-busy=true on the wrapper after 200ms', () => {
+      it('sets aria-busy=true on the wrapper after 400ms', () => {
         jest.useFakeTimers();
         const { container, getByRole } = render((
           <ComboBoxWrapper options={['foo']} busy />
@@ -1346,7 +1346,7 @@ describe('busy', () => {
         userEvent.type(getByRole('combobox'), 'foo');
         expect(container.firstChild).toHaveAttribute('aria-busy', 'false');
         act(() => {
-          jest.advanceTimersByTime(200);
+          jest.advanceTimersByTime(400);
         });
         expect(container.firstChild).toHaveAttribute('aria-busy', 'true');
       });
@@ -2616,7 +2616,7 @@ describe('aria-describedby', () => {
 });
 
 [
-  'autoComplete', 'autoCapitalize', 'inputMode',
+  'autoComplete', 'autoCapitalize', 'autoCorrect', 'inputMode',
   'maxLength', 'minLength', 'pattern', 'placeholder',
   'spellCheck',
 ].forEach((name) => {
@@ -2628,6 +2628,16 @@ describe('aria-describedby', () => {
       ));
       expect(getByRole('combobox')).toHaveAttribute(name, 'foo');
     });
+  });
+});
+
+describe('autoFocus', () => {
+  it('it focuses the input', () => {
+    const { getByRole } = render((
+      <ComboBoxWrapper options={['foo']} autoFocus />
+    ));
+    // React polyfills autofocus behaviour rather than adding the attribute
+    expectToBeOpen(getByRole('combobox'));
   });
 });
 

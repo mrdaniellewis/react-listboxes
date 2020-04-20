@@ -70,7 +70,7 @@ If `busy` is set to `true` this sets `aria-busy` to `"true"`.  If `false` it set
 
 If `null` this also sets it to `false` to tells the component the search was not run.  This prevents the not found message showing.
 
-Setting `aria-busy` is debounced to prevent some screen-readers constantly reading "loaded".
+Setting `aria-busy` is debounced to prevent some screen-readers constantly reading "loaded", you can adjust the debounce.
 
 ## Customisation
 

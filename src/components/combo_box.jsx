@@ -16,7 +16,7 @@ import { ListBox } from './list_box.jsx';
 import { classPrefix } from '../constants/class_prefix.js';
 
 const allowAttributes = [
-  'autoComplete', 'autoCapitalize', 'disabled', 'inputMode',
+  'autoComplete', 'autoCapitalize', 'autoCorrect', 'autoFocus', 'disabled', 'inputMode',
   'maxLength', 'minLength', 'pattern', 'placeholder', 'readOnly',
   'required', 'size', 'spellCheck',
 ];
@@ -300,7 +300,7 @@ ComboBox.defaultProps = {
   value: null,
 
   busy: false,
-  busyDebounce: 200,
+  busyDebounce: 400,
 
   'aria-describedby': null,
   placeholder: null,
