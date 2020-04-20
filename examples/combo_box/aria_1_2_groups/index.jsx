@@ -1,4 +1,4 @@
-import React, { forwardRef, useContext, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Context, ComboBox, useTokenSearch } from '../../../src/index.js';
 
 const options = [

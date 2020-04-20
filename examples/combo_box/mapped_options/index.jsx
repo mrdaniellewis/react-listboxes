@@ -17,7 +17,10 @@ export function Example() {
   const map = useCallback(({ name, char, group }) => ({ label: `${name} ${char}`, group }), []);
   const [value, setValue] = useState(null);
   // The list of emoji can be thousands.  This rather ruins performance so limit results to 100.
-  const [filteredOptions, onSearch] = useTokenSearch(dedupedEmoji, { index, minLength: 1, maxResults: 100 });
+  const [filteredOptions, onSearch] = useTokenSearch(
+    dedupedEmoji,
+    { index, minLength: 1, maxResults: 100 },
+  );
 
   return (
     <>

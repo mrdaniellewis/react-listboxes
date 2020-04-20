@@ -1,7 +1,7 @@
 @import "normalize.css";
 @import "prismjs/themes/prism.css";
-@import "../src/styles/dropdown.scss";
-@import "../src/styles/combobox.scss";
+@import "../styles/dropdown.scss";
+@import "../styles/combobox.scss";
 
 $text-colour: #161616;
 
@@ -33,24 +33,9 @@ nav {
     margin: 1rem;
   }
 
-  ul {
-    list-style: none;
-    padding: 0;
-  }
-
-  > ul > li {
-    &:not(:first-child) {
-      border-top: 1px solid #ddd;
-    }
-
-    div {
-      padding: 0.5em 1em;
-      font-weight: bold;
-    }
-
-    > ul > li div {
-      padding: 0.5em 2em;
-    }
+  summary {
+    padding: 0.5em 1em;
+    font-weight: bold;
   }
 
   a {
@@ -61,8 +46,20 @@ nav {
     color: $text-colour;
   }
 
-  ul ul ul a {
+  details details a {
     padding-left: 3em;
+  }
+
+  details details details a {
+    padding-left: 4.5em;
+  }
+
+  details details summary {
+    margin-left: 1em;
+  }
+
+  details details details summary {
+    margin-left: 3em;
   }
 
   a:hover {

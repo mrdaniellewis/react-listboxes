@@ -11,7 +11,7 @@
     "prepare": "npm run build:cjs && npm run build:es",
     "install": "npm run prepare",
     "prebuild": "rm -rf dist",
-    "build": "parcel build ./examples/index.pug --public-url .",
+    "build": "parcel build ./examples/index.pug",
     "start": "parcel ./examples/index.pug",
     "lint:js": "eslint . --ext .js --ext .jsx",
     "lint:scss": "stylelint \"**/*.scss\"",

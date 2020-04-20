@@ -1,5 +1,4 @@
 /* eslint-disable import/no-extraneous-dependencies */
-const util = require('util');
 const emoji = require('node-emoji');
 const marked = require('marked');
 const Prism = require('prismjs');

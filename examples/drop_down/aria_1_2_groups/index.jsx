@@ -1,4 +1,4 @@
-import React, { forwardRef, useContext, useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { DropDown, Context } from '../../../src/index.js';
 
 const options = [
