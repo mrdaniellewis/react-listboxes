@@ -5,9 +5,9 @@ function calculateMaxWidth(el, selector) {
   const contained = el.closest(selector) || document.body;
   const elBounding = el.getBoundingClientRect();
   const extras = Math.ceil(elBounding.width - el.clientWidth)
-    + parseFloat(getComputedStyle(el).marginRight);
+    + (parseFloat(getComputedStyle(el).marginRight) || 0);
   const maxWidth = `${contained.getBoundingClientRect().right - extras - elBounding.left}px`;
-  el.maxWidth = maxWidth;// eslint-disable-line no-param-reassign
+  el.style.maxWidth = maxWidth; // eslint-disable-line no-param-reassign
   return maxWidth;
 }
 
@@ -20,7 +20,7 @@ function calculateMaxHeight(el) {
 
   if (elBounding.bottom > windowEnd) {
     const extras = Math.ceil(elBounding.height - el.clientHeight)
-      + parseFloat(getComputedStyle(el).marginBottom);
+      + (parseFloat(getComputedStyle(el).marginBottom) || 0);
     const newHeight = elBounding.height - (elBounding.bottom - windowEnd) - extras;
     const newMaxHeight = Math.max(newHeight, 0);
     maxHeight = `${newMaxHeight}px`;
@@ -29,7 +29,7 @@ function calculateMaxHeight(el) {
   return maxHeight;
 }
 
-export function useConfineListBox(selector = 'body', { findListBox } = {}) {
+export function useConfineListBox(selector = 'body') {
   const [style, setStyle] = useState({});
   const [handler, setHandler] = useState(null);
 
@@ -40,17 +40,15 @@ export function useConfineListBox(selector = 'body', { findListBox } = {}) {
         return;
       }
 
-      const element = findListBox ? findListBox(listbox) : listbox;
-
       setStyle({
-        maxWidth: calculateMaxWidth(element, selector),
-        maxHeight: calculateMaxHeight(element),
+        maxWidth: calculateMaxWidth(listbox, selector),
+        maxHeight: calculateMaxHeight(listbox),
       });
     };
 
     updateProps();
     setHandler(() => updateProps);
-  }, [selector, findListBox]);
+  }, [selector]);
 
   useEffect(() => {
     if (!handler) {
