@@ -1042,6 +1042,15 @@ describe('options', () => {
         expect(getByRole('option')).not.toHaveAttribute('data-foo', 'bar');
       });
     });
+
+    describe('missing label', () => {
+      it('treats as a blank string', () => {
+        const options = [{}];
+        const { container, getByRole } = render(<DropDownWrapper options={options} />);
+        expect(container).toMatchSnapshot();
+        expectToBeClosed(getByRole('combobox'));
+      });
+    });
   });
 
   describe('options as array of strings', () => {
@@ -1300,6 +1309,20 @@ describe('value', () => {
       fireEvent.click(getByRole('combobox'));
       propUpdater.update((props) => ({ ...props, value: 'Apple' }));
       expectToHaveFocusedOption(getByRole('combobox'), getAllByRole('option')[0]);
+    });
+
+    describe('value is not in options', () => {
+      it('retains existing selection', () => {
+        const propUpdater = new PropUpdater();
+        const { getByRole, getAllByRole } = render(<DropDownWrapper
+          options={options}
+          propUpdater={propUpdater}
+          value="Orange"
+        />);
+        fireEvent.click(getByRole('combobox'));
+        propUpdater.update((props) => ({ ...props, value: 'Potato' }));
+        expectToHaveFocusedOption(getByRole('combobox'), getAllByRole('option')[2]);
+      });
     });
   });
 });
@@ -1713,6 +1736,26 @@ describe('comboBoxProps', () => {
       <DropDownWrapper options={['foo']} comboBoxProps={{ className: 'bar' }} />,
     );
     expect(getByRole('combobox')).toHaveClass('bar');
+  });
+});
+
+describe('ListBoxComponent', () => {
+  it('allows the listbox to be replaced', () => {
+    const ListBox = forwardRef((props, ref) => <dl ref={ref} />);
+    const { queryByRole } = render(
+      <DropDownWrapper options={['foo']} ListBoxComponent={ListBox} />,
+    );
+    expect(queryByRole('listbox', { hidden: true })).toBeNull();
+    expect(document.querySelector('dl')).toBeInstanceOf(Element);
+  });
+});
+
+describe('listBoxProps', () => {
+  it('allows custom props to be added to the listbox', () => {
+    const { getByRole } = render(
+      <DropDownWrapper options={['foo']} listBoxProps={{ className: 'bar' }} />,
+    );
+    expect(getByRole('listbox', { hidden: true })).toHaveClass('bar');
   });
 });
 

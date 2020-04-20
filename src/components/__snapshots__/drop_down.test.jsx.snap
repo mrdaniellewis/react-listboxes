@@ -242,6 +242,40 @@ exports[`options as array of objects label renders a closed drop down 1`] = `
 </div>
 `;
 
+exports[`options as array of objects missing label treats as a blank string 1`] = `
+<div>
+  <div
+    class="react-combo-boxes-dropdown"
+  >
+    <div
+      aria-controls="id_listbox"
+      aria-expanded="false"
+      class="react-combo-boxes-dropdown__combobox"
+      id="id"
+      role="combobox"
+      tabindex="0"
+    >
+       
+    </div>
+    <ul
+      class="react-combo-boxes-listbox"
+      hidden=""
+      id="id_listbox"
+      role="listbox"
+      tabindex="-1"
+    >
+      <li
+        aria-selected="true"
+        class="react-combo-boxes-listbox__option"
+        id="id_option_undefined"
+        role="option"
+        tabindex="-1"
+      />
+    </ul>
+  </div>
+</div>
+`;
+
 exports[`options options as array of numbers renders a closed drop down 1`] = `
 <div>
   <div

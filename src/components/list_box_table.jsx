@@ -12,6 +12,7 @@ export const ListBoxTable = forwardRef(({ focusedRef, hidden, onSelectOption, ..
     props: {
       columns: rawColumns,
       options,
+      ListBoxListComponent = 'div',
       listBoxListProps,
       tableProps,
       tableHeaderProps,
@@ -36,7 +37,7 @@ export const ListBoxTable = forwardRef(({ focusedRef, hidden, onSelectOption, ..
   ), [rawColumns]);
 
   return (
-    <div
+    <ListBoxListComponent
       hidden={hidden}
       className={`${classPrefix}listbox`}
       onMouseDown={(e) => e.preventDefault()}
@@ -118,7 +119,10 @@ export const ListBoxTable = forwardRef(({ focusedRef, hidden, onSelectOption, ..
                     onClick={disabled ? null : (e) => onSelectOption(e, option)}
                   >
                     {columns.map((column, index) => (
-                      <Context.Provider key={column.name} value={{ ...context, column }}>
+                      <Context.Provider
+                        key={column.name}
+                        value={{ ...context, selected, option, group, columns, column }}
+                      >
                         <td
                           role="presentation"
                           title={column.label || null}
@@ -156,7 +160,7 @@ export const ListBoxTable = forwardRef(({ focusedRef, hidden, onSelectOption, ..
           })}
         </tbody>
       </table>
-    </div>
+    </ListBoxListComponent>
   );
 });
 

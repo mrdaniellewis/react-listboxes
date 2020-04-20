@@ -1,4 +1,4 @@
-import React, { forwardRef, useContext } from 'react';
+import React, { Fragment, forwardRef, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { Context } from '../context.js';
 import { renderGroupedOptions } from '../helpers/render_grouped_options.js';
@@ -11,10 +11,10 @@ export const ListBox = forwardRef(({ focusedRef, onSelectOption, ...props }, ref
     currentOption,
     props: {
       options,
-      ListBoxListComponent, listBoxListProps,
-      GroupComponent, groupProps,
-      GroupLabelComponent, groupLabelProps,
-      OptionComponent, optionProps,
+      ListBoxListComponent = 'ul', listBoxListProps,
+      GroupComponent = Fragment, groupProps,
+      GroupLabelComponent = 'li', groupLabelProps,
+      OptionComponent = 'li', optionProps,
       ValueComponent, valueProps,
       VisuallyHiddenComponent, visuallyHiddenProps,
     },

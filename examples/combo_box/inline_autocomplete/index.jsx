@@ -13,6 +13,7 @@ export function Example() {
   const [tabAutocomplete, setTabAutocomplete] = useState(false);
   const [showSelectedLabel, setShowSelectedLabel] = useState(false);
   const [managedFocus, setManagedFocus] = useState(true);
+  const [expandOnFocus, setExpandOnFocus] = useState(true);
 
   return (
     <>
@@ -30,6 +31,7 @@ export function Example() {
         tabAutocomplete={tabAutocomplete}
         showSelectedLabel={showSelectedLabel}
         managedFocus={managedFocus}
+        expandOnFocus={expandOnFocus}
         ValueComponent={TokenHighlight}
       />
 
@@ -107,6 +109,16 @@ export function Example() {
         />
         {' '}
         Toggle show selected label
+      </label>
+
+      <label>
+        <input
+          type="checkbox"
+          onChange={({ target: { checked } }) => setExpandOnFocus(checked)}
+          checked={expandOnFocus}
+        />
+        {' '}
+        Toggle Expand on focus
       </label>
 
       <label htmlFor="output">

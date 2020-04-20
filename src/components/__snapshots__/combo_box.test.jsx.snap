@@ -4,7 +4,7 @@ exports[`WrapperComponent allows custom layouts 1`] = `
 <div>
   <div
     aria-busy="false"
-    class="combobox"
+    class="react-combo-boxes-combobox"
   >
     <div
       class="combobox-wrapper"
@@ -13,10 +13,10 @@ exports[`WrapperComponent allows custom layouts 1`] = `
         aria-autocomplete="none"
         aria-controls="id_listbox"
         aria-expanded="false"
-        class="combobox__input"
+        autocomplete="off"
+        class="react-combo-boxes-combobox__input"
         id="id"
         role="combobox"
-        tabindex="0"
         type="text"
         value=""
       />
@@ -26,7 +26,7 @@ exports[`WrapperComponent allows custom layouts 1`] = `
     >
       <span
         aria-hidden="true"
-        class="combobox__clear-button"
+        class="react-combo-boxes-combobox__clear-button"
         hidden=""
         id="id_clear_button"
       />
@@ -35,14 +35,14 @@ exports[`WrapperComponent allows custom layouts 1`] = `
       class="listbox-wrapper"
     >
       <ul
-        class="combobox__listbox"
+        class="react-combo-boxes-listbox"
         hidden=""
         id="id_listbox"
         role="listbox"
         tabindex="-1"
       >
         <li
-          class="combobox__option"
+          class="react-combo-boxes-listbox__option"
           id="id_option_foo"
           role="option"
           tabindex="-1"
@@ -56,7 +56,7 @@ exports[`WrapperComponent allows custom layouts 1`] = `
     >
       <div
         aria-live="polite"
-        class="combobox__not-found"
+        class="react-combo-boxes-combobox__not-found"
         hidden=""
         id="id_not_found"
         role="alert"
@@ -70,33 +70,33 @@ exports[`onSearch updating options updates the displayed options 1`] = `
 <div>
   <div
     aria-busy="false"
-    class="combobox"
+    class="react-combo-boxes-combobox"
   >
     <input
       aria-autocomplete="none"
       aria-controls="id_listbox"
       aria-expanded="true"
-      class="combobox__input"
+      autocomplete="off"
+      class="react-combo-boxes-combobox__input"
       id="id"
       role="combobox"
-      tabindex="0"
       type="text"
       value=""
     />
     <span
       aria-hidden="true"
-      class="combobox__clear-button"
+      class="react-combo-boxes-combobox__clear-button"
       hidden=""
       id="id_clear_button"
     />
     <ul
-      class="combobox__listbox"
+      class="react-combo-boxes-listbox"
       id="id_listbox"
       role="listbox"
       tabindex="-1"
     >
       <li
-        class="combobox__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_strawberry"
         role="option"
         tabindex="-1"
@@ -104,7 +104,7 @@ exports[`onSearch updating options updates the displayed options 1`] = `
         Strawberry
       </li>
       <li
-        class="combobox__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_raspberry"
         role="option"
         tabindex="-1"
@@ -112,7 +112,7 @@ exports[`onSearch updating options updates the displayed options 1`] = `
         Raspberry
       </li>
       <li
-        class="combobox__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_banana"
         role="option"
         tabindex="-1"
@@ -122,7 +122,7 @@ exports[`onSearch updating options updates the displayed options 1`] = `
     </ul>
     <div
       aria-live="polite"
-      class="combobox__not-found"
+      class="react-combo-boxes-combobox__not-found"
       hidden=""
       id="id_not_found"
       role="alert"
@@ -135,33 +135,33 @@ exports[`options as array of objects disabled sets the aria-disabled attribute 1
 <div>
   <div
     aria-busy="false"
-    class="combobox"
+    class="react-combo-boxes-combobox"
   >
     <input
       aria-autocomplete="none"
       aria-controls="id_listbox"
       aria-expanded="true"
-      class="combobox__input"
+      autocomplete="off"
+      class="react-combo-boxes-combobox__input"
       id="id"
       role="combobox"
-      tabindex="0"
       type="text"
       value=""
     />
     <span
       aria-hidden="true"
-      class="combobox__clear-button"
+      class="react-combo-boxes-combobox__clear-button"
       hidden=""
       id="id_clear_button"
     />
     <ul
-      class="combobox__listbox"
+      class="react-combo-boxes-listbox"
       id="id_listbox"
       role="listbox"
       tabindex="-1"
     >
       <li
-        class="combobox__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_apple"
         role="option"
         tabindex="-1"
@@ -170,7 +170,7 @@ exports[`options as array of objects disabled sets the aria-disabled attribute 1
       </li>
       <li
         aria-disabled="true"
-        class="combobox__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_banana"
         role="option"
         tabindex="-1"
@@ -180,7 +180,7 @@ exports[`options as array of objects disabled sets the aria-disabled attribute 1
     </ul>
     <div
       aria-live="polite"
-      class="combobox__not-found"
+      class="react-combo-boxes-combobox__not-found"
       hidden=""
       id="id_not_found"
       role="alert"
@@ -193,34 +193,34 @@ exports[`options as array of objects group renders grouped options 1`] = `
 <div>
   <div
     aria-busy="false"
-    class="combobox"
+    class="react-combo-boxes-combobox"
   >
     <input
       aria-autocomplete="none"
       aria-controls="id_listbox"
       aria-expanded="false"
-      class="combobox__input"
+      autocomplete="off"
+      class="react-combo-boxes-combobox__input"
       id="id"
       role="combobox"
-      tabindex="0"
       type="text"
       value=""
     />
     <span
       aria-hidden="true"
-      class="combobox__clear-button"
+      class="react-combo-boxes-combobox__clear-button"
       hidden=""
       id="id_clear_button"
     />
     <ul
-      class="combobox__listbox"
+      class="react-combo-boxes-listbox"
       hidden=""
       id="id_listbox"
       role="listbox"
       tabindex="-1"
     >
       <li
-        class="combobox__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_apple"
         role="option"
         tabindex="-1"
@@ -229,31 +229,31 @@ exports[`options as array of objects group renders grouped options 1`] = `
       </li>
       <li
         aria-hidden="true"
-        class="combobox__group"
+        class="react-combo-boxes-listbox__group-label"
       >
         Citrus
       </li>
       <li
-        class="combobox__option combobox__option--grouped"
+        class="react-combo-boxes-listbox__option"
         id="id_option_orange"
         role="option"
         tabindex="-1"
       >
         <div
-          class="visually-hidden visuallyhidden sr-only"
+          class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
         >
           Citrus
         </div>
         Orange
       </li>
       <li
-        class="combobox__option combobox__option--grouped"
+        class="react-combo-boxes-listbox__option"
         id="id_option_lemon"
         role="option"
         tabindex="-1"
       >
         <div
-          class="visually-hidden visuallyhidden sr-only"
+          class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
         >
           Citrus
         </div>
@@ -261,31 +261,31 @@ exports[`options as array of objects group renders grouped options 1`] = `
       </li>
       <li
         aria-hidden="true"
-        class="combobox__group"
+        class="react-combo-boxes-listbox__group-label"
       >
         Berry
       </li>
       <li
-        class="combobox__option combobox__option--grouped"
+        class="react-combo-boxes-listbox__option"
         id="id_option_raspberry"
         role="option"
         tabindex="-1"
       >
         <div
-          class="visually-hidden visuallyhidden sr-only"
+          class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
         >
           Berry
         </div>
         Raspberry
       </li>
       <li
-        class="combobox__option combobox__option--grouped"
+        class="react-combo-boxes-listbox__option"
         id="id_option_strawberry"
         role="option"
         tabindex="-1"
       >
         <div
-          class="visually-hidden visuallyhidden sr-only"
+          class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
         >
           Berry
         </div>
@@ -294,7 +294,7 @@ exports[`options as array of objects group renders grouped options 1`] = `
     </ul>
     <div
       aria-live="polite"
-      class="combobox__not-found"
+      class="react-combo-boxes-combobox__not-found"
       hidden=""
       id="id_not_found"
       role="alert"
@@ -307,34 +307,34 @@ exports[`options as array of objects label renders a closed combo box 1`] = `
 <div>
   <div
     aria-busy="false"
-    class="combobox"
+    class="react-combo-boxes-combobox"
   >
     <input
       aria-autocomplete="none"
       aria-controls="id_listbox"
       aria-expanded="false"
-      class="combobox__input"
+      autocomplete="off"
+      class="react-combo-boxes-combobox__input"
       id="id"
       role="combobox"
-      tabindex="0"
       type="text"
       value=""
     />
     <span
       aria-hidden="true"
-      class="combobox__clear-button"
+      class="react-combo-boxes-combobox__clear-button"
       hidden=""
       id="id_clear_button"
     />
     <ul
-      class="combobox__listbox"
+      class="react-combo-boxes-listbox"
       hidden=""
       id="id_listbox"
       role="listbox"
       tabindex="-1"
     >
       <li
-        class="combobox__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_apple"
         role="option"
         tabindex="-1"
@@ -342,7 +342,7 @@ exports[`options as array of objects label renders a closed combo box 1`] = `
         Apple
       </li>
       <li
-        class="combobox__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_banana"
         role="option"
         tabindex="-1"
@@ -350,7 +350,7 @@ exports[`options as array of objects label renders a closed combo box 1`] = `
         Banana
       </li>
       <li
-        class="combobox__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_orange"
         role="option"
         tabindex="-1"
@@ -360,7 +360,56 @@ exports[`options as array of objects label renders a closed combo box 1`] = `
     </ul>
     <div
       aria-live="polite"
-      class="combobox__not-found"
+      class="react-combo-boxes-combobox__not-found"
+      hidden=""
+      id="id_not_found"
+      role="alert"
+    />
+  </div>
+</div>
+`;
+
+exports[`options as array of objects missing label treats as a blank string 1`] = `
+<div>
+  <div
+    aria-busy="false"
+    class="react-combo-boxes-combobox"
+  >
+    <input
+      aria-autocomplete="none"
+      aria-controls="id_listbox"
+      aria-expanded="false"
+      autocomplete="off"
+      class="react-combo-boxes-combobox__input"
+      id="id"
+      role="combobox"
+      type="text"
+      value=""
+    />
+    <span
+      aria-hidden="true"
+      class="react-combo-boxes-combobox__clear-button"
+      hidden=""
+      id="id_clear_button"
+    />
+    <ul
+      class="react-combo-boxes-listbox"
+      hidden=""
+      id="id_listbox"
+      role="listbox"
+      tabindex="-1"
+    >
+      <li
+        aria-selected="true"
+        class="react-combo-boxes-listbox__option"
+        id="id_option_undefined"
+        role="option"
+        tabindex="-1"
+      />
+    </ul>
+    <div
+      aria-live="polite"
+      class="react-combo-boxes-combobox__not-found"
       hidden=""
       id="id_not_found"
       role="alert"
@@ -373,34 +422,34 @@ exports[`options options as array of numbers renders a closed combo box 1`] = `
 <div>
   <div
     aria-busy="false"
-    class="combobox"
+    class="react-combo-boxes-combobox"
   >
     <input
       aria-autocomplete="none"
       aria-controls="id_listbox"
       aria-expanded="false"
-      class="combobox__input"
+      autocomplete="off"
+      class="react-combo-boxes-combobox__input"
       id="id"
       role="combobox"
-      tabindex="0"
       type="text"
       value=""
     />
     <span
       aria-hidden="true"
-      class="combobox__clear-button"
+      class="react-combo-boxes-combobox__clear-button"
       hidden=""
       id="id_clear_button"
     />
     <ul
-      class="combobox__listbox"
+      class="react-combo-boxes-listbox"
       hidden=""
       id="id_listbox"
       role="listbox"
       tabindex="-1"
     >
       <li
-        class="combobox__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_1"
         role="option"
         tabindex="-1"
@@ -408,7 +457,7 @@ exports[`options options as array of numbers renders a closed combo box 1`] = `
         1
       </li>
       <li
-        class="combobox__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_2"
         role="option"
         tabindex="-1"
@@ -416,7 +465,7 @@ exports[`options options as array of numbers renders a closed combo box 1`] = `
         2
       </li>
       <li
-        class="combobox__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_3"
         role="option"
         tabindex="-1"
@@ -426,7 +475,7 @@ exports[`options options as array of numbers renders a closed combo box 1`] = `
     </ul>
     <div
       aria-live="polite"
-      class="combobox__not-found"
+      class="react-combo-boxes-combobox__not-found"
       hidden=""
       id="id_not_found"
       role="alert"
@@ -439,34 +488,34 @@ exports[`options options as array of strings renders a closed combo box 1`] = `
 <div>
   <div
     aria-busy="false"
-    class="combobox"
+    class="react-combo-boxes-combobox"
   >
     <input
       aria-autocomplete="none"
       aria-controls="id_listbox"
       aria-expanded="false"
-      class="combobox__input"
+      autocomplete="off"
+      class="react-combo-boxes-combobox__input"
       id="id"
       role="combobox"
-      tabindex="0"
       type="text"
       value=""
     />
     <span
       aria-hidden="true"
-      class="combobox__clear-button"
+      class="react-combo-boxes-combobox__clear-button"
       hidden=""
       id="id_clear_button"
     />
     <ul
-      class="combobox__listbox"
+      class="react-combo-boxes-listbox"
       hidden=""
       id="id_listbox"
       role="listbox"
       tabindex="-1"
     >
       <li
-        class="combobox__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_apple"
         role="option"
         tabindex="-1"
@@ -474,7 +523,7 @@ exports[`options options as array of strings renders a closed combo box 1`] = `
         Apple
       </li>
       <li
-        class="combobox__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_banana"
         role="option"
         tabindex="-1"
@@ -482,7 +531,7 @@ exports[`options options as array of strings renders a closed combo box 1`] = `
         Banana
       </li>
       <li
-        class="combobox__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_orange"
         role="option"
         tabindex="-1"
@@ -492,7 +541,7 @@ exports[`options options as array of strings renders a closed combo box 1`] = `
     </ul>
     <div
       aria-live="polite"
-      class="combobox__not-found"
+      class="react-combo-boxes-combobox__not-found"
       hidden=""
       id="id_not_found"
       role="alert"
@@ -505,27 +554,27 @@ exports[`options options as null renders an option with an empty string 1`] = `
 <div>
   <div
     aria-busy="false"
-    class="combobox"
+    class="react-combo-boxes-combobox"
   >
     <input
       aria-autocomplete="none"
       aria-controls="id_listbox"
       aria-expanded="false"
-      class="combobox__input"
+      autocomplete="off"
+      class="react-combo-boxes-combobox__input"
       id="id"
       role="combobox"
-      tabindex="0"
       type="text"
       value=""
     />
     <span
       aria-hidden="true"
-      class="combobox__clear-button"
+      class="react-combo-boxes-combobox__clear-button"
       hidden=""
       id="id_clear_button"
     />
     <ul
-      class="combobox__listbox"
+      class="react-combo-boxes-listbox"
       hidden=""
       id="id_listbox"
       role="listbox"
@@ -533,7 +582,7 @@ exports[`options options as null renders an option with an empty string 1`] = `
     >
       <li
         aria-selected="true"
-        class="combobox__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_"
         role="option"
         tabindex="-1"
@@ -541,7 +590,7 @@ exports[`options options as null renders an option with an empty string 1`] = `
         
       </li>
       <li
-        class="combobox__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_foo"
         role="option"
         tabindex="-1"
@@ -551,7 +600,7 @@ exports[`options options as null renders an option with an empty string 1`] = `
     </ul>
     <div
       aria-live="polite"
-      class="combobox__not-found"
+      class="react-combo-boxes-combobox__not-found"
       hidden=""
       id="id_not_found"
       role="alert"
@@ -564,27 +613,27 @@ exports[`options options as undefined renders an option with an empty string 1`]
 <div>
   <div
     aria-busy="false"
-    class="combobox"
+    class="react-combo-boxes-combobox"
   >
     <input
       aria-autocomplete="none"
       aria-controls="id_listbox"
       aria-expanded="false"
-      class="combobox__input"
+      autocomplete="off"
+      class="react-combo-boxes-combobox__input"
       id="id"
       role="combobox"
-      tabindex="0"
       type="text"
       value=""
     />
     <span
       aria-hidden="true"
-      class="combobox__clear-button"
+      class="react-combo-boxes-combobox__clear-button"
       hidden=""
       id="id_clear_button"
     />
     <ul
-      class="combobox__listbox"
+      class="react-combo-boxes-listbox"
       hidden=""
       id="id_listbox"
       role="listbox"
@@ -592,7 +641,7 @@ exports[`options options as undefined renders an option with an empty string 1`]
     >
       <li
         aria-selected="true"
-        class="combobox__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_"
         role="option"
         tabindex="-1"
@@ -600,7 +649,7 @@ exports[`options options as undefined renders an option with an empty string 1`]
         
       </li>
       <li
-        class="combobox__option"
+        class="react-combo-boxes-listbox__option"
         id="id_option_foo"
         role="option"
         tabindex="-1"
@@ -610,7 +659,7 @@ exports[`options options as undefined renders an option with an empty string 1`]
     </ul>
     <div
       aria-live="polite"
-      class="combobox__not-found"
+      class="react-combo-boxes-combobox__not-found"
       hidden=""
       id="id_not_found"
       role="alert"

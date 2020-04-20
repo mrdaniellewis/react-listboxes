@@ -3,6 +3,9 @@ import { render, act } from '@testing-library/react';
 import { useSearch } from './use_search.js';
 
 function TestSearch({ fn, onUpdate, ...props }) {
+  if (!Object.keys(props).length) {
+    props = undefined; // eslint-disable-line no-param-reassign
+  }
   const [filteredOptions, onSearch, busy] = useSearch(fn, props);
   useEffect(() => {
     onUpdate(filteredOptions, onSearch, busy);

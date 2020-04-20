@@ -108,15 +108,13 @@ function reduce(state, { type, ...params }, props) {
       };
     }
     case SET_EXPANDED: {
-      const { expanded, focusListBox } = params;
-      const { focusedOption } = state;
       const { selectedOption } = props;
 
       return {
         ...state,
-        expanded,
-        focusedOption: focusedOption ?? (expanded ? selectedOption : null),
-        focusListBox: focusListBox || state.focusListBox,
+        expanded: true,
+        focusedOption: selectedOption,
+        focusListBox: true,
       };
     }
     case SET_CLOSED: {
@@ -132,7 +130,7 @@ function reduce(state, { type, ...params }, props) {
     }
     case SET_FOCUSED_OPTION: {
       const {
-        focusListBox = state.focusListBox,
+        focusListBox,
         focusedOption,
         expanded,
       } = params;
@@ -140,7 +138,7 @@ function reduce(state, { type, ...params }, props) {
       return {
         ...state,
         expanded: expanded ?? true,
-        focusListBox: focusedOption ? focusListBox : false,
+        focusListBox: (focusListBox == null ? state.focusListBox : focusListBox) && focusedOption,
         focusedOption,
       };
     }

@@ -1,8 +1,11 @@
 import React, { useEffect } from 'react';
-import { render, act, wait } from '@testing-library/react';
+import { render, act, waitFor } from '@testing-library/react';
 import { useTokenSearch } from './use_token_search.js';
 
 function TestTokenSearch({ options, onUpdate, ...params }) {
+  if (!Object.keys(params).length) {
+    params = undefined; // eslint-disable-line no-param-reassign
+  }
   const [filteredOptions, onSearch, busy] = useTokenSearch(options, params);
   useEffect(() => {
     onUpdate(filteredOptions, onSearch, busy);
@@ -32,7 +35,7 @@ describe('options', () => {
       act(() => {
         spy.mock.calls[0][1]('ba');
       });
-      await wait(() => {
+      await waitFor(() => {
         expect(spy).toHaveBeenLastCalledWith(
           ['bar', 'foe bar'],
           expect.any(Function),
@@ -49,7 +52,7 @@ describe('options', () => {
       act(() => {
         spy.mock.calls[0][1]('ba');
       });
-      await wait(() => {
+      await waitFor(() => {
         expect(spy).toHaveBeenLastCalledWith(
           ['bar'],
           expect.any(Function),
@@ -59,7 +62,7 @@ describe('options', () => {
       act(() => {
         spy.mock.calls[0][1]('');
       });
-      await wait(() => {
+      await waitFor(() => {
         expect(spy).toHaveBeenLastCalledWith(
           ['foo', 'bar', 'foe'],
           expect.any(Function),
@@ -82,7 +85,7 @@ describe('options', () => {
       act(() => {
         spy.mock.calls[0][1]('ba');
       });
-      await wait(() => {
+      await waitFor(() => {
         expect(spy).toHaveBeenLastCalledWith(
           [options[1]],
           expect.any(Function),
@@ -107,7 +110,7 @@ describe('options', () => {
         act(() => {
           spy.mock.calls[0][1]('ba');
         });
-        await wait(() => {
+        await waitFor(() => {
           expect(spy).toHaveBeenLastCalledWith(
             [options[1]],
             expect.any(Function),
@@ -131,7 +134,7 @@ describe('options', () => {
       act(() => {
         spy.mock.calls[0][1]('r');
       });
-      await wait(() => {
+      await waitFor(() => {
         expect(spy).toHaveBeenLastCalledWith(
           ['bar'],
           expect.any(Function),

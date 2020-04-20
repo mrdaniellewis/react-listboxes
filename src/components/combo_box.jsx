@@ -4,25 +4,25 @@ import { Context } from '../context.js';
 import { useThunkReducer as useReducer } from '../hooks/use_thunk_reducer.js';
 import { reducer } from './combo_box/reducer.js';
 import { initialState } from './combo_box/initial_state.js';
-import { onKeyDown, onChange, onFocus, onInputMouseUp, onClearValue, onBlur, onClick, onOptionsChanged, onValueChanged } from './combo_box/actions.js';
+import { onKeyDown, onChange, onFocus, onInputMouseUp, onClearValue, onBlur, onClick, onOptionsChanged, onValueChanged, onFocusInput } from './combo_box/actions.js';
 import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
 import { useOnBlur } from '../hooks/use_on_blur.js';
 import { joinTokens } from '../helpers/join_tokens.js';
 import { componentValidator } from '../validators/component_validator.js';
 import { findOption } from '../helpers/find_option.js';
 import { useCombineRefs } from '../hooks/use_combine_refs.js';
-import { extractProps } from '../helpers/extract_props.js';
+import { allowProps } from '../helpers/allow_props.js';
 import { ListBox } from './list_box.jsx';
 import { classPrefix } from '../constants/class_prefix.js';
 
 const allowAttributes = [
-  'autoCapitalize', 'disabled', 'inputMode',
+  'autoComplete', 'autoCapitalize', 'disabled', 'inputMode',
   'maxLength', 'minLength', 'pattern', 'placeholder', 'readOnly',
   'required', 'size', 'spellCheck',
 ];
 
-export const ComboBox = forwardRef((rawProps, ref) => {
-  const optionisedProps = useNormalisedOptions(rawProps);
+export const ComboBox = forwardRef(({ placeholder, ...rawProps }, ref) => {
+  const optionisedProps = { ...useNormalisedOptions(rawProps), placeholder };
   const {
     'aria-describedby': ariaDescribedBy, busyDebounce,
     options, value, selectedOption, id, className,
@@ -73,7 +73,6 @@ export const ComboBox = forwardRef((rawProps, ref) => {
       onSearch(searchValue);
     }
   }, [onSearch, searchValue]);
-
   const inputLabel = useMemo(() => {
     if (inlineAutoselect
       || (((showSelectedLabel && !focusedOption?.unselectable) ?? autoselect === 'inline') && focusListBox)
@@ -117,7 +116,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
 
   // Do not show the list box is the only option is the currently selected option
   const showListBox = useMemo(() => (
-    expanded && options.length
+    expanded && !!options.length
       && !(options.length === 1 && options[0].identity === selectedOption?.identity)
   ), [expanded, options, selectedOption]);
 
@@ -168,7 +167,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
     search,
     suggestedOption,
     'aria-busy': ariaBusy,
-    'aria-autocomplete': 'ariaAutocomplete',
+    'aria-autocomplete': ariaAutocomplete,
   };
   const clickOption = useCallback((e, option) => dispatch(onClick(e, option)), []);
 
@@ -187,6 +186,7 @@ export const ComboBox = forwardRef((rawProps, ref) => {
           className={`${classPrefix}combobox__input`}
           type="text"
           role="combobox"
+          autoComplete="off"
           // aria-haspopup="listbox" is implicit
           aria-autocomplete={ariaAutocomplete}
           aria-controls={`${id}_listbox`} // ARIA 1.2 pattern
@@ -196,11 +196,12 @@ export const ComboBox = forwardRef((rawProps, ref) => {
           onKeyDown={(e) => dispatch(onKeyDown(e))}
           onChange={(e) => dispatch(onChange(e))}
           onMouseUp={(e) => dispatch(onInputMouseUp(e))}
+          onFocus={(e) => dispatch(onFocusInput(e))}
           aria-describedby={joinTokens(showNotFound && `${id}_not_found`, ariaDescribedBy)}
           ref={combinedRef}
           tabIndex={managedFocus && showListBox && focusListBox ? -1 : null}
+          {...allowProps(optionisedProps, ...allowAttributes)}
           {...inputProps}
-          {...extractProps(optionisedProps, ...allowAttributes)}
         />
         <ClearButtonComponent
           id={`${id}_clear_button`}
@@ -251,6 +252,7 @@ ComboBox.propTypes = {
   ]),
   className: PropTypes.string,
   id: PropTypes.string.isRequired,
+  placeholder: PropTypes.string,
 
   notFoundMessage: PropTypes.node,
 
@@ -301,6 +303,7 @@ ComboBox.defaultProps = {
   busyDebounce: 200,
 
   'aria-describedby': null,
+  placeholder: null,
   className: `${classPrefix}combobox`,
 
   notFoundMessage: 'No matches found',
@@ -326,13 +329,13 @@ ComboBox.defaultProps = {
   inputProps: null,
   ListBoxComponent: ListBox,
   listBoxProps: null,
-  ListBoxListComponent: 'ul',
+  ListBoxListComponent: undefined,
   listBoxListProps: null,
-  GroupComponent: Fragment,
+  GroupComponent: undefined,
   groupProps: null,
-  GroupLabelComponent: 'li',
+  GroupLabelComponent: undefined,
   groupLabelProps: null,
-  OptionComponent: 'li',
+  OptionComponent: undefined,
   optionProps: null,
   ValueComponent: Fragment,
   valueProps: null,

@@ -108,7 +108,7 @@ export function onKeyDown(event) {
             focusListBox: true,
           }));
         } else {
-          dispatch({ type: SET_EXPANDED, expanded: true, focusListBox: true });
+          dispatch({ type: SET_EXPANDED });
         }
         break;
       case 'ArrowDown':
@@ -120,7 +120,7 @@ export function onKeyDown(event) {
             focusListBox: true,
           }));
         } else {
-          dispatch({ type: SET_EXPANDED, expanded: true, focusListBox: true });
+          dispatch({ type: SET_EXPANDED });
         }
         break;
       case 'Home':
@@ -189,14 +189,22 @@ export function onChange(event) {
 export function onFocus() {
   return (dispatch, getState, getProps) => {
     const { selectedOption, expandOnFocus } = getProps();
-    dispatch(setFocusedOption({ focusedOption: selectedOption, expanded: expandOnFocus }));
+    dispatch(setFocusedOption({
+      focusedOption: selectedOption,
+      expanded: expandOnFocus,
+      focusListBox: false,
+    }));
   };
 }
 
-export function onInputMouseUp() {
+export function onFocusInput() {
+  return { type: SET_FOCUS_LIST_BOX, focusListBox: false };
+}
+
+export function onInputMouseUp(e) {
   return (dispatch, getState, getProps) => {
     const { expanded } = getState();
-    if (expanded) {
+    if (expanded || e.button > 0) {
       return;
     }
     const { selectedOption, expandOnFocus } = getProps();
@@ -231,11 +239,12 @@ export function onClick(event, option) {
 }
 
 export function onClearValue(event) {
-  return (dispatch) => {
+  return (dispatch, setState, getProps) => {
     if (event.button > 0) {
       return;
     }
-    dispatch(onSelectValue(null, true));
+    const { expandOnFocus } = getProps();
+    dispatch(onSelectValue(null, expandOnFocus));
   };
 }
 
