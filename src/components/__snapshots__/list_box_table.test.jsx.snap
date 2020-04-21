@@ -9,6 +9,7 @@ exports[`used with a combo box columns as names only renders a table as the list
     <input
       aria-autocomplete="none"
       aria-controls="id_listbox"
+      aria-describedby="id_hint"
       aria-expanded="false"
       autocomplete="off"
       class="react-combo-boxes-combobox__input"
@@ -121,11 +122,13 @@ exports[`used with a combo box columns as names only renders a table as the list
       </table>
     </div>
     <div
-      aria-live="polite"
+      class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
+      id="id_hint"
+    />
+    <div
       class="react-combo-boxes-combobox__not-found"
       hidden=""
       id="id_not_found"
-      role="alert"
     />
   </div>
 </div>
@@ -140,6 +143,7 @@ exports[`used with a combo box columns with headers renders a table with headers
     <input
       aria-autocomplete="none"
       aria-controls="id_listbox"
+      aria-describedby="id_hint"
       aria-expanded="false"
       autocomplete="off"
       class="react-combo-boxes-combobox__input"
@@ -173,11 +177,13 @@ exports[`used with a combo box columns with headers renders a table with headers
         >
           <tr>
             <th
+              aria-hidden="true"
               class="react-combo-boxes-listbox__table-header"
             >
               Name
             </th>
             <th
+              aria-hidden="true"
               class="react-combo-boxes-listbox__table-header"
             >
               Type
@@ -196,7 +202,6 @@ exports[`used with a combo box columns with headers renders a table with headers
             <td
               class="react-combo-boxes-listbox__table-cell"
               role="presentation"
-              title="Name"
             >
               <div
                 class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
@@ -208,7 +213,6 @@ exports[`used with a combo box columns with headers renders a table with headers
             <td
               class="react-combo-boxes-listbox__table-cell"
               role="presentation"
-              title="Type"
             >
               <div
                 class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
@@ -227,7 +231,6 @@ exports[`used with a combo box columns with headers renders a table with headers
             <td
               class="react-combo-boxes-listbox__table-cell"
               role="presentation"
-              title="Name"
             >
               <div
                 class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
@@ -239,7 +242,6 @@ exports[`used with a combo box columns with headers renders a table with headers
             <td
               class="react-combo-boxes-listbox__table-cell"
               role="presentation"
-              title="Type"
             >
               <div
                 class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
@@ -258,7 +260,6 @@ exports[`used with a combo box columns with headers renders a table with headers
             <td
               class="react-combo-boxes-listbox__table-cell"
               role="presentation"
-              title="Name"
             >
               <div
                 class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
@@ -270,7 +271,6 @@ exports[`used with a combo box columns with headers renders a table with headers
             <td
               class="react-combo-boxes-listbox__table-cell"
               role="presentation"
-              title="Type"
             >
               <div
                 class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
@@ -284,11 +284,13 @@ exports[`used with a combo box columns with headers renders a table with headers
       </table>
     </div>
     <div
-      aria-live="polite"
+      class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
+      id="id_hint"
+    />
+    <div
       class="react-combo-boxes-combobox__not-found"
       hidden=""
       id="id_not_found"
-      role="alert"
     />
   </div>
 </div>
@@ -303,6 +305,7 @@ exports[`used with a combo box columns with html renders a table with colgroups 
     <input
       aria-autocomplete="none"
       aria-controls="id_listbox"
+      aria-describedby="id_hint"
       aria-expanded="false"
       autocomplete="off"
       class="react-combo-boxes-combobox__input"
@@ -399,11 +402,13 @@ exports[`used with a combo box columns with html renders a table with colgroups 
       </table>
     </div>
     <div
-      aria-live="polite"
+      class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
+      id="id_hint"
+    />
+    <div
       class="react-combo-boxes-combobox__not-found"
       hidden=""
       id="id_not_found"
-      role="alert"
     />
   </div>
 </div>
@@ -418,6 +423,7 @@ exports[`used with a combo box grouped renders a table with groups 1`] = `
     <input
       aria-autocomplete="none"
       aria-controls="id_listbox"
+      aria-describedby="id_hint"
       aria-expanded="false"
       autocomplete="off"
       class="react-combo-boxes-combobox__input"
@@ -453,6 +459,7 @@ exports[`used with a combo box grouped renders a table with groups 1`] = `
             class="react-combo-boxes-listbox__table-group-row"
           >
             <th
+              aria-hidden="true"
               class="react-combo-boxes-listbox__table-group-header"
               colspan="2"
             >
@@ -511,6 +518,7 @@ exports[`used with a combo box grouped renders a table with groups 1`] = `
             class="react-combo-boxes-listbox__table-group-row"
           >
             <th
+              aria-hidden="true"
               class="react-combo-boxes-listbox__table-group-header"
               colspan="2"
             >
@@ -545,11 +553,13 @@ exports[`used with a combo box grouped renders a table with groups 1`] = `
       </table>
     </div>
     <div
-      aria-live="polite"
+      class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
+      id="id_hint"
+    />
+    <div
       class="react-combo-boxes-combobox__not-found"
       hidden=""
       id="id_not_found"
-      role="alert"
     />
   </div>
 </div>

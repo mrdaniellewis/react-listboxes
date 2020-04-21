@@ -9,12 +9,8 @@ exports[`WrapperComponent allows custom layouts 1`] = `
       class="combobox-wrapper"
     >
       <div
-        aria-controls="id_listbox"
-        aria-expanded="false"
-        class="react-combo-boxes-dropdown__combobox"
-        id="id"
-        role="combobox"
-        tabindex="0"
+        class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
+        id="id_value"
       >
         foo
       </div>
@@ -22,23 +18,17 @@ exports[`WrapperComponent allows custom layouts 1`] = `
     <div
       class="listbox-wrapper"
     >
-      <ul
-        class="react-combo-boxes-listbox"
-        hidden=""
-        id="id_listbox"
-        role="listbox"
-        tabindex="-1"
+      <div
+        aria-controls="id_listbox"
+        aria-expanded="false"
+        aria-labelledby="id_value"
+        class="react-combo-boxes-dropdown__combobox"
+        id="id"
+        role="combobox"
+        tabindex="0"
       >
-        <li
-          aria-selected="true"
-          class="react-combo-boxes-listbox__option"
-          id="id_option_foo"
-          role="option"
-          tabindex="-1"
-        >
-          foo
-        </li>
-      </ul>
+        foo
+      </div>
     </div>
   </div>
 </div>
@@ -50,9 +40,16 @@ exports[`options as array of objects disabled sets the aria-disabled attribute 1
     class="react-combo-boxes-dropdown"
   >
     <div
+      class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
+      id="id_value"
+    >
+      Apple
+    </div>
+    <div
       aria-activedescendant="id_option_apple"
       aria-controls="id_listbox"
       aria-expanded="true"
+      aria-labelledby="id_value"
       class="react-combo-boxes-dropdown__combobox"
       id="id"
       role="combobox"
@@ -96,8 +93,15 @@ exports[`options as array of objects group renders grouped options 1`] = `
     class="react-combo-boxes-dropdown"
   >
     <div
+      class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
+      id="id_value"
+    >
+      Apple
+    </div>
+    <div
       aria-controls="id_listbox"
       aria-expanded="false"
+      aria-labelledby="id_value"
       class="react-combo-boxes-dropdown__combobox"
       id="id"
       role="combobox"
@@ -196,8 +200,15 @@ exports[`options as array of objects label renders a closed drop down 1`] = `
     class="react-combo-boxes-dropdown"
   >
     <div
+      class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
+      id="id_value"
+    >
+      Apple
+    </div>
+    <div
       aria-controls="id_listbox"
       aria-expanded="false"
+      aria-labelledby="id_value"
       class="react-combo-boxes-dropdown__combobox"
       id="id"
       role="combobox"
@@ -248,8 +259,15 @@ exports[`options as array of objects missing label treats as a blank string 1`] 
     class="react-combo-boxes-dropdown"
   >
     <div
+      class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
+      id="id_value"
+    >
+       
+    </div>
+    <div
       aria-controls="id_listbox"
       aria-expanded="false"
+      aria-labelledby="id_value"
       class="react-combo-boxes-dropdown__combobox"
       id="id"
       role="combobox"
@@ -282,8 +300,15 @@ exports[`options options as array of numbers renders a closed drop down 1`] = `
     class="react-combo-boxes-dropdown"
   >
     <div
+      class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
+      id="id_value"
+    >
+      0
+    </div>
+    <div
       aria-controls="id_listbox"
       aria-expanded="false"
+      aria-labelledby="id_value"
       class="react-combo-boxes-dropdown__combobox"
       id="id"
       role="combobox"
@@ -342,8 +367,15 @@ exports[`options options as array of strings renders a closed drop down 1`] = `
     class="react-combo-boxes-dropdown"
   >
     <div
+      class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
+      id="id_value"
+    >
+      Apple
+    </div>
+    <div
       aria-controls="id_listbox"
       aria-expanded="false"
+      aria-labelledby="id_value"
       class="react-combo-boxes-dropdown__combobox"
       id="id"
       role="combobox"
@@ -394,8 +426,15 @@ exports[`options options as null renders a closed drop down with the option as a
     class="react-combo-boxes-dropdown"
   >
     <div
+      class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
+      id="id_value"
+    >
+       
+    </div>
+    <div
       aria-controls="id_listbox"
       aria-expanded="false"
+      aria-labelledby="id_value"
       class="react-combo-boxes-dropdown__combobox"
       id="id"
       role="combobox"
@@ -430,8 +469,15 @@ exports[`options options as undefined renders a closed drop down with the option
     class="react-combo-boxes-dropdown"
   >
     <div
+      class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
+      id="id_value"
+    >
+       
+    </div>
+    <div
       aria-controls="id_listbox"
       aria-expanded="false"
+      aria-labelledby="id_value"
       class="react-combo-boxes-dropdown__combobox"
       id="id"
       role="combobox"
@@ -466,9 +512,16 @@ exports[`options updating options updates the options 1`] = `
     class="react-combo-boxes-dropdown"
   >
     <div
+      class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
+      id="id_value"
+    >
+      Strawberry
+    </div>
+    <div
       aria-activedescendant="id_option_strawberry"
       aria-controls="id_listbox"
       aria-expanded="true"
+      aria-labelledby="id_value"
       class="react-combo-boxes-dropdown__combobox"
       id="id"
       role="combobox"
@@ -519,8 +572,15 @@ exports[`placeholder renders a placeholder option 1`] = `
     class="react-combo-boxes-dropdown"
   >
     <div
+      class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
+      id="id_value"
+    >
+      Please select…
+    </div>
+    <div
       aria-controls="id_listbox"
       aria-expanded="false"
+      aria-labelledby="id_value"
       class="react-combo-boxes-dropdown__combobox"
       id="id"
       role="combobox"

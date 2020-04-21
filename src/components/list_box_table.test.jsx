@@ -274,23 +274,7 @@ describe('used with a combo box', () => {
       });
     });
 
-    describe('VisuallyHiddenComponent', () => {
-      it('allows the component to be replaced', () => {
-        const { getByRole, getAllByRole } = render((
-          <ComboBoxWrapper
-            options={options}
-            columns={columns}
-            ListBoxComponent={ListBoxTable}
-            mapOption={map}
-            VisuallyHiddenComponent="dl"
-          />
-        ));
-        getByRole('combobox').focus();
-        expect(getAllByRole('option')[0].firstChild.firstChild.tagName).toEqual('DL');
-      });
-    });
-
-    describe('visuallyHiddenProps', () => {
+    describe('visuallyHiddenClassName', () => {
       it('allows custom props', () => {
         const { getAllByRole, getByRole } = render((
           <ComboBoxWrapper
@@ -298,7 +282,7 @@ describe('used with a combo box', () => {
             columns={columns}
             ListBoxComponent={ListBoxTable}
             mapOption={map}
-            visuallyHiddenProps={{ className: 'bar' }}
+            visuallyHiddenClassName="bar"
           />
         ));
         getByRole('combobox').focus();

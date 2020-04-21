@@ -47,7 +47,7 @@ const InputComponent = forwardRef((props, ref) => {
         value={suggestedValue}
         disabled
         id={null}
-        style={{ position: 'absolute', left: 0, background: 'white', zIndex: -1 }}
+        style={{ position: 'absolute', left: 0, background: 'white', zIndex: -1, color: '#999' }}
       />
     </>
   );

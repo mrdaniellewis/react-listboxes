@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Context } from '../context.js';
 import { renderGroupedOptions } from '../helpers/render_grouped_options.js';
 import { classPrefix } from '../constants/class_prefix.js';
-import { visuallyHiddenClassName } from '../constants/visually_hidden_class_name.js';
 
 export const ListBoxTable = forwardRef(({ focusedRef, hidden, onSelectOption, ...props }, ref) => {
   const context = useContext(Context);
@@ -21,7 +20,7 @@ export const ListBoxTable = forwardRef(({ focusedRef, hidden, onSelectOption, ..
       tableRowProps,
       tableCellProps,
       ValueComponent, valueProps,
-      VisuallyHiddenComponent, visuallyHiddenProps,
+      visuallyHiddenClassName,
     },
   } = context;
 
@@ -60,6 +59,7 @@ export const ListBoxTable = forwardRef(({ focusedRef, hidden, onSelectOption, ..
             <tr>
               {columns.map(({ name, label }) => (
                 <th
+                  aria-hidden="true"
                   key={name}
                   className={`${classPrefix}listbox__table-header`}
                   {...tableHeaderProps}
@@ -85,6 +85,7 @@ export const ListBoxTable = forwardRef(({ focusedRef, hidden, onSelectOption, ..
                     {...tableGroupRowProps}
                   >
                     <th
+                      aria-hidden="true"
                       colSpan={Object.keys(columns).length}
                       className={`${classPrefix}listbox__table-group-header`}
                       {...tableGroupHeaderProps}
@@ -125,25 +126,18 @@ export const ListBoxTable = forwardRef(({ focusedRef, hidden, onSelectOption, ..
                       >
                         <td
                           role="presentation"
-                          title={column.label || null}
                           className={`${classPrefix}listbox__table-cell`}
                           {...tableCellProps}
                         >
                           {group && index === 0 && (
-                            <VisuallyHiddenComponent
-                              className={visuallyHiddenClassName}
-                              {...visuallyHiddenProps}
-                            >
+                            <div className={visuallyHiddenClassName}>
                               {group.label}
-                            </VisuallyHiddenComponent>
+                            </div>
                           )}
                           {column.label && (
-                            <VisuallyHiddenComponent
-                              className={visuallyHiddenClassName}
-                              {...visuallyHiddenProps}
-                            >
+                            <div className={visuallyHiddenClassName}>
                               {column.label}
-                            </VisuallyHiddenComponent>
+                            </div>
                           )}
                           <ValueComponent
                             {...valueProps}

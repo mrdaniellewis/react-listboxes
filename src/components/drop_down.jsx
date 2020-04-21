@@ -16,6 +16,8 @@ import { useCombineRefs } from '../hooks/use_combine_refs.js';
 import { findOption } from '../helpers/find_option.js';
 import { ListBox } from './list_box.jsx';
 import { classPrefix } from '../constants/class_prefix.js';
+import { joinTokens } from '../helpers/join_tokens.js';
+import { visuallyHiddenClassName } from '../constants/visually_hidden_class_name.js';
 
 export const DropDown = forwardRef((rawProps, ref) => {
   const optionisedProps = useNormalisedOptions(rawProps, { mustHaveSelection: true });
@@ -30,6 +32,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
     ListBoxComponent, listBoxProps,
     WrapperComponent, wrapperProps,
     ComboBoxComponent, comboBoxProps,
+    visuallyHiddenClassName: providedVisuallyHiddenClassName,
   } = optionisedProps;
   const comboBoxRef = useRef();
   const listRef = useRef();
@@ -117,6 +120,12 @@ export const DropDown = forwardRef((rawProps, ref) => {
         className={`${classPrefix}dropdown`}
         {...wrapperProps}
       >
+        <div // Some screen-readers don't read the value
+          id={`${id}_value`}
+          className={providedVisuallyHiddenClassName}
+        >
+          {(children ?? value?.label ?? selectedOption?.label) || '\u00A0'}
+        </div>
         <ComboBoxComponent
           role="combobox"
           id={id}
@@ -124,7 +133,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
           aria-controls={`${id}_listbox`}
           aria-expanded={expanded ? 'true' : 'false'}
           aria-activedescendant={(expanded && focusedOption?.key) || null}
-          aria-labelledby={ariaLabelledBy}
+          aria-labelledby={joinTokens(ariaLabelledBy, `${id}_value`)}
           aria-required={required ? 'true' : null}
           aria-disabled={disabled ? 'true' : null}
           aria-invalid={ariaInvalid == null ? undefined : String(ariaInvalid)}
@@ -141,6 +150,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
           id={`${id}_listbox`}
           hidden={!expanded}
           aria-activedescendant={(expanded && focusedOption?.key) || null}
+          aria-labelledby={ariaLabelledBy}
           tabIndex={-1}
           onSelectOption={clickOption}
           focusedRef={focusedRef}
@@ -189,8 +199,7 @@ DropDown.propTypes = {
   optionProps: PropTypes.object,
   ValueComponent: componentValidator,
   valueProps: PropTypes.object,
-  VisuallyHiddenComponent: componentValidator,
-  visuallyHiddenProps: PropTypes.object,
+  visuallyHiddenClassName: PropTypes.string,
 };
 
 DropDown.defaultProps = {
@@ -229,8 +238,7 @@ DropDown.defaultProps = {
   optionProps: null,
   ValueComponent: Fragment,
   valueProps: null,
-  VisuallyHiddenComponent: 'div',
-  visuallyHiddenProps: null,
+  visuallyHiddenClassName,
 };
 
 DropDown.displayName = 'DropDown';

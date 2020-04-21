@@ -1491,11 +1491,27 @@ describe('disabled', () => {
 });
 
 describe('aria-labelledby', () => {
+  it('is labelled by the value', () => {
+    const { getByRole, getByLabelText } = render(
+      <DropDownWrapper options={['one', 'two']} value="two" />,
+    );
+    expect(getByLabelText('two')).toEqual(getByRole('combobox'));
+  });
+
+  it('is labelled by the children', () => {
+    const { getByRole, getByLabelText } = render((
+      <DropDownWrapper options={['one', 'two']} value="two">
+        bar
+      </DropDownWrapper>
+    ));
+    expect(getByLabelText('bar')).toEqual(getByRole('combobox'));
+  });
+
   it('sets aria-labelledby as a string', () => {
     const { getByRole } = render(
       <DropDownWrapper options={['one', 'two']} aria-labelledby="foo" />,
     );
-    expect(getByRole('combobox')).toHaveAttribute('aria-labelledby', 'foo');
+    expect(getByRole('combobox')).toHaveAttribute('aria-labelledby', 'foo id_value');
   });
 });
 
@@ -1917,22 +1933,12 @@ describe('optionProps', () => {
   });
 });
 
-describe('VisuallyHiddenComponent', () => {
-  it('allows the component to be replaced', () => {
-    const { getByRole } = render(
-      <DropDownWrapper options={[{ label: 'foo', group: 'bar' }]} VisuallyHiddenComponent="dl" />,
-    );
-    fireEvent.click(getByRole('combobox'));
-    expect(getByRole('option').firstChild.tagName).toEqual('DL');
-  });
-});
-
-describe('visuallyHiddenProps', () => {
+describe('visuallyHiddenClassName', () => {
   it('allows custom props', () => {
     const { getByRole } = render(
       <DropDownWrapper
         options={[{ label: 'foo', group: 'bar' }]}
-        visuallyHiddenProps={{ className: 'bar' }}
+        visuallyHiddenClassName="bar"
       />,
     );
     fireEvent.click(getByRole('combobox'));

@@ -14,6 +14,7 @@ import { useCombineRefs } from '../hooks/use_combine_refs.js';
 import { allowProps } from '../helpers/allow_props.js';
 import { ListBox } from './list_box.jsx';
 import { classPrefix } from '../constants/class_prefix.js';
+import { visuallyHiddenClassName } from '../constants/visually_hidden_class_name.js';
 
 const allowAttributes = [
   'autoComplete', 'autoCapitalize', 'autoCorrect', 'autoFocus', 'disabled', 'inputMode',
@@ -34,6 +35,8 @@ export const ComboBox = forwardRef(({ placeholder, ...rawProps }, ref) => {
     InputComponent, inputProps,
     ClearButtonComponent, clearButtonProps,
     NotFoundComponent, notFoundProps,
+    HintComponent,
+    visuallyHiddenClassName: providedVisuallyHiddenClassName,
   } = optionisedProps;
 
   const comboRef = useRef();
@@ -197,7 +200,7 @@ export const ComboBox = forwardRef(({ placeholder, ...rawProps }, ref) => {
           onChange={(e) => dispatch(onChange(e))}
           onMouseUp={(e) => dispatch(onInputMouseUp(e))}
           onFocus={(e) => dispatch(onFocusInput(e))}
-          aria-describedby={joinTokens(showNotFound && `${id}_not_found`, ariaDescribedBy)}
+          aria-describedby={joinTokens(showNotFound && `${id}_not_found`, `${id}_hint`, ariaDescribedBy)}
           ref={combinedRef}
           tabIndex={managedFocus && showListBox && focusListBox ? -1 : null}
           {...allowProps(optionisedProps, ...allowAttributes)}
@@ -223,12 +226,18 @@ export const ComboBox = forwardRef(({ placeholder, ...rawProps }, ref) => {
           focusedRef={focusedRef}
           {...listBoxProps}
         />
+        <HintComponent
+          id={`${id}_hint`}
+          className={providedVisuallyHiddenClassName}
+        >
+          {showListBox && (
+            `${options.length} option${options.length > 1 ? 's' : ''} found`
+          )}
+        </HintComponent>
         <NotFoundComponent
           id={`${id}_not_found`}
           className={`${classPrefix}combobox__not-found`}
           hidden={!showNotFound}
-          role="alert"
-          aria-live="polite"
           {...notFoundProps}
         >
           {showNotFound ? notFoundMessage : null}
@@ -289,10 +298,10 @@ ComboBox.propTypes = {
   valueProps: PropTypes.object,
   ClearButtonComponent: componentValidator,
   clearButtonProps: PropTypes.object,
+  HintComponent: componentValidator,
   NotFoundComponent: componentValidator,
   notFoundProps: PropTypes.object,
-  VisuallyHiddenComponent: componentValidator,
-  visuallyHiddenProps: PropTypes.object,
+  visuallyHiddenClassName: PropTypes.string,
 };
 
 ComboBox.defaultProps = {
@@ -341,10 +350,10 @@ ComboBox.defaultProps = {
   valueProps: null,
   ClearButtonComponent: 'span',
   clearButtonProps: null,
+  HintComponent: 'div',
   NotFoundComponent: 'div',
   notFoundProps: null,
-  VisuallyHiddenComponent: 'div',
-  visuallyHiddenProps: null,
+  visuallyHiddenClassName,
 };
 
 ComboBox.displayName = 'ComboBox';

@@ -78,6 +78,7 @@ the html element, or a full component if you want a more far reaching change.  B
 
 ```js
 <WrapperComponent {...wrapperProps}>
+  <div className={visuallyHiddenClassName} /> // contains the curreng value for screen readers
   <ComboBoxComponent {...comboBoxProps} />
   <ListBoxComponent {...listBoxProps} > // The entire listbox implementation
     <ListBoxListComponent {...listBoxListProps}>
@@ -87,7 +88,7 @@ the html element, or a full component if you want a more far reaching change.  B
       <GroupComponent {...groupProps}>
         <GroupLabelComponent {...groupProps} />
         <OptionComponent {...optionProps}>
-          <VisuallyHiddenComponent {...visuallyHiddenProps} /> // contains the group name for screen readers
+          <div className={visuallyHiddenClassName} /> // contains the group name for screen readers
           <ValueComponent {...valueProps} />
         </OptionComponent>
       </GroupComponent>

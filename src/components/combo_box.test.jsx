@@ -2406,6 +2406,40 @@ describe('notFoundMessage', () => {
   });
 });
 
+describe('hint', () => {
+  it('is empty with no results', () => {
+    const { container, getByRole } = render((
+      <ComboBoxWrapper options={[]} />
+    ));
+    getByRole('combobox').focus();
+    expect(container.querySelector('#id_hint')).not.toHaveTextContent();
+  });
+
+  it('is empty if list box is not showing', () => {
+    const { container, getByRole } = render((
+      <ComboBoxWrapper options={['foo']} value="foo" />
+    ));
+    getByRole('combobox').focus();
+    expect(container.querySelector('#id_hint')).not.toHaveTextContent();
+  });
+
+  it('lists the number of options', () => {
+    const { container, getByRole } = render((
+      <ComboBoxWrapper options={['foo', 'bar']} />
+    ));
+    getByRole('combobox').focus();
+    expect(container.querySelector('#id_hint')).toHaveTextContent('2 options found');
+  });
+
+  it('lists one option', () => {
+    const { container, getByRole } = render((
+      <ComboBoxWrapper options={['foo']} />
+    ));
+    getByRole('combobox').focus();
+    expect(container.querySelector('#id_hint')).toHaveTextContent('1 option found');
+  });
+});
+
 describe('id', () => {
   const options = [
     { label: 'Apple' },
@@ -2590,7 +2624,7 @@ describe('aria-describedby', () => {
       <ComboBoxWrapper options={['foo']} aria-describedby="foo" />
     ));
     getByRole('combobox').focus();
-    expect(getByRole('combobox')).toHaveAttribute('aria-describedby', 'foo');
+    expect(getByRole('combobox')).toHaveAttribute('aria-describedby', 'id_hint foo');
   });
 
   it('is appended to the input when not found is showing', async () => {
@@ -2599,7 +2633,7 @@ describe('aria-describedby', () => {
     ));
     getByRole('combobox').focus();
     await userEvent.type(document.activeElement, 'foo');
-    expect(getByRole('combobox')).toHaveAttribute('aria-describedby', 'id_not_found foo');
+    expect(getByRole('combobox')).toHaveAttribute('aria-describedby', 'id_not_found id_hint foo');
   });
 });
 
@@ -2713,7 +2747,7 @@ describe('WrapperComponent', () => {
 
   it('allows custom layouts', () => {
     const WrapperComponent = forwardRef((props, ref) => {
-      const { children: [comboBox, clearButton, listBox, notFound] } = props;
+      const { children: [comboBox, clearButton, listBox, hint, notFound] } = props;
 
       return (
         <div {...props} ref={ref}>
@@ -2725,6 +2759,9 @@ describe('WrapperComponent', () => {
           </div>
           <div className="listbox-wrapper">
             {listBox}
+          </div>
+          <div className="listbox-hint">
+            {hint}
           </div>
           <div className="not-found-wrapper">
             {notFound}
@@ -2994,6 +3031,16 @@ describe('clearButtonProps', () => {
   });
 });
 
+describe('HintComponent', () => {
+  it('allows the component to be replaced', () => {
+    render(
+      <ComboBoxWrapper options={['foo']} HintComponent="dl" />,
+    );
+    const el = document.getElementById('id_hint');
+    expect(el.tagName).toEqual('DL');
+  });
+});
+
 describe('NotFoundComponent', () => {
   it('allows the component to be replaced', () => {
     render(
@@ -3014,22 +3061,12 @@ describe('notFoundProps', () => {
   });
 });
 
-describe('VisuallyHiddenComponent', () => {
-  it('allows the component to be replaced', () => {
-    const { getByRole } = render(
-      <ComboBoxWrapper options={[{ label: 'foo', group: 'bar' }]} VisuallyHiddenComponent="dl" />,
-    );
-    getByRole('combobox').focus();
-    expect(getByRole('option').firstChild.tagName).toEqual('DL');
-  });
-});
-
-describe('visuallyHiddenProps', () => {
+describe('visuallyHiddenClassName', () => {
   it('allows custom props', () => {
     const { getByRole } = render(
       <ComboBoxWrapper
         options={[{ label: 'foo', group: 'bar' }]}
-        visuallyHiddenProps={{ className: 'bar' }}
+        visuallyHiddenClassName="bar"
       />,
     );
     getByRole('combobox').focus();

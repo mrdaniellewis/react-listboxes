@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Context } from '../context.js';
 import { renderGroupedOptions } from '../helpers/render_grouped_options.js';
 import { classPrefix } from '../constants/class_prefix.js';
-import { visuallyHiddenClassName } from '../constants/visually_hidden_class_name.js';
 
 export const ListBox = forwardRef(({ focusedRef, onSelectOption, ...props }, ref) => {
   const context = useContext(Context);
@@ -16,7 +15,7 @@ export const ListBox = forwardRef(({ focusedRef, onSelectOption, ...props }, ref
       GroupLabelComponent = 'li', groupLabelProps,
       OptionComponent = 'li', optionProps,
       ValueComponent, valueProps,
-      VisuallyHiddenComponent, visuallyHiddenProps,
+      visuallyHiddenClassName,
     },
   } = context;
 
@@ -76,12 +75,9 @@ export const ListBox = forwardRef(({ focusedRef, onSelectOption, ...props }, ref
                 onClick={disabled ? null : (e) => onSelectOption(e, option)}
               >
                 {group && (
-                  <VisuallyHiddenComponent
-                    className={visuallyHiddenClassName}
-                    {...visuallyHiddenProps}
-                  >
+                  <div className={visuallyHiddenClassName}>
                     {group.label}
-                  </VisuallyHiddenComponent>
+                  </div>
                 )}
                 <ValueComponent {...valueProps}>
                   {label}

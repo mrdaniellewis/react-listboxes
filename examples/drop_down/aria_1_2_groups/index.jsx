@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { forwardRef, useContext, useRef, useState } from 'react';
 import { DropDown, Context } from '../../../src/index.js';
 
 const options = [
@@ -42,6 +42,19 @@ function GroupLabelComponent({ children }) {
   );
 }
 
+const OptionComponent = forwardRef(({ children, ...props }, ref) => {
+  // Filter out visually hidden label
+  const [, option] = children;
+  return (
+    <li
+      ref={ref}
+      {...props}
+    >
+      {option}
+    </li>
+  );
+});
+
 export function Example() {
   const [value, setValue] = useState(null);
   const [managedFocus, setManagedFocus] = useState(true);
@@ -65,7 +78,7 @@ export function Example() {
         managedFocus={managedFocus}
         GroupComponent={GroupComponent}
         GroupLabelComponent={GroupLabelComponent}
-        VisuallyHiddenComponent={() => null} // hidden group label not required
+        OptionComponent={OptionComponent}
       />
 
       <label>

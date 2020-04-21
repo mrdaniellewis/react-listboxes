@@ -55,8 +55,8 @@ The properties for customisation are as follows:
         </tr>
         <tr {...tableRowProps}>
           <td {...tableCellProps}>
-            <VisuallyHiddenComponent {...visuallyHiddenProps} /> // contains group name in first cell if present
-            <VisuallyHiddenComponent {...visuallyHiddenProps} /> // contains column label if present
+            <div className={visuallyHiddenClassName} /> // contains group name in first cell if present
+            <div className={visuallyHiddenClassName} /> // contains column label if present
             <ValueComponent {...valueProps} />
           </td>
         </tr>
