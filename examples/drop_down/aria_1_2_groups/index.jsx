@@ -1,5 +1,5 @@
 import React, { forwardRef, useContext, useRef, useState } from 'react';
-import { DropDown, Context } from '../../../src/index.js';
+import { DropDown, Context } from '../../../src';
 
 const options = [
   { label: 'Apple' },

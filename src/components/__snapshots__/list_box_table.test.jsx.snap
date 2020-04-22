@@ -20,6 +20,11 @@ exports[`used with a combo box columns as names only renders a table as the list
     />
     <span
       aria-hidden="true"
+      class="react-combo-boxes-combobox__open-button"
+      id="id_open_button"
+    />
+    <span
+      aria-hidden="true"
       class="react-combo-boxes-combobox__clear-button"
       hidden=""
       id="id_clear_button"
@@ -151,6 +156,11 @@ exports[`used with a combo box columns with headers renders a table with headers
       role="combobox"
       type="text"
       value=""
+    />
+    <span
+      aria-hidden="true"
+      class="react-combo-boxes-combobox__open-button"
+      id="id_open_button"
     />
     <span
       aria-hidden="true"
@@ -316,6 +326,11 @@ exports[`used with a combo box columns with html renders a table with colgroups 
     />
     <span
       aria-hidden="true"
+      class="react-combo-boxes-combobox__open-button"
+      id="id_open_button"
+    />
+    <span
+      aria-hidden="true"
       class="react-combo-boxes-combobox__clear-button"
       hidden=""
       id="id_clear_button"
@@ -431,6 +446,11 @@ exports[`used with a combo box grouped renders a table with groups 1`] = `
       role="combobox"
       type="text"
       value=""
+    />
+    <span
+      aria-hidden="true"
+      class="react-combo-boxes-combobox__open-button"
+      id="id_open_button"
     />
     <span
       aria-hidden="true"

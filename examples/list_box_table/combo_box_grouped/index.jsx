@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Context, ComboBox, useTokenSearch, ListBoxTable, TokenHighlight, useConfineListBoxTable } from '../../../src/index.js';
+import { Context, ComboBox, useTokenSearch, ListBoxTable, TokenHighlight, useConfineListBoxTable } from '../../../src';
 import cats from '../../data/cats.json';
 
 const columns = ['breed', 'country', 'origin', 'coatLength', 'pattern'];

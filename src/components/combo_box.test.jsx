@@ -722,6 +722,53 @@ describe('options', () => {
         });
       });
 
+      describe('typing', () => {
+        it('updates the input value', () => {
+          const { getByRole } = render((
+            <ComboBoxWrapper options={options} />
+          ));
+          getByRole('combobox').focus();
+          userEvent.type(getByRole('combobox'), 'foo');
+          expect(getByRole('combobox')).toHaveValue('foo');
+        });
+
+        describe('single option with matching value', () => {
+          it('does not show the listbox if the search matches the value', () => {
+            const { getByRole } = render((
+              <ComboBoxWrapper options={['foo']} />
+            ));
+            getByRole('combobox').focus();
+            userEvent.type(getByRole('combobox'), 'foo');
+            fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+            fireEvent.keyDown(document.activeElement, { key: 'Enter' });
+            expectToBeClosed(getByRole('combobox'));
+
+            fireEvent.change(document.activeElement, { target: { value: 'fo' } });
+            expectToHaveSelectedOption(getByRole('combobox'), getByRole('option'));
+            userEvent.type(getByRole('combobox'), 'o');
+            expectToBeClosed(getByRole('combobox'));
+          });
+        });
+
+        describe('multiple options with matching value', () => {
+          it('does show the listbox if the search matches the value', () => {
+            const { getByRole, getAllByRole } = render((
+              <ComboBoxWrapper options={['foo', 'foo bar']} />
+            ));
+            getByRole('combobox').focus();
+            userEvent.type(getByRole('combobox'), 'foo');
+            fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+            fireEvent.keyDown(document.activeElement, { key: 'Enter' });
+            expectToBeClosed(getByRole('combobox'));
+
+            fireEvent.change(document.activeElement, { target: { value: 'fo' } });
+            expectToHaveSelectedOption(getByRole('combobox'), getAllByRole('option')[0]);
+            userEvent.type(getByRole('combobox'), 'o');
+            expectToHaveSelectedOption(getByRole('combobox'), getAllByRole('option')[0]);
+          });
+        });
+      });
+
       describe('setting the search to an empty string', () => {
         describe('without an existing value', () => {
           it('does not call onValue', async () => {
@@ -768,32 +815,6 @@ describe('options', () => {
             fireEvent.change(document.activeElement, { target: { value: '' } });
             expectToBeOpen(document.activeElement);
           });
-        });
-      });
-
-      describe('remove button', () => {
-        it('is not present without a value', () => {
-          render(<ComboBoxWrapper options={options} />);
-          const remove = document.getElementById('id_clear_button');
-          expect(remove).not.toBeVisible();
-        });
-
-        it('pressing the button removes the value', () => {
-          const spy = jest.fn();
-          render(<ComboBoxWrapper options={options} value="Apple" onValue={spy} />);
-          const remove = document.getElementById('id_clear_button');
-          expect(remove).toBeVisible();
-          userEvent.click(remove);
-          expect(spy).toHaveBeenCalledWith(null);
-        });
-
-        it('pressing the middle button does not remove the value', () => {
-          const spy = jest.fn();
-          render(<ComboBoxWrapper options={options} value="Apple" onValue={spy} />);
-          const remove = document.getElementById('id_clear_button');
-          expect(remove).toBeVisible();
-          fireEvent.click(remove, { button: 1 });
-          expect(spy).not.toHaveBeenCalled();
         });
       });
     });
@@ -1185,9 +1206,9 @@ describe('value', () => {
 
   describe('with a single option matching the value', () => {
     it('does not open the combo box', () => {
-      const options = [{ id: 1 }];
+      const options = ['foo'];
       const { getByRole } = render((
-        <ComboBoxWrapper options={options} value={1} />
+        <ComboBoxWrapper options={options} value="foo" />
       ));
       getByRole('combobox').focus();
       expectToBeClosed(getByRole('combobox'));
@@ -1265,6 +1286,67 @@ describe('value', () => {
       fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
       expectToHaveFocusedOption(getByRole('combobox'), getAllByRole('option')[1]);
     });
+  });
+});
+
+describe('open button', () => {
+  const options = ['Apple', 'Orange', 'Banana'];
+
+  it('pressing the button focuses the input', () => {
+    render(<ComboBoxWrapper options={options} />);
+    const open = document.getElementById('id_open_button');
+    expect(open).toBeVisible();
+    userEvent.click(open);
+    expectToBeOpen(document.activeElement);
+  });
+
+  it('pressing the middle button does not focus the input', () => {
+    const { getByRole } = render(<ComboBoxWrapper options={options} />);
+    const open = document.getElementById('id_open_button');
+    expect(open).toBeVisible();
+    fireEvent.click(open, { button: 1 });
+    expect(document.activeElement).not.toEqual(getByRole('combobox'));
+    expect(getByRole('listbox', { hidden: true })).not.toBeVisible();
+  });
+
+  it('is not present with a value', () => {
+    render(<ComboBoxWrapper options={options} value="Apple" />);
+    const open = document.getElementById('id_open_button');
+    expect(open).not.toBeVisible();
+  });
+
+  it('is not present with no options', () => {
+    render(<ComboBoxWrapper options={[]} />);
+    const open = document.getElementById('id_open_button');
+    expect(open).not.toBeVisible();
+  });
+});
+
+describe('clear button', () => {
+  const options = ['Apple', 'Orange', 'Banana'];
+
+  it('is not present without a value', () => {
+    render(<ComboBoxWrapper options={options} />);
+    const remove = document.getElementById('id_clear_button');
+    expect(remove).not.toBeVisible();
+  });
+
+  it('pressing the button removes the value', () => {
+    const spy = jest.fn();
+    render(<ComboBoxWrapper options={options} value="Apple" onValue={spy} />);
+    const remove = document.getElementById('id_clear_button');
+    expect(remove).toBeVisible();
+    userEvent.click(remove);
+    expect(spy).toHaveBeenCalledWith(null);
+  });
+
+  it('pressing the middle button does not remove the value', () => {
+    const spy = jest.fn();
+    render(<ComboBoxWrapper options={options} value="Apple" onValue={spy} />);
+    const remove = document.getElementById('id_clear_button');
+    expect(remove).toBeVisible();
+    fireEvent.click(remove, { button: 1 });
+    expect(spy).not.toHaveBeenCalled();
   });
 });
 
@@ -2459,7 +2541,9 @@ describe('id', () => {
     expect(getAllByRole('option')[1]).toHaveAttribute('id', 'foo_option_pear');
     expect(getAllByRole('option')[2]).toHaveAttribute('id', 'foo_option_orange');
 
+    expect(document.getElementById('foo_open_button')).toBeInstanceOf(Element);
     expect(document.getElementById('foo_clear_button')).toBeInstanceOf(Element);
+    expect(document.getElementById('foo_hint')).toBeInstanceOf(Element);
     expect(document.getElementById('foo_not_found')).toBeInstanceOf(Element);
   });
 });
@@ -2747,12 +2831,20 @@ describe('WrapperComponent', () => {
 
   it('allows custom layouts', () => {
     const WrapperComponent = forwardRef((props, ref) => {
-      const { children: [comboBox, clearButton, listBox, hint, notFound] } = props;
+      const {
+        children: [beforeInput, input, openButton, clearButton, listBox, hint, notFound],
+      } = props;
 
       return (
         <div {...props} ref={ref}>
-          <div className="combobox-wrapper">
-            {comboBox}
+          <div className="input-wrapper">
+            {input}
+          </div>
+          <div className="before-input">
+            {beforeInput}
+          </div>
+          <div className="open-button-wrapper">
+            {openButton}
           </div>
           <div className="clear-button-wrapper">
             {clearButton}
@@ -2784,6 +2876,15 @@ describe('wrapperProps', () => {
       <ComboBoxWrapper options={['foo']} wrapperProps={{ className: 'foo' }} />,
     );
     expect(container.firstChild).toHaveClass('foo');
+  });
+});
+
+describe('BeforeInputComponent', () => {
+  it('allows the input to be replaced', () => {
+    const { getByRole } = render(
+      <ComboBoxWrapper options={['foo']} BeforeInputComponent="dl" />,
+    );
+    expect(getByRole('combobox').previousSibling.tagName).toEqual('DL');
   });
 });
 
@@ -3008,6 +3109,26 @@ describe('valueProps', () => {
     );
     getByRole('combobox').focus();
     expect(getByRole('option').firstChild).toHaveAttribute('data-foo', 'bar');
+  });
+});
+
+describe('OpenButtonComponent', () => {
+  it('allows the component to be replaced', () => {
+    render(
+      <ComboBoxWrapper options={['foo']} OpenButtonComponent="dl" />,
+    );
+    const button = document.getElementById('id_open_button');
+    expect(button.tagName).toEqual('DL');
+  });
+});
+
+describe('openButtonProps', () => {
+  it('allows custom props', () => {
+    render(
+      <ComboBoxWrapper options={['foo']} openButtonProps={{ className: 'foo' }} />,
+    );
+    const button = document.getElementById('id_open_button');
+    expect(button).toHaveClass('foo');
   });
 });
 

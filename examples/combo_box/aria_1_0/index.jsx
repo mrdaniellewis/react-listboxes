@@ -1,6 +1,6 @@
 import React, { forwardRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { ComboBox, useTokenSearch } from '../../../src/index.js';
+import { ComboBox, useTokenSearch } from '../../../src';
 
 const options = [
   'Apple',

@@ -1,5 +1,5 @@
 import React, { forwardRef, useState } from 'react';
-import { ComboBox, useTokenSearch } from '../../../src/index.js';
+import { ComboBox, useTokenSearch } from '../../../src';
 
 const options = [
   'Apple',

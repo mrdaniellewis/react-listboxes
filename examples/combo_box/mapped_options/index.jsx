@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { ComboBox, useTokenSearch, TokenHighlight } from '../../../src/index.js';
+import { ComboBox, useTokenSearch, TokenHighlight } from '../../../src';
 import emoji from '../../data/emoji.json';
 
 // The emoji set includes identical variations on code sequences

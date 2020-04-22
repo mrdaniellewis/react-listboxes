@@ -1,5 +1,5 @@
 import React, { forwardRef, useContext, useState } from 'react';
-import { Context, ComboBox, useTokenSearch } from '../../../src/index.js';
+import { Context, ComboBox, useTokenSearch } from '../../../src';
 
 const options = [
   { label: 'Apple' },

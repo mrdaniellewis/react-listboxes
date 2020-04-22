@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ComboBox } from '../../../src/index.js';
+import { ComboBox } from '../../../src';
 
 const options = [
   'Apple',

@@ -4,7 +4,10 @@ import { Context } from '../context';
 import { useThunkReducer as useReducer } from '../hooks/use_thunk_reducer';
 import { reducer } from './combo_box/reducer';
 import { initialState } from './combo_box/initial_state';
-import { onKeyDown, onChange, onFocus, onInputMouseUp, onClearValue, onBlur, onClick, onOptionsChanged, onValueChanged, onFocusInput } from './combo_box/actions';
+import {
+  onKeyDown, onChange, onFocus, onInputMouseUp, onClearValue, onBlur,
+  onClick, onOptionsChanged, onValueChanged, onFocusInput, onOpenButtonClick,
+} from './combo_box/actions';
 import { useNormalisedOptions } from '../hooks/use_normalised_options';
 import { useOnBlur } from '../hooks/use_on_blur';
 import { joinTokens } from '../helpers/join_tokens';
@@ -32,7 +35,9 @@ export const ComboBox = forwardRef(({ placeholder, ...rawProps }, ref) => {
     onBlur: passedOnBlur, onFocus: passedOnFocus,
     ListBoxComponent, listBoxProps,
     WrapperComponent, wrapperProps,
+    BeforeInputComponent,
     InputComponent, inputProps,
+    OpenButtonComponent, openButtonProps,
     ClearButtonComponent, clearButtonProps,
     NotFoundComponent, notFoundProps,
     HintComponent,
@@ -120,8 +125,11 @@ export const ComboBox = forwardRef(({ placeholder, ...rawProps }, ref) => {
   // Do not show the list box is the only option is the currently selected option
   const showListBox = useMemo(() => (
     expanded && !!options.length
-      && !(options.length === 1 && options[0].identity === selectedOption?.identity)
-  ), [expanded, options, selectedOption]);
+      && !(options.length === 1
+        && options[0].identity === selectedOption?.identity
+        && options[0].label === (search ?? value?.label)
+      )
+  ), [expanded, options, selectedOption, search, value]);
 
   useLayoutEffect(() => {
     if (focusedOption && managedFocus && focusListBox && showListBox) {
@@ -184,6 +192,7 @@ export const ComboBox = forwardRef(({ placeholder, ...rawProps }, ref) => {
         ref={comboRef}
         {...wrapperProps}
       >
+        <BeforeInputComponent />
         <InputComponent
           id={id}
           className={`${classPrefix}combobox__input`}
@@ -205,6 +214,14 @@ export const ComboBox = forwardRef(({ placeholder, ...rawProps }, ref) => {
           tabIndex={managedFocus && showListBox && focusListBox ? -1 : null}
           {...allowProps(optionisedProps, ...allowAttributes)}
           {...inputProps}
+        />
+        <OpenButtonComponent
+          id={`${id}_open_button`}
+          className={`${classPrefix}combobox__open-button`}
+          onClick={(e) => dispatch(onOpenButtonClick(e))}
+          hidden={value || !options.length}
+          aria-hidden="true"
+          {...openButtonProps}
         />
         <ClearButtonComponent
           id={`${id}_clear_button`}
@@ -282,6 +299,7 @@ ComboBox.propTypes = {
 
   WrapperComponent: componentValidator,
   wrapperProps: PropTypes.object,
+  BeforeInputComponent: componentValidator,
   InputComponent: componentValidator,
   inputProps: PropTypes.object,
   ListBoxComponent: componentValidator,
@@ -296,6 +314,8 @@ ComboBox.propTypes = {
   optionProps: PropTypes.object,
   ValueComponent: componentValidator,
   valueProps: PropTypes.object,
+  OpenButtonComponent: componentValidator,
+  openButtonProps: PropTypes.object,
   ClearButtonComponent: componentValidator,
   clearButtonProps: PropTypes.object,
   HintComponent: componentValidator,
@@ -334,6 +354,7 @@ ComboBox.defaultProps = {
 
   WrapperComponent: 'div',
   wrapperProps: null,
+  BeforeInputComponent: Fragment,
   InputComponent: 'input',
   inputProps: null,
   ListBoxComponent: ListBox,
@@ -348,6 +369,8 @@ ComboBox.defaultProps = {
   optionProps: null,
   ValueComponent: Fragment,
   valueProps: null,
+  OpenButtonComponent: 'span',
+  openButtonProps: null,
   ClearButtonComponent: 'span',
   clearButtonProps: null,
   HintComponent: 'div',

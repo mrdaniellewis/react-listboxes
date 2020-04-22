@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ComboBox, useTokenSearch, TokenHighlight } from '../../../src/index.js';
+import { ComboBox, useTokenSearch, TokenHighlight } from '../../../src';
 
 const options = [
   'Apple',

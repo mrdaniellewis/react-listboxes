@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { DropDown } from '../../../src/index.js';
+import { DropDown } from '../../../src';
 import countries from '../../data/countries.json';
 
 export function Example() {

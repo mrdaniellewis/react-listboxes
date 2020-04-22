@@ -77,19 +77,19 @@ the html element, or a full component if you want a more far reaching change.  B
 `forwardRef` for a number of the components.
 
 ```js
-<WrapperComponent {...wrapperProps}>
-  <div className={visuallyHiddenClassName} /> // contains the curreng value for screen readers
-  <ComboBoxComponent {...comboBoxProps} />
-  <ListBoxComponent {...listBoxProps} > // The entire listbox implementation
-    <ListBoxListComponent {...listBoxListProps}>
-      <OptionComponent {...optionProps}>
-        <ValueComponent {...valueProps} />
+<WrapperComponent {...wrapperProps}>                  // <div>
+  <div className={visuallyHiddenClassName} />         // contains the current value for screen readers
+  <ComboBoxComponent {...comboBoxProps} />            // <div>
+  <ListBoxComponent {...listBoxProps} >               // The entire listbox implementation
+    <ListBoxListComponent {...listBoxListProps}>      // <ul>
+      <OptionComponent {...optionProps}>              // <li>
+        <ValueComponent {...valueProps} />            // Fragment
       </OptionComponent>
-      <GroupComponent {...groupProps}>
-        <GroupLabelComponent {...groupProps} />
-        <OptionComponent {...optionProps}>
+      <GroupComponent {...groupProps}>                // Fragment
+        <GroupLabelComponent {...groupProps} />       // <li>
+        <OptionComponent {...optionProps}>            // <li>
           <div className={visuallyHiddenClassName} /> // contains the group name for screen readers
-          <ValueComponent {...valueProps} />
+          <ValueComponent {...valueProps} />          // Fragment
         </OptionComponent>
       </GroupComponent>
     </ListBoxListComponent>

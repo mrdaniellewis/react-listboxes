@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Select } from '../../../src/index.js';
+import { Select } from '../../../src';
 
 const options = [
   { label: 'Apple', html: { style: { color: 'green' } } },

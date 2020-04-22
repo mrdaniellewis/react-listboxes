@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ComboBox, useTokenSearch } from '../../../src/index.js';
+import { ComboBox, useTokenSearch } from '../../../src';
 import countries from '../../data/countries.json';
 
 function map({ name, code }) {

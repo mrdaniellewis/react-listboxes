@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ComboBox, usePrefixSearch, TokenHighlight } from '../../../src/index.js';
+import { ComboBox, usePrefixSearch, TokenHighlight } from '../../../src';
 
 const options = [
   'css',

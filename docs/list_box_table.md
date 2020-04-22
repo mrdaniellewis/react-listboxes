@@ -42,7 +42,7 @@ A `columns` array should be passed.  The elements be:
 The properties for customisation are as follows:
 
 ```js
-  <div {...listBoxListProps}>
+  <ListBoxListComponent {...listBoxListProps}> // <div>
     <table {...tableProps>
       <thead>
         <tr>
@@ -57,12 +57,12 @@ The properties for customisation are as follows:
           <td {...tableCellProps}>
             <div className={visuallyHiddenClassName} /> // contains group name in first cell if present
             <div className={visuallyHiddenClassName} /> // contains column label if present
-            <ValueComponent {...valueProps} />
+            <ValueComponent {...valueProps} />          // Fragment
           </td>
         </tr>
       </tbody>
     </table>
-  </div>
+  </ListBoxListComponent>
 ```
 
 ## `onLayoutListBox`

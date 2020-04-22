@@ -19,7 +19,7 @@ module.exports = {
   rootDir: 'examples/',
   filters: {
     highlight: (code) => Prism.highlight(code, Prism.languages.javascript, 'javascript'),
-    packageInclude: (text) => text.replace(/from '(..\/)+src\/index\.js';$/mg, `from '${name}';`),
+    packageInclude: (text) => text.replace(/from '(..\/)+src';$/mg, `from '${name}';`),
     markdown: (text) => marked(
       text.replace(/:([\w\d_-]+):/g, (m, code) => emoji.get(code) || m),
       { highlight: (code, lang) => Prism.highlight(code, Prism.languages[lang], lang), renderer },

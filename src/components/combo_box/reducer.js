@@ -98,7 +98,13 @@ function reduce(state, { type, ...params }, props) {
   switch (type) {
     case SET_SEARCH: {
       const { search } = params;
-      const focusedOption = search ? state.focusedOption : null;
+      const { selectedOption } = props;
+      let { focusedOption } = state;
+      if (!search) {
+        focusedOption = null;
+      } else if (!state.expanded) {
+        focusedOption = selectedOption;
+      }
       return {
         ...state,
         search,

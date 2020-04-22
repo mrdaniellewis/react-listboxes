@@ -1,5 +1,5 @@
 import React, { forwardRef, useContext, useState } from 'react';
-import { ComboBox, useSearch, Context } from '../../../src/index.js';
+import { ComboBox, useSearch, Context } from '../../../src';
 
 function search(value) {
   if (!value) {

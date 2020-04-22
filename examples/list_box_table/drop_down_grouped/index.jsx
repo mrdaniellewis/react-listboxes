@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { DropDown, ListBoxTable, useConfineListBoxTable } from '../../../src/index.js';
+import { DropDown, ListBoxTable, useConfineListBoxTable } from '../../../src';
 import cats from '../../data/cats.json';
 
 const columns = ['breed', 'country', 'origin', 'bodyType', 'pattern'];

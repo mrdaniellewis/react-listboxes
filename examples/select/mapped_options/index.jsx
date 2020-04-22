@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Select } from '../../../src/index.js';
+import { Select } from '../../../src';
 import countries from '../../data/countries.json';
 
 function map({ name, code }) {

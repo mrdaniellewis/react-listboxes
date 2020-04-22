@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { DropDown } from '../../../src/index.js';
+import { DropDown } from '../../../src';
 
 const options = [];
 
