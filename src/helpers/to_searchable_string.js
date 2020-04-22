@@ -1,6 +1,6 @@
-import { toNormalizedString } from './to_normalized_string.js';
-import { rPunctuation } from '../constants/r_punctuation.js';
-import { rSpace } from '../constants/r_space.js';
+import { toNormalizedString } from './to_normalized_string';
+import { rPunctuation } from '../constants/r_punctuation';
+import { rSpace } from '../constants/r_space';
 
 export function toSearchableString(text) {
   return toNormalizedString(text)

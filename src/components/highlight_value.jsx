@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
-import { Highlight } from './highlight.jsx';
-import { Context } from '../context.js';
+import { Highlight } from './highlight';
+import { Context } from '../context';
 
 export function HighlightValue({ children: value, highlight, inverse, ...props }) {
   const context = useContext(Context);

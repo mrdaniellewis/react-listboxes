@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { render, act, waitFor } from '@testing-library/react';
-import { usePrefixSearch } from './use_prefix_search.js';
+import { usePrefixSearch } from './use_prefix_search';
 
 function TestPrefixSearch({ options, onUpdate, ...params }) {
   if (!Object.keys(params).length) {

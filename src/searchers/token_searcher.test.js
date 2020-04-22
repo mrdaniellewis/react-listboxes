@@ -1,4 +1,4 @@
-import { tokenSearcher } from './token_searcher.js';
+import { tokenSearcher } from './token_searcher';
 
 it('returns an empty array when searching an empty collection', () => {
   const search = tokenSearcher([]);

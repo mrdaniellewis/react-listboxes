@@ -1,4 +1,4 @@
-export { Context } from './context.js';
-export * from './components/index.js';
-export * from './hooks/index.js';
-export * from './searchers/index.js';
+export { Context } from './context';
+export * from './components';
+export * from './hooks';
+export * from './searchers';

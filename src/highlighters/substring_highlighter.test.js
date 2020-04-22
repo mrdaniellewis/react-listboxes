@@ -1,4 +1,4 @@
-import { substringHighlighter } from './substring_highlighter.js';
+import { substringHighlighter } from './substring_highlighter';
 
 it('returns an empty string with no term', () => {
   expect(substringHighlighter('', '')).toEqual(['']);

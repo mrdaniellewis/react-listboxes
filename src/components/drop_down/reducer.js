@@ -1,5 +1,5 @@
 import { shallowEqualObjects } from 'shallow-equal';
-import { SET_EXPANDED, SET_SEARCH_KEY, CLEAR_SEARCH, SET_FOCUSED_OPTION, SET_SELECTED } from './actions.js';
+import { SET_EXPANDED, SET_SEARCH_KEY, CLEAR_SEARCH, SET_FOCUSED_OPTION, SET_SELECTED } from './actions';
 
 function reduce(state, { type, ...params }) {
   switch (type) {

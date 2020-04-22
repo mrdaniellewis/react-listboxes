@@ -1,7 +1,7 @@
 import React, { useCallback, forwardRef } from 'react';
 import PropTypes from 'prop-types';
-import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
-import { renderGroupedOptions } from '../helpers/render_grouped_options.js';
+import { useNormalisedOptions } from '../hooks/use_normalised_options';
+import { renderGroupedOptions } from '../helpers/render_grouped_options';
 
 export const Select = forwardRef((rawProps, ref) => {
   const {

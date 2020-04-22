@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { HighlightValue } from './highlight_value.jsx';
-import { Context } from '../context.js';
+import { HighlightValue } from './highlight_value';
+import { Context } from '../context';
 
 it('calls highlight with a search', () => {
   const spy = jest.fn(() => []);

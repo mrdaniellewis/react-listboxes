@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { tokenSearcher } from '../searchers/token_searcher.js';
-import { useSearch } from './use_search.js';
+import { tokenSearcher } from '../searchers/token_searcher';
+import { useSearch } from './use_search';
 
 export function useTokenSearch(options, { index, tokenise, ...more } = {}) {
   const search = useMemo(() => (

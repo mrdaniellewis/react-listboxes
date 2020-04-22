@@ -1,4 +1,4 @@
-import { normaliseHighlight } from './normalise_highlight.js';
+import { normaliseHighlight } from './normalise_highlight';
 
 it('filters empty parts', () => {
   expect(normaliseHighlight(['', [''], '', ['']])).toEqual(['']);

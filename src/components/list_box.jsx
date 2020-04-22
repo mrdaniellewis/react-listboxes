@@ -1,8 +1,8 @@
 import React, { Fragment, forwardRef, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { Context } from '../context.js';
-import { renderGroupedOptions } from '../helpers/render_grouped_options.js';
-import { classPrefix } from '../constants/class_prefix.js';
+import { Context } from '../context';
+import { renderGroupedOptions } from '../helpers/render_grouped_options';
+import { classPrefix } from '../constants/class_prefix';
 
 export const ListBox = forwardRef(({ focusedRef, onSelectOption, ...props }, ref) => {
   const context = useContext(Context);

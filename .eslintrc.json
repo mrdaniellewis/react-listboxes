@@ -12,7 +12,7 @@
     "browser": true
   },
   "rules": {
-    "import/extensions": ["error", "always", { "ignorePackages": true }],
+    "import/extensions": ["error", "never"],
     "import/prefer-default-export": "off",
     "import/no-default-export": "error",
     "object-curly-newline": ["error", { "consistent": true }],

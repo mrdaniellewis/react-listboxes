@@ -1,4 +1,4 @@
-import { tokenise } from './tokenise.js';
+import { tokenise } from './tokenise';
 
 it('returns an empty array for null', () => {
   expect(tokenise(null)).toEqual([]);

@@ -1,6 +1,6 @@
 import React from 'react';
-import { HighlightValue } from '../highlight_value.jsx';
-import { substringHighlighter } from '../../highlighters/substring_highlighter.js';
+import { HighlightValue } from '../highlight_value';
+import { substringHighlighter } from '../../highlighters/substring_highlighter';
 
 export function SubstringHighlight(props) {
   return (

@@ -1,6 +1,6 @@
 import React, { useState, forwardRef } from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import { Select } from './select.jsx';
+import { Select } from './select';
 
 const SelectWrapper = forwardRef(({ value: initialValue, ...props }, ref) => {
   const [value, setValue] = useState(initialValue);

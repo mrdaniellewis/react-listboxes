@@ -1,23 +1,23 @@
 import React, { useRef, useEffect, useLayoutEffect, Fragment, forwardRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { Context } from '../context.js';
-import { useThunkReducer as useReducer } from '../hooks/use_thunk_reducer.js';
-import { reducer } from './drop_down/reducer.js';
-import { initialState } from './drop_down/initial_state.js';
+import { Context } from '../context';
+import { useThunkReducer as useReducer } from '../hooks/use_thunk_reducer';
+import { reducer } from './drop_down/reducer';
+import { initialState } from './drop_down/initial_state';
 import {
   clearSearch, onKeyDown, onBlur,
   onToggleOpen, onFocus, onClick,
   onSelectValue, setFocusedOption, onOptionsChanged, onValueChanged,
-} from './drop_down/actions.js';
-import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
-import { useOnBlur } from '../hooks/use_on_blur.js';
-import { componentValidator } from '../validators/component_validator.js';
-import { useCombineRefs } from '../hooks/use_combine_refs.js';
-import { findOption } from '../helpers/find_option.js';
-import { ListBox } from './list_box.jsx';
-import { classPrefix } from '../constants/class_prefix.js';
-import { joinTokens } from '../helpers/join_tokens.js';
-import { visuallyHiddenClassName } from '../constants/visually_hidden_class_name.js';
+} from './drop_down/actions';
+import { useNormalisedOptions } from '../hooks/use_normalised_options';
+import { useOnBlur } from '../hooks/use_on_blur';
+import { componentValidator } from '../validators/component_validator';
+import { useCombineRefs } from '../hooks/use_combine_refs';
+import { findOption } from '../helpers/find_option';
+import { ListBox } from './list_box';
+import { classPrefix } from '../constants/class_prefix';
+import { joinTokens } from '../helpers/join_tokens';
+import { visuallyHiddenClassName } from '../constants/visually_hidden_class_name';
 
 export const DropDown = forwardRef((rawProps, ref) => {
   const optionisedProps = useNormalisedOptions(rawProps, { mustHaveSelection: true });

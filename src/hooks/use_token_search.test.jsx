@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { render, act, waitFor } from '@testing-library/react';
-import { useTokenSearch } from './use_token_search.js';
+import { useTokenSearch } from './use_token_search';
 
 function TestTokenSearch({ options, onUpdate, ...params }) {
   if (!Object.keys(params).length) {

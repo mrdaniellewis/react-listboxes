@@ -1,9 +1,9 @@
 import React, { useState, useContext, forwardRef } from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ComboBox } from './combo_box.jsx';
-import { ListBoxTable } from './list_box_table.jsx';
-import { Context } from '../context.js';
+import { ComboBox } from './combo_box';
+import { ListBoxTable } from './list_box_table';
+import { Context } from '../context';
 
 const ComboBoxWrapper = forwardRef(({ value: initialValue, ...props }, ref) => {
   const [value, onValue] = useState(initialValue);

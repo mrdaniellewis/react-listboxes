@@ -1,8 +1,8 @@
-import { nextInList } from '../../helpers/next_in_list.js';
-import { previousInList } from '../../helpers/previous_in_list.js';
-import { rNonPrintableKey } from '../../constants/r_non_printable_key.js';
-import { isMac } from '../../helpers/is_mac.js';
-import { getKey } from '../../helpers/get_key.js';
+import { nextInList } from '../../helpers/next_in_list';
+import { previousInList } from '../../helpers/previous_in_list';
+import { rNonPrintableKey } from '../../constants/r_non_printable_key';
+import { isMac } from '../../helpers/is_mac';
+import { getKey } from '../../helpers/get_key';
 
 export const SET_SEARCH = 'SET_SEARCH';
 export const SET_EXPANDED = 'SET_EXPANDED';

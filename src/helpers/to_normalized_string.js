@@ -1,4 +1,4 @@
-import { rAccent } from '../constants/r_accent.js';
+import { rAccent } from '../constants/r_accent';
 
 export function toNormalizedString(value) {
   if (value === null || value === undefined) {

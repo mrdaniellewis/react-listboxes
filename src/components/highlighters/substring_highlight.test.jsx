@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { SubstringHighlight } from './substring_highlight.jsx';
-import { Context } from '../../context.js';
+import { SubstringHighlight } from './substring_highlight';
+import { Context } from '../../context';
 
 function TestHighlight({ children, value, inverse, ...props }) {
   return (

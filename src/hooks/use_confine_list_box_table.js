@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useConfineListBox } from './use_confine_list_box.js';
+import { useConfineListBox } from './use_confine_list_box';
 
 export function useConfineListBoxTable(selector) {
   const [style, originalOnLayoutListBox] = useConfineListBox(selector);

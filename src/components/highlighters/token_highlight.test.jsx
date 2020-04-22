@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { TokenHighlight } from './token_highlight.jsx';
-import { Context } from '../../context.js';
+import { TokenHighlight } from './token_highlight';
+import { Context } from '../../context';
 
 function TestHighlight({ children, value, inverse, ...props }) {
   return (

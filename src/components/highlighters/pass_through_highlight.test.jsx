@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { PassThroughHighlight } from './pass_through_highlight.jsx';
-import { Context } from '../../context.js';
+import { PassThroughHighlight } from './pass_through_highlight';
+import { Context } from '../../context';
 
 function TestHighlight({ children, value, ...props }) {
   return (

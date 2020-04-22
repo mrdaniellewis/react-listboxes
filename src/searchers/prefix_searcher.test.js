@@ -1,4 +1,4 @@
-import { prefixSearcher } from './prefix_searcher.js';
+import { prefixSearcher } from './prefix_searcher';
 
 it('returns an empty array when searching an empty collection', () => {
   const search = prefixSearcher([]);

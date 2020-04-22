@@ -1,4 +1,4 @@
-import { isMac } from './is_mac.js';
+import { isMac } from './is_mac';
 
 export function getKey(event) {
   const { key, ctrlKey, altKey, metaKey } = event;

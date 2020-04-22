@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, act } from '@testing-library/react';
-import { useConfineListBoxTable } from './use_confine_list_box_table.js';
+import { useConfineListBoxTable } from './use_confine_list_box_table';
 
 function Test({ selector, out }) {
   const [style, onLayoutListBox] = useConfineListBoxTable(selector);

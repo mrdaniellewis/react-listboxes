@@ -1,4 +1,4 @@
-import { UniqueIdGenerator } from './unique_id_generator.js';
+import { UniqueIdGenerator } from './unique_id_generator';
 
 it('returns unique values as is', () => {
   const idGenerator = new UniqueIdGenerator();

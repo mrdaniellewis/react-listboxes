@@ -1,5 +1,5 @@
-import { tokenise as defaultTokenise } from '../helpers/tokenise.js';
-import { indexValue } from '../helpers/index_value.js';
+import { tokenise as defaultTokenise } from '../helpers/tokenise';
+import { indexValue } from '../helpers/index_value';
 
 export function tokenSearcher(
   options,

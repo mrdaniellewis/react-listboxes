@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { render, act } from '@testing-library/react';
-import { useSearch } from './use_search.js';
+import { useSearch } from './use_search';
 
 function TestSearch({ fn, onUpdate, ...props }) {
   if (!Object.keys(props).length) {

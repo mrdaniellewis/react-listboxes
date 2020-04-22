@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { prefixSearcher } from '../searchers/prefix_searcher.js';
-import { useSearch } from './use_search.js';
+import { prefixSearcher } from '../searchers/prefix_searcher';
+import { useSearch } from './use_search';
 
 export function usePrefixSearch(options, { index, ...more } = {}) {
   const search = useMemo(() => (

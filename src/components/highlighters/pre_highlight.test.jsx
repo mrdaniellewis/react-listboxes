@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { PreHighlight } from './pre_highlight.jsx';
-import { Context } from '../../context.js';
+import { PreHighlight } from './pre_highlight';
+import { Context } from '../../context';
 
 function TestHighlight({ children, inverse, ...props }) {
   return (

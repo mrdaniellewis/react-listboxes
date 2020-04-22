@@ -1,4 +1,4 @@
-import { prefixHighlighter } from './prefix_highlighter.js';
+import { prefixHighlighter } from './prefix_highlighter';
 
 it('returns an empty string with no term', () => {
   expect(prefixHighlighter('', '')).toEqual(['']);

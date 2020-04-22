@@ -1,4 +1,4 @@
-import { normaliseHighlight } from '../helpers/normalise_highlight.js';
+import { normaliseHighlight } from '../helpers/normalise_highlight';
 
 export function preHighlighter(term, label, context, { start, end } = {}) {
   if (!term) {

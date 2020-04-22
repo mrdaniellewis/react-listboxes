@@ -7,8 +7,8 @@
   "main": "cjs/index.js",
   "module": "es/index.js",
   "scripts": {
-    "build:cjs": "rm -rf cjs && babel src --out-dir cjs --source-maps --keep-file-extension",
-    "build:es": "rm -rf es && babel src --out-dir es --source-maps --keep-file-extension --no-babelrc --presets=@babel/react",
+    "build:cjs": "rm -rf cjs && babel src --out-dir cjs --source-maps",
+    "build:es": "rm -rf es && BABEL_ENV=es babel src --out-dir es --source-maps",
     "prepare": "npm run build:cjs && npm run build:es",
     "install": "npm run prepare",
     "prebuild": "rm -rf dist",
@@ -41,7 +41,6 @@
     "eslint-plugin-react": "^7.19.0",
     "eslint-plugin-react-hooks": "^3.0.0",
     "gh-pages": "^2.2.0",
-    "highlight.js": "^9.18.1",
     "jest": "^25.1.0",
     "jest-environment-jsdom-sixteen": "^1.0.3",
     "marked": "^0.8.2",

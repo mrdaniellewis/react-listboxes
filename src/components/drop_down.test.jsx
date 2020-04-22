@@ -1,8 +1,8 @@
 import React, { useState, useContext, forwardRef } from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { DropDown } from './drop_down.jsx';
-import { Context } from '../context.js';
+import { DropDown } from './drop_down';
+import { Context } from '../context';
 
 class PropUpdater {
   setUpdater(fn) {

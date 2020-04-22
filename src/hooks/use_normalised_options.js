@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { useMemo } from 'react';
-import { optionise } from '../helpers/optionise.js';
-import { UniqueIdGenerator } from '../helpers/unique_id_generator.js';
+import { optionise } from '../helpers/optionise';
+import { UniqueIdGenerator } from '../helpers/unique_id_generator';
 
 /**
  * @private

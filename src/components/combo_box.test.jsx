@@ -1,8 +1,8 @@
 import React, { useState, useContext, forwardRef } from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ComboBox } from './combo_box.jsx';
-import { Context } from '../context.js';
+import { ComboBox } from './combo_box';
+import { Context } from '../context';
 
 class PropUpdater {
   setUpdater(fn) {

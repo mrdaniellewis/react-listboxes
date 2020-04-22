@@ -1,5 +1,5 @@
-import { rSpace } from '../constants/r_space.js';
-import { toSearchableString } from './to_searchable_string.js';
+import { rSpace } from '../constants/r_space';
+import { toSearchableString } from './to_searchable_string';
 
 export function tokenise(item) {
   return toSearchableString(item)

@@ -1,4 +1,4 @@
-import { tokenHighlighter } from './token_highlighter.js';
+import { tokenHighlighter } from './token_highlighter';
 
 it('returns an empty string with no term', () => {
   expect(tokenHighlighter('', '')).toEqual(['']);

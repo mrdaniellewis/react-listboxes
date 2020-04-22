@@ -1,25 +1,25 @@
 import React, { useRef, useEffect, useLayoutEffect, Fragment, useMemo, forwardRef, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { Context } from '../context.js';
-import { useThunkReducer as useReducer } from '../hooks/use_thunk_reducer.js';
-import { reducer } from './combo_box/reducer.js';
-import { initialState } from './combo_box/initial_state.js';
-import { onKeyDown, onChange, onFocus, onInputMouseUp, onClearValue, onBlur, onClick, onOptionsChanged, onValueChanged, onFocusInput } from './combo_box/actions.js';
-import { useNormalisedOptions } from '../hooks/use_normalised_options.js';
-import { useOnBlur } from '../hooks/use_on_blur.js';
-import { joinTokens } from '../helpers/join_tokens.js';
-import { componentValidator } from '../validators/component_validator.js';
-import { findOption } from '../helpers/find_option.js';
-import { useCombineRefs } from '../hooks/use_combine_refs.js';
-import { allowProps } from '../helpers/allow_props.js';
-import { ListBox } from './list_box.jsx';
-import { classPrefix } from '../constants/class_prefix.js';
-import { visuallyHiddenClassName } from '../constants/visually_hidden_class_name.js';
+import { Context } from '../context';
+import { useThunkReducer as useReducer } from '../hooks/use_thunk_reducer';
+import { reducer } from './combo_box/reducer';
+import { initialState } from './combo_box/initial_state';
+import { onKeyDown, onChange, onFocus, onInputMouseUp, onClearValue, onBlur, onClick, onOptionsChanged, onValueChanged, onFocusInput } from './combo_box/actions';
+import { useNormalisedOptions } from '../hooks/use_normalised_options';
+import { useOnBlur } from '../hooks/use_on_blur';
+import { joinTokens } from '../helpers/join_tokens';
+import { componentValidator } from '../validators/component_validator';
+import { findOption } from '../helpers/find_option';
+import { useCombineRefs } from '../hooks/use_combine_refs';
+import { allowProps } from '../helpers/allow_props';
+import { ListBox } from './list_box';
+import { classPrefix } from '../constants/class_prefix';
+import { visuallyHiddenClassName } from '../constants/visually_hidden_class_name';
 
 const allowAttributes = [
   'autoComplete', 'autoCapitalize', 'autoCorrect', 'autoFocus', 'disabled', 'inputMode',
   'maxLength', 'minLength', 'pattern', 'placeholder', 'readOnly',
-  'required', 'size', 'spellCheck',
+  'required', 'size', 'spellCheck', 'aria-invalid',
 ];
 
 export const ComboBox = forwardRef(({ placeholder, ...rawProps }, ref) => {

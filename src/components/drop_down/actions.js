@@ -1,6 +1,6 @@
-import { nextInList } from '../../helpers/next_in_list.js';
-import { previousInList } from '../../helpers/previous_in_list.js';
-import { rNonPrintableKey } from '../../constants/r_non_printable_key.js';
+import { nextInList } from '../../helpers/next_in_list';
+import { previousInList } from '../../helpers/previous_in_list';
+import { rNonPrintableKey } from '../../constants/r_non_printable_key';
 
 export const SET_EXPANDED = 'SET_EXPANDED';
 export const CLEAR_SEARCH = 'CLEAR_SEARCH';

@@ -1,5 +1,5 @@
-import { indexValue } from '../helpers/index_value.js';
-import { tokenSearcher } from './token_searcher.js';
+import { indexValue } from '../helpers/index_value';
+import { tokenSearcher } from './token_searcher';
 
 function tokenise(text) {
   return [text.trimStart().toLowerCase()];

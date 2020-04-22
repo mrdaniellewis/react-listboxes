@@ -1,8 +1,8 @@
-import { normaliseHighlight } from '../helpers/normalise_highlight.js';
-import { rAccent } from '../constants/r_accent.js';
-import { rPunctuation } from '../constants/r_punctuation.js';
-import { rSpace } from '../constants/r_space.js';
-import { tokenise } from '../helpers/tokenise.js';
+import { normaliseHighlight } from '../helpers/normalise_highlight';
+import { rAccent } from '../constants/r_accent';
+import { rPunctuation } from '../constants/r_punctuation';
+import { rSpace } from '../constants/r_space';
+import { tokenise } from '../helpers/tokenise';
 
 /**
  * Highlights terms inside a search query

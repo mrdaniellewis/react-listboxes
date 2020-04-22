@@ -1,4 +1,4 @@
-import { preHighlighter } from './pre_highlighter.js';
+import { preHighlighter } from './pre_highlighter';
 
 it('returns an empty string with no term', () => {
   expect(preHighlighter('', null, null, { start: '<em>', end: '</em>' })).toEqual(['']);
