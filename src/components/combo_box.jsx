@@ -218,6 +218,7 @@ export const ComboBox = forwardRef(({ placeholder, ...rawProps }, ref) => {
         <OpenButtonComponent
           id={`${id}_open_button`}
           className={`${classPrefix}combobox__open-button`}
+          onMouseDown={(e) => e.preventDefault()}
           onClick={(e) => dispatch(onOpenButtonClick(e))}
           hidden={value || !options.length}
           aria-hidden="true"
