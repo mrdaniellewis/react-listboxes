@@ -239,19 +239,7 @@ describe('busy', () => {
 });
 
 describe('minLength', () => {
-  it('does not run a search under minLength', async () => {
-    const spy = jest.fn();
-    const fn = jest.fn();
-    render((
-      <TestSearch fn={fn} onUpdate={spy} minLength={2} />
-    ));
-    await act(async () => {
-      spy.mock.calls[0][1]('a');
-    });
-    expect(fn).not.toHaveBeenCalled();
-  });
-
-  it('sets busy to null under minLength', async () => {
+  it('returns no results for a search under minLength', async () => {
     const spy = jest.fn();
     const fn = jest.fn();
     render((
@@ -261,9 +249,9 @@ describe('minLength', () => {
       spy.mock.calls[0][1]('a');
     });
     expect(spy).toHaveBeenLastCalledWith(
+      [],
       expect.anything(),
-      expect.anything(),
-      null,
+      false,
     );
   });
 

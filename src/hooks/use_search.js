@@ -26,10 +26,11 @@ export function useSearch(fn, { initialOptions, debounce, minLength, maxResults 
 
   const onSearch = useCallback((query) => {
     lastSearchRef.current = query;
-    dispatch({ busy: null });
     if (minLength && query.length < minLength) {
+      dispatch({ busy: false, options: [] });
       return;
     }
+    dispatch({ busy: null });
 
     if (debounce) {
       clearTimeout(timeoutRef.current);

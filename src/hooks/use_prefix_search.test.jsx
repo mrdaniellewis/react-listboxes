@@ -123,7 +123,7 @@ describe('options', () => {
 });
 
 describe('minLength', () => {
-  it('does not search for a query less then minLength', async () => {
+  it('returns no results for a query less then minLength', async () => {
     const spy = jest.fn();
     render((
       <TestPrefixSearch options={['foo', 'bar', 'foe']} onUpdate={spy} minLength={2} />
@@ -132,9 +132,9 @@ describe('minLength', () => {
       spy.mock.calls[0][1]('b');
     });
     expect(spy).toHaveBeenLastCalledWith(
-      ['foo', 'bar', 'foe'],
+      [],
       expect.anything(),
-      null,
+      false,
     );
   });
 
