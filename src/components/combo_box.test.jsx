@@ -95,11 +95,6 @@ function expectToHaveSelectedOption(combobox, option) {
   expectNotToHaveNotFoundMessage(combobox);
 }
 
-afterEach(async () => {
-  // Fix act warning due to the focus event triggering after a timeout
-  await waitFor(() => {});
-});
-
 describe('options', () => {
   describe('as array of objects', () => {
     describe('label', () => {
@@ -2494,7 +2489,7 @@ describe('hint', () => {
       <ComboBoxWrapper options={[]} />
     ));
     getByRole('combobox').focus();
-    expect(container.querySelector('#id_hint')).not.toHaveTextContent();
+    expect(container.querySelector('#id_found_description')).not.toHaveTextContent();
   });
 
   it('is empty if list box is not showing', () => {
@@ -2502,7 +2497,7 @@ describe('hint', () => {
       <ComboBoxWrapper options={['foo']} value="foo" />
     ));
     getByRole('combobox').focus();
-    expect(container.querySelector('#id_hint')).not.toHaveTextContent();
+    expect(container.querySelector('#id_found_description')).not.toHaveTextContent();
   });
 
   it('lists the number of options', () => {
@@ -2510,7 +2505,7 @@ describe('hint', () => {
       <ComboBoxWrapper options={['foo', 'bar']} />
     ));
     getByRole('combobox').focus();
-    expect(container.querySelector('#id_hint')).toHaveTextContent('2 options found');
+    expect(container.querySelector('#id_found_description')).toHaveTextContent('2 options found');
   });
 
   it('lists one option', () => {
@@ -2518,7 +2513,7 @@ describe('hint', () => {
       <ComboBoxWrapper options={['foo']} />
     ));
     getByRole('combobox').focus();
-    expect(container.querySelector('#id_hint')).toHaveTextContent('1 option found');
+    expect(container.querySelector('#id_found_description')).toHaveTextContent('1 option found');
   });
 });
 
@@ -2543,7 +2538,7 @@ describe('id', () => {
 
     expect(document.getElementById('foo_open_button')).toBeInstanceOf(Element);
     expect(document.getElementById('foo_clear_button')).toBeInstanceOf(Element);
-    expect(document.getElementById('foo_hint')).toBeInstanceOf(Element);
+    expect(document.getElementById('foo_found_description')).toBeInstanceOf(Element);
     expect(document.getElementById('foo_not_found')).toBeInstanceOf(Element);
   });
 });
@@ -2687,16 +2682,17 @@ describe('onFocus', () => {
     const { getByRole } = render((
       <>
         <ComboBoxWrapper options={['foo']} onFocus={spy} />
-        <input />
+        <input type="text" />
       </>
     ));
-    await act(async () => {
-      getByRole('combobox').focus();
-    });
+    getByRole('combobox').focus();
     expect(spy).toHaveBeenCalledTimes(1);
     fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
     await act(async () => {
       userEvent.tab();
+    });
+    await waitFor(() => {
+      expect(document.activeElement).toEqual(getByRole('textbox'));
     });
     expect(spy).toHaveBeenCalledTimes(1);
   });
@@ -2708,7 +2704,7 @@ describe('aria-describedby', () => {
       <ComboBoxWrapper options={['foo']} aria-describedby="foo" />
     ));
     getByRole('combobox').focus();
-    expect(getByRole('combobox')).toHaveAttribute('aria-describedby', 'id_hint foo');
+    expect(getByRole('combobox')).toHaveAttribute('aria-describedby', 'id_found_description foo');
   });
 
   it('is appended to the input when not found is showing', async () => {
@@ -2717,7 +2713,7 @@ describe('aria-describedby', () => {
     ));
     getByRole('combobox').focus();
     await userEvent.type(document.activeElement, 'foo');
-    expect(getByRole('combobox')).toHaveAttribute('aria-describedby', 'id_not_found id_hint foo');
+    expect(getByRole('combobox')).toHaveAttribute('aria-describedby', 'id_not_found id_found_description foo');
   });
 });
 
@@ -3152,12 +3148,12 @@ describe('clearButtonProps', () => {
   });
 });
 
-describe('HintComponent', () => {
+describe('FoundDescriptionComponent', () => {
   it('allows the component to be replaced', () => {
     render(
-      <ComboBoxWrapper options={['foo']} HintComponent="dl" />,
+      <ComboBoxWrapper options={['foo']} FoundDescriptionComponent="dl" />,
     );
-    const el = document.getElementById('id_hint');
+    const el = document.getElementById('id_found_description');
     expect(el.tagName).toEqual('DL');
   });
 });

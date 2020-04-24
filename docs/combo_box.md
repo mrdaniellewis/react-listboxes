@@ -84,24 +84,26 @@ the html element, or a full component if you want a more far reaching change.  B
 `forwardRef` for a number of the components.
 
 ```js
-<WrapperComponent {...wrapperProps}>
-  <InputComponent {...inputProps} />
-  <ListBoxComponent {...listBoxProps} > // the entire listbox implementation
-    <ListBoxListComponent {...listBoxListProps}>
-      <OptionComponent {...optionProps}>
-        <ValueComponent {...valueProps} />
+<WrapperComponent {...wrapperProps}>                                  // <div>
+  <BeforeInputComponent />                                            // Fragment
+  <InputComponent {...inputProps} />                                  // <input>
+  <ListBoxComponent {...listBoxProps} >                               // the entire listbox implementation
+    <ListBoxListComponent {...listBoxListProps}>                      // <ul>
+      <OptionComponent {...optionProps}>                              // <li>
+        <ValueComponent {...valueProps} />                            // Fragment
       </OptionComponent>
-      <GroupComponent {...groupProps}>
-        <GroupLabelComponent {...groupProps} />
-        <OptionComponent {...optionProps}>
-          <div className={visuallyHiddenClassName } /> // contains the group name for screen readers
-          <ValueComponent {...valueProps} />
+      <GroupComponent {...groupProps}>                                // Fragment
+        <GroupLabelComponent {...groupProps} />                       // <li>
+        <OptionComponent {...optionProps}>                            // <li>
+          <div className={visuallyHiddenClassName } />                // contains the group name for screen readers
+          <ValueComponent {...valueProps} />                          // Fragment
         </OptionComponent>
       </GroupComponent>
     </ListBoxListComponent>
-    <ClearButtonComponent {...clearButtonProps} /> 
-    <HintComponent className={visuallyHiddenClassName} /> // Tells screen readers how many results were found
-    <NotFoundComponent {...notFoundProps} /> 
+    <OpenButtonComponent {...openButtonProps} />                      // <span>
+    <ClearButtonComponent {...clearButtonProps} />                    // <span>
+    <FoundDescriptionComponent className={visuallyHiddenClassName} /> // Tells screen readers how many results were found
+    <NotFoundComponent {...notFoundProps} />                          // <div>
   </ListBoxComponent>
 </WrapperComponent>
 ```

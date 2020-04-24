@@ -40,7 +40,7 @@ export const ComboBox = forwardRef(({ placeholder, ...rawProps }, ref) => {
     OpenButtonComponent, openButtonProps,
     ClearButtonComponent, clearButtonProps,
     NotFoundComponent, notFoundProps,
-    HintComponent,
+    FoundDescriptionComponent,
     visuallyHiddenClassName: providedVisuallyHiddenClassName,
   } = optionisedProps;
 
@@ -209,7 +209,7 @@ export const ComboBox = forwardRef(({ placeholder, ...rawProps }, ref) => {
           onChange={(e) => dispatch(onChange(e))}
           onMouseUp={(e) => dispatch(onInputMouseUp(e))}
           onFocus={(e) => dispatch(onFocusInput(e))}
-          aria-describedby={joinTokens(showNotFound && `${id}_not_found`, `${id}_hint`, ariaDescribedBy)}
+          aria-describedby={joinTokens(showNotFound && `${id}_not_found`, `${id}_found_description`, ariaDescribedBy)}
           ref={combinedRef}
           tabIndex={managedFocus && showListBox && focusListBox ? -1 : null}
           {...allowProps(optionisedProps, ...allowAttributes)}
@@ -244,14 +244,14 @@ export const ComboBox = forwardRef(({ placeholder, ...rawProps }, ref) => {
           focusedRef={focusedRef}
           {...listBoxProps}
         />
-        <HintComponent
-          id={`${id}_hint`}
+        <FoundDescriptionComponent
+          id={`${id}_found_description`}
           className={providedVisuallyHiddenClassName}
         >
           {showListBox && (
             `${options.length} option${options.length > 1 ? 's' : ''} found`
           )}
-        </HintComponent>
+        </FoundDescriptionComponent>
         <NotFoundComponent
           id={`${id}_not_found`}
           className={`${classPrefix}combobox__not-found`}
@@ -319,7 +319,7 @@ ComboBox.propTypes = {
   openButtonProps: PropTypes.object,
   ClearButtonComponent: componentValidator,
   clearButtonProps: PropTypes.object,
-  HintComponent: componentValidator,
+  FoundDescriptionComponent: componentValidator,
   NotFoundComponent: componentValidator,
   notFoundProps: PropTypes.object,
   visuallyHiddenClassName: PropTypes.string,
@@ -374,7 +374,7 @@ ComboBox.defaultProps = {
   openButtonProps: null,
   ClearButtonComponent: 'span',
   clearButtonProps: null,
-  HintComponent: 'div',
+  FoundDescriptionComponent: 'div',
   NotFoundComponent: 'div',
   notFoundProps: null,
   visuallyHiddenClassName,

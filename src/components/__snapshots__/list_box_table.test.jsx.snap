@@ -9,7 +9,7 @@ exports[`used with a combo box columns as names only renders a table as the list
     <input
       aria-autocomplete="none"
       aria-controls="id_listbox"
-      aria-describedby="id_hint"
+      aria-describedby="id_found_description"
       aria-expanded="false"
       autocomplete="off"
       class="react-combo-boxes-combobox__input"
@@ -128,7 +128,7 @@ exports[`used with a combo box columns as names only renders a table as the list
     </div>
     <div
       class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
-      id="id_hint"
+      id="id_found_description"
     />
     <div
       class="react-combo-boxes-combobox__not-found"
@@ -148,7 +148,7 @@ exports[`used with a combo box columns with headers renders a table with headers
     <input
       aria-autocomplete="none"
       aria-controls="id_listbox"
-      aria-describedby="id_hint"
+      aria-describedby="id_found_description"
       aria-expanded="false"
       autocomplete="off"
       class="react-combo-boxes-combobox__input"
@@ -295,7 +295,7 @@ exports[`used with a combo box columns with headers renders a table with headers
     </div>
     <div
       class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
-      id="id_hint"
+      id="id_found_description"
     />
     <div
       class="react-combo-boxes-combobox__not-found"
@@ -315,7 +315,7 @@ exports[`used with a combo box columns with html renders a table with colgroups 
     <input
       aria-autocomplete="none"
       aria-controls="id_listbox"
-      aria-describedby="id_hint"
+      aria-describedby="id_found_description"
       aria-expanded="false"
       autocomplete="off"
       class="react-combo-boxes-combobox__input"
@@ -418,7 +418,7 @@ exports[`used with a combo box columns with html renders a table with colgroups 
     </div>
     <div
       class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
-      id="id_hint"
+      id="id_found_description"
     />
     <div
       class="react-combo-boxes-combobox__not-found"
@@ -438,7 +438,7 @@ exports[`used with a combo box grouped renders a table with groups 1`] = `
     <input
       aria-autocomplete="none"
       aria-controls="id_listbox"
-      aria-describedby="id_hint"
+      aria-describedby="id_found_description"
       aria-expanded="false"
       autocomplete="off"
       class="react-combo-boxes-combobox__input"
@@ -574,7 +574,7 @@ exports[`used with a combo box grouped renders a table with groups 1`] = `
     </div>
     <div
       class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
-      id="id_hint"
+      id="id_found_description"
     />
     <div
       class="react-combo-boxes-combobox__not-found"

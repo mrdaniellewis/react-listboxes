@@ -12,7 +12,7 @@ exports[`WrapperComponent allows custom layouts 1`] = `
       <input
         aria-autocomplete="none"
         aria-controls="id_listbox"
-        aria-describedby="id_hint"
+        aria-describedby="id_found_description"
         aria-expanded="false"
         autocomplete="off"
         class="react-combo-boxes-combobox__input"
@@ -69,7 +69,7 @@ exports[`WrapperComponent allows custom layouts 1`] = `
     >
       <div
         class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
-        id="id_hint"
+        id="id_found_description"
       />
     </div>
     <div
@@ -94,7 +94,7 @@ exports[`onSearch updating options updates the displayed options 1`] = `
     <input
       aria-autocomplete="none"
       aria-controls="id_listbox"
-      aria-describedby="id_hint"
+      aria-describedby="id_found_description"
       aria-expanded="true"
       autocomplete="off"
       class="react-combo-boxes-combobox__input"
@@ -147,7 +147,7 @@ exports[`onSearch updating options updates the displayed options 1`] = `
     </ul>
     <div
       class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
-      id="id_hint"
+      id="id_found_description"
     >
       3 options found
     </div>
@@ -169,7 +169,7 @@ exports[`options as array of objects disabled sets the aria-disabled attribute 1
     <input
       aria-autocomplete="none"
       aria-controls="id_listbox"
-      aria-describedby="id_hint"
+      aria-describedby="id_found_description"
       aria-expanded="true"
       autocomplete="off"
       class="react-combo-boxes-combobox__input"
@@ -215,7 +215,7 @@ exports[`options as array of objects disabled sets the aria-disabled attribute 1
     </ul>
     <div
       class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
-      id="id_hint"
+      id="id_found_description"
     >
       2 options found
     </div>
@@ -237,7 +237,7 @@ exports[`options as array of objects group renders grouped options 1`] = `
     <input
       aria-autocomplete="none"
       aria-controls="id_listbox"
-      aria-describedby="id_hint"
+      aria-describedby="id_found_description"
       aria-expanded="false"
       autocomplete="off"
       class="react-combo-boxes-combobox__input"
@@ -339,7 +339,7 @@ exports[`options as array of objects group renders grouped options 1`] = `
     </ul>
     <div
       class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
-      id="id_hint"
+      id="id_found_description"
     />
     <div
       class="react-combo-boxes-combobox__not-found"
@@ -359,7 +359,7 @@ exports[`options as array of objects label renders a closed combo box 1`] = `
     <input
       aria-autocomplete="none"
       aria-controls="id_listbox"
-      aria-describedby="id_hint"
+      aria-describedby="id_found_description"
       aria-expanded="false"
       autocomplete="off"
       class="react-combo-boxes-combobox__input"
@@ -413,7 +413,7 @@ exports[`options as array of objects label renders a closed combo box 1`] = `
     </ul>
     <div
       class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
-      id="id_hint"
+      id="id_found_description"
     />
     <div
       class="react-combo-boxes-combobox__not-found"
@@ -433,7 +433,7 @@ exports[`options as array of objects missing label treats as a blank string 1`] 
     <input
       aria-autocomplete="none"
       aria-controls="id_listbox"
-      aria-describedby="id_hint"
+      aria-describedby="id_found_description"
       aria-expanded="false"
       autocomplete="off"
       class="react-combo-boxes-combobox__input"
@@ -470,7 +470,7 @@ exports[`options as array of objects missing label treats as a blank string 1`] 
     </ul>
     <div
       class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
-      id="id_hint"
+      id="id_found_description"
     />
     <div
       class="react-combo-boxes-combobox__not-found"
@@ -490,7 +490,7 @@ exports[`options options as array of numbers renders a closed combo box 1`] = `
     <input
       aria-autocomplete="none"
       aria-controls="id_listbox"
-      aria-describedby="id_hint"
+      aria-describedby="id_found_description"
       aria-expanded="false"
       autocomplete="off"
       class="react-combo-boxes-combobox__input"
@@ -544,7 +544,7 @@ exports[`options options as array of numbers renders a closed combo box 1`] = `
     </ul>
     <div
       class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
-      id="id_hint"
+      id="id_found_description"
     />
     <div
       class="react-combo-boxes-combobox__not-found"
@@ -564,7 +564,7 @@ exports[`options options as array of strings renders a closed combo box 1`] = `
     <input
       aria-autocomplete="none"
       aria-controls="id_listbox"
-      aria-describedby="id_hint"
+      aria-describedby="id_found_description"
       aria-expanded="false"
       autocomplete="off"
       class="react-combo-boxes-combobox__input"
@@ -618,7 +618,7 @@ exports[`options options as array of strings renders a closed combo box 1`] = `
     </ul>
     <div
       class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
-      id="id_hint"
+      id="id_found_description"
     />
     <div
       class="react-combo-boxes-combobox__not-found"
@@ -638,7 +638,7 @@ exports[`options options as null renders an option with an empty string 1`] = `
     <input
       aria-autocomplete="none"
       aria-controls="id_listbox"
-      aria-describedby="id_hint"
+      aria-describedby="id_found_description"
       aria-expanded="false"
       autocomplete="off"
       class="react-combo-boxes-combobox__input"
@@ -685,7 +685,7 @@ exports[`options options as null renders an option with an empty string 1`] = `
     </ul>
     <div
       class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
-      id="id_hint"
+      id="id_found_description"
     />
     <div
       class="react-combo-boxes-combobox__not-found"
@@ -705,7 +705,7 @@ exports[`options options as undefined renders an option with an empty string 1`]
     <input
       aria-autocomplete="none"
       aria-controls="id_listbox"
-      aria-describedby="id_hint"
+      aria-describedby="id_found_description"
       aria-expanded="false"
       autocomplete="off"
       class="react-combo-boxes-combobox__input"
@@ -752,7 +752,7 @@ exports[`options options as undefined renders an option with an empty string 1`]
     </ul>
     <div
       class="visually-hidden visuallyhidden sr-only react-combo-boxes-sr-only"
-      id="id_hint"
+      id="id_found_description"
     />
     <div
       class="react-combo-boxes-combobox__not-found"
