@@ -80,6 +80,8 @@ export function Example() {
         ClearButtonComponent={() => null}
         InputComponent={InputComponent}
         autoselect={autoselect}
+        autoCapitalize="none"
+        autoCorrect="off"
       />
 
       <fieldset>
