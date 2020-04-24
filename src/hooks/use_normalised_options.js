@@ -61,7 +61,7 @@ export function useNormalisedOptions({
   }, [id, rawOptions, placeholder, mapOption]);
 
   const value = useMemo(() => (
-    rawValue && optionise(rawValue, mapOption)
+    rawValue != null ? optionise(rawValue, mapOption) : rawValue
   ), [rawValue, mapOption]);
 
   const selectedOption = useMemo(() => {

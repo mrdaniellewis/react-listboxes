@@ -11,6 +11,7 @@ import {
 } from './drop_down/actions';
 import { useNormalisedOptions } from '../hooks/use_normalised_options';
 import { useOnBlur } from '../hooks/use_on_blur';
+import { useMounted } from '../hooks/use_mounted';
 import { componentValidator } from '../validators/component_validator';
 import { useCombineRefs } from '../hooks/use_combine_refs';
 import { findOption } from '../helpers/find_option';
@@ -37,6 +38,7 @@ export const DropDown = forwardRef((rawProps, ref) => {
   const comboBoxRef = useRef();
   const listRef = useRef();
   const focusedRef = useRef();
+  const mounted = useMounted();
 
   const [state, dispatch] = useReducer(
     reducer,
@@ -95,13 +97,19 @@ export const DropDown = forwardRef((rawProps, ref) => {
 
   const optionsCheck = options.length ? options : null;
   useLayoutEffect(() => {
+    if (!mounted) {
+      return;
+    }
     dispatch(onOptionsChanged());
-  }, [optionsCheck]);
+  }, [optionsCheck, mounted]);
 
   const valueIdentity = value?.identity;
   useLayoutEffect(() => {
+    if (!mounted) {
+      return;
+    }
     dispatch(onValueChanged());
-  }, [valueIdentity]);
+  }, [valueIdentity, mounted]);
 
   const combinedRef = useCombineRefs(comboBoxRef, ref);
   const context = {

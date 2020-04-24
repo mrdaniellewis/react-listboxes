@@ -10,6 +10,7 @@ import {
 } from './combo_box/actions';
 import { useNormalisedOptions } from '../hooks/use_normalised_options';
 import { useOnBlur } from '../hooks/use_on_blur';
+import { useMounted } from '../hooks/use_mounted';
 import { joinTokens } from '../helpers/join_tokens';
 import { componentValidator } from '../validators/component_validator';
 import { findOption } from '../helpers/find_option';
@@ -50,6 +51,7 @@ export const ComboBox = forwardRef(({ placeholder, ...rawProps }, ref) => {
   const focusedRef = useRef();
   const lastKeyRef = useRef();
   const busyTimeoutRef = useRef();
+  const mounted = useMounted();
 
   const [state, dispatch] = useReducer(
     reducer,
@@ -77,10 +79,14 @@ export const ComboBox = forwardRef(({ placeholder, ...rawProps }, ref) => {
 
   const searchValue = (search ?? value?.label) || '';
   useEffect(() => {
+    if (!mounted) {
+      return;
+    }
     if (onSearch) {
       onSearch(searchValue);
     }
-  }, [onSearch, searchValue]);
+  }, [onSearch, searchValue, mounted]);
+
   const inputLabel = useMemo(() => {
     if (inlineAutoselect
       || (((showSelectedLabel && !focusedOption?.unselectable) ?? autoselect === 'inline') && focusListBox)
@@ -114,13 +120,19 @@ export const ComboBox = forwardRef(({ placeholder, ...rawProps }, ref) => {
 
   const optionsCheck = options.length ? options : null;
   useLayoutEffect(() => {
+    if (!mounted) {
+      return;
+    }
     dispatch(onOptionsChanged());
-  }, [optionsCheck]);
+  }, [optionsCheck, mounted]);
 
   const valueIdentity = value?.identity;
   useLayoutEffect(() => {
+    if (!mounted) {
+      return;
+    }
     dispatch(onValueChanged());
-  }, [valueIdentity]);
+  }, [valueIdentity, mounted]);
 
   // Do not show the list box is the only option is the currently selected option
   const showListBox = useMemo(() => (
