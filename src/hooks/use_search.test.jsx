@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { render, act } from '@testing-library/react';
+import { render, act, waitFor } from '@testing-library/react';
 import { useSearch } from './use_search';
 
 function TestSearch({ fn, onUpdate, ...props }) {
@@ -271,10 +271,26 @@ describe('minLength', () => {
       false,
     );
   });
+
+  it('trims the search', async () => {
+    const spy = jest.fn();
+    const fn = jest.fn(() => ['foo']);
+    render((
+      <TestSearch fn={fn} onUpdate={spy} minLength={2} />
+    ));
+    await act(async () => {
+      spy.mock.calls[0][1]('a  ');
+    });
+    expect(spy).toHaveBeenLastCalledWith(
+      [],
+      expect.anything(),
+      false,
+    );
+  });
 });
 
 describe('initialOptions', () => {
-  it('displays all options by default', () => {
+  it('displays initialOptions by default', () => {
     const spy = jest.fn();
     const fn = jest.fn(() => ['foo']);
     render((
@@ -286,6 +302,22 @@ describe('initialOptions', () => {
       false,
     );
     expect(fn).not.toHaveBeenCalled();
+  });
+
+  it('does not display them for an empty search', async () => {
+    const spy = jest.fn();
+    const fn = jest.fn(() => ['foo']);
+    render((
+      <TestSearch initialOptions={['foo', 'bar', 'foe']} fn={fn} onUpdate={spy} />
+    ));
+    await act(async () => {
+      spy.mock.calls[0][1]('');
+    });
+    expect(spy).toHaveBeenLastCalledWith(
+      ['foo'],
+      expect.any(Function),
+      false,
+    );
   });
 });
 
@@ -384,6 +416,69 @@ describe('maxResults', () => {
     });
     expect(spy).toHaveBeenCalledWith(
       ['foo', 'bar'],
+      expect.any(Function),
+      false,
+    );
+  });
+});
+
+describe('emptyOptions', () => {
+  it('does not return emptyOptions as initialOptions', () => {
+    const spy = jest.fn();
+    const fn = jest.fn(() => ['foo']);
+    render((
+      <TestSearch initialOptions={['foo', 'bar', 'foe']} emptyOptions={['bar']} fn={fn} onUpdate={spy} />
+    ));
+    expect(spy).toHaveBeenCalledWith(
+      ['foo', 'bar', 'foe'],
+      expect.any(Function),
+      false,
+    );
+  });
+
+  it('returns empty options for no search term', async () => {
+    const spy = jest.fn();
+    const fn = jest.fn(() => ['foo']);
+    render((
+      <TestSearch initialOptions={['foo', 'bar', 'foe']} emptyOptions={['bar']} fn={fn} onUpdate={spy} />
+    ));
+    await act(async () => {
+      spy.mock.calls[0][1]('');
+    });
+    expect(spy).toHaveBeenLastCalledWith(
+      ['bar'],
+      expect.any(Function),
+      false,
+    );
+  });
+
+  it('trims the search term', async () => {
+    const spy = jest.fn();
+    const fn = jest.fn(() => ['foo']);
+    render((
+      <TestSearch initialOptions={['foo', 'bar', 'foe']} emptyOptions={['bar']} fn={fn} onUpdate={spy} />
+    ));
+    await act(async () => {
+      spy.mock.calls[0][1](' ');
+    });
+    expect(spy).toHaveBeenLastCalledWith(
+      ['bar'],
+      expect.any(Function),
+      false,
+    );
+  });
+
+  it('does not return empty options for a search', async () => {
+    const spy = jest.fn();
+    const fn = jest.fn(() => ['foo']);
+    render((
+      <TestSearch initialOptions={['foo', 'bar', 'foe']} emptyOptions={['bar']} fn={fn} onUpdate={spy} />
+    ));
+    await act(async () => {
+      spy.mock.calls[0][1]('f');
+    });
+    expect(spy).toHaveBeenLastCalledWith(
+      ['foo'],
       expect.any(Function),
       false,
     );
